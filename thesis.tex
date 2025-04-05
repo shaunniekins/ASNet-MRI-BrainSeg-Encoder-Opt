@@ -1,0 +1,46 @@
+% !TeX root = thesis.tex
+
+\documentclass[12pt]{gatechthesis}
+
+% preamble
+
+% \usepackage{natbib}
+% % Add the following line to configure citation style
+% \setcitestyle{round,authoryear}
+
+\title{Optimizing AS-Net for MRI Brain Tumor Segmentation: A Comparative Study of Different Encoders for Improved Segmentation Performance}
+\author{Shaun Niel A. Ochavo \\ Armiex Jay J. Roble}
+%\vspace*{0.5cm} \\{Nunas Eluzai\\ Index No: 12-CC-1027}}
+	
+\approvaldate{\underline{\hspace{2in}}}
+\department{Institute of XXXXX}
+\bibliography{references}
+
+% document body
+\begin{document}
+
+\makeTitlePage{May}{2024}
+\input{declaration}
+%\input{approvalPage.tex}
+\makeDedication{For our parents, who have always supported us in our endeavors.}
+
+\begin{frontmatter}
+    \input{acknowledgments}
+    \makeTOC
+    \makeListOfFigures
+    \makeListOfTables
+    \input{summary}
+    \input{abbrevs}
+\end{frontmatter}
+
+\begin{thesisbody}
+    \input{chapters/chapter1}
+    \input{chapters/chapter2}
+    \input{chapters/chapter3}
+    \input{chapters/chapter4}
+    \input{chapters/chapter5.tex}
+    \makeBibliography
+    \input{chapters/appendix.tex}
+\end{thesisbody}
+
+\end{document}

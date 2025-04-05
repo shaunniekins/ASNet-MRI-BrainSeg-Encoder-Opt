@@ -1,0 +1,40 @@
+\chapter{SUMMARY, CONCLUSION AND RECOMMENDATION}
+
+\section{Summary}
+
+This thesis aimed to optimize the Attention Synergy Network (AS-Net) for Magnetic Resonance Imaging (MRI) brain tumor segmentation by investigating the impact of different encoder architectures on performance and efficiency. Inspired by the original AS-Net's success in skin lesion segmentation but acknowledging its limitations with the heavy VGG16 encoder, this study compared VGG16 against lightweight alternatives: MobileNetV3 (Large and Small variants) and EfficientNetV2 (B0 and B1 variants).
+
+The methodology involved adapting the core AS-Net decoder structure (incorporating Spatial Attention, Channel Attention, and Synergy modules) to work with each pre-trained encoder. The models were trained and evaluated on the BraTS 2020 dataset, preprocessed into 2D H5 slices. Performance was primarily measured using the Dice Similarity Coefficient (Dice Coef) and Intersection over Union (IoU) for segmentation accuracy, while computational efficiency was assessed via training time. A combined Dice Loss and Weighted Binary Cross-Entropy loss function was employed, with fine-tuning applied to the later layers of each encoder.
+
+Key findings from the comparative analysis revealed that lightweight encoders, specifically MobileNetV3-Large and EfficientNetV2-B0, achieved segmentation accuracy comparable, or even slightly superior (Dice Coef $\approx$ 0.93), to the VGG16 baseline on the validation set. Crucially, these lightweight models demonstrated a substantial improvement in computational efficiency, reducing training times by approximately 7-8 times compared to VGG16 under the experimental conditions. MobileNetV3-Large yielded the highest Dice score overall (0.9326). MobileNetV3-Small and EfficientNetV2-B1 also showed significant efficiency gains but exhibited slightly lower segmentation accuracy.
+
+\section{Conclusion}
+
+Based on the results and discussion presented in Chapter 4, the following conclusions can be drawn:
+
+\begin{enumerate}
+    \item \textbf{Lightweight Encoders Offer an Excellent Trade-off:} The primary research question regarding the potential of lightweight encoders within AS-Net for brain tumor segmentation is answered affirmatively. MobileNetV3-Large and EfficientNetV2-B0 demonstrated that it is possible to achieve high segmentation accuracy (comparable to VGG16) with significantly reduced computational cost. This directly addresses the limitation of the original AS-Net's reliance on the heavy VGG16 encoder for practical medical imaging applications.
+    \item \textbf{MobileNetV3-Large Emerges as the Optimal Choice:} Comparing the specific encoders, MobileNetV3-Large provided the best balance, achieving the highest Dice score (0.9326) while being vastly more efficient than VGG16. It slightly outperformed EfficientNetV2-B0 in accuracy and was comparable in efficiency.
+    \item \textbf{AS-Net Architecture is Effective for Brain Tumor Segmentation:} The successful adaptation and high performance achieved across the top models validate the effectiveness of the AS-Net's attention synergy mechanism (SAM, CAM, Synergy modules) for enhancing feature representation in the context of MRI brain tumor segmentation.
+    \item \textbf{Efficiency Gains are Substantial:} The study quantitatively confirmed the significant efficiency benefits (7-8x faster training) of using modern lightweight architectures like MobileNetV3 and EfficientNetV2 compared to the older VGG16, making them more suitable for resource-constrained environments or scenarios requiring faster model iteration.
+\end{enumerate}
+
+In essence, this research successfully demonstrated that optimizing AS-Net with a lightweight encoder, particularly MobileNetV3-Large, yields a highly effective and efficient model for MRI brain tumor segmentation, surpassing the original VGG16 implementation in terms of practical applicability without sacrificing segmentation performance on the tested dataset.
+
+\section{Recommendations}
+
+Based on the findings and conclusions of this study, the following recommendations are made:
+
+\begin{enumerate}
+    \item \textbf{For Practical Deployment (Balancing Accuracy and Efficiency):} Integrate MobileNetV3-Large as the encoder within the AS-Net architecture. It offers the best combination of top-tier segmentation accuracy and substantial computational efficiency, making it suitable for clinical research or potential deployment where resources and time may be limiting factors. EfficientNetV2-B0 is a close second and also highly recommended.
+    \item \textbf{For Maximum Accuracy (If Resources Permit):} While VGG16 performed very well, its marginal accuracy difference compared to MobileNetV3-Large does not justify the significant increase in computational cost for most applications. However, if maximizing Dice score is the absolute priority regardless of computational expense, VGG16 remains a strong, albeit slow, baseline.
+    \item \textbf{Further Validation:} Conduct extensive validation of the AS-Net models with MobileNetV3-Large and EfficientNetV2-B0 encoders on diverse, multi-institutional datasets beyond BraTS 2020. This is crucial to assess the generalizability and robustness of the models in real-world scenarios with variations in imaging protocols and patient populations.
+    \item \textbf{Explore Multi-Class Segmentation:} Extend the current binary segmentation framework to perform multi-class segmentation (distinguishing NCR/NET, ED, and ET). This would involve modifying the final layer of the model, adapting the loss function (e.g., using multi-class Dice or cross-entropy variants), and evaluating performance using appropriate multi-class metrics.
+    \item \textbf{Investigate Hyperparameter Optimization:} Perform systematic hyperparameter tuning for the most promising models (AS-Net with MobileNetV3-Large/EfficientNetV2-B0), focusing on learning rates, optimizer parameters, depth of fine-tuning, and loss function weights, to potentially further enhance segmentation accuracy.
+    \item \textbf{Consider 3D Architectures:} While this study focused on 2D slice-based segmentation for efficiency, future work could explore adapting the AS-Net principles to fully 3D convolutional networks (like 3D U-Net variants) using lightweight 3D encoders, which might better capture volumetric context, albeit at a higher computational cost.
+    \item \textbf{Clinical Relevance Studies:} Investigate the clinical utility of the segmentations produced by the optimized AS-Net models, for example, by correlating segmentation results with patient outcomes, treatment response, or radiological assessments.
+    \item \textbf{Explore Other Lightweight Encoders:} Future research could also explore other lightweight architectures (e.g., SqueezeNet, ShuffleNet) or hybrid models that combine the strengths of different encoders to further enhance segmentation performance and efficiency.
+    \item \textbf{Investigate Real-Time Segmentation:} Given the efficiency of the lightweight encoders, explore the feasibility of real-time segmentation applications in clinical settings, potentially integrating the models into radiology workflows or surgical planning systems.
+\end{enumerate}
+
+By implementing these recommendations, future research can build upon the findings of this thesis to develop even more accurate, efficient, and clinically relevant deep learning tools for brain tumor analysis.

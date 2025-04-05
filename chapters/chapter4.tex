@@ -1,0 +1,111 @@
+\chapter{RESULTS AND DISCUSSION}
+
+This chapter presents and discusses the results obtained from implementing and evaluating the Attention Synergy Network (AS-Net) architecture for the task of MRI brain tumor segmentation. The core AS-Net modules (Spatial Attention Module - SAM, Channel Attention Module - CAM, Synergy Module) were integrated with five different encoder backbones: VGG16, MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, and EfficientNetV2-B1. The primary objective of this research was to optimize the AS-Net architecture for MRI brain tumor segmentation by comparing the performance of these encoder networks, particularly focusing on the trade-offs between segmentation accuracy (using metrics like Dice Similarity Coefficient and IoU) and computational efficiency (primarily measured by training time). The experiments were conducted using the BraTS 2020 dataset, preprocessed into H5 slice files.
+
+\section{Experimental Setup Summary}
+
+Before presenting the results, a brief summary of the experimental setup is provided:
+
+\begin{itemize}
+    \item \textbf{Dataset:} BraTS 2020 Training Data, converted into H5 files, each containing a 2D slice with four MRI modalities (T1, T1ce, T2, FLAIR) and corresponding ground truth segmentation masks (NCR/NET, ED, ET). The T1ce and FLAIR modalities (\texttt{MODALITY\_INDICES = [1, 3]}) were selected and mapped to 3 channels (\texttt{RGB\_MAPPING\_INDICES = [0, 1, 0]}) as input for the models. The FLAIR modality was used as the reference for visualization.
+    \item \textbf{Preprocessing:} Input images were Z-score normalized per channel and resized to the specific input dimensions required by each encoder (VGG16: 192x192; MobileNetV3-Large/Small, EfficientNetV2-B0: 224x224; EfficientNetV2-B1: 240x240). The ground truth mask was converted into a binary representation (tumor vs. background) for training and evaluation using the combined loss function.
+    \item \textbf{Model Architecture:} The core AS-Net architecture, featuring SAM, CAM, and the Synergy module, was used consistently across experiments. The encoder part was replaced with the respective pre-trained backbones (VGG16, MobileNetV3-Large/Small, EfficientNetV2-B0/B1). Fine-tuning was applied to the later layers of each encoder, while earlier layers were kept frozen, as detailed in the implementation scripts (\texttt{asnet\_*\_brats.py}).
+    \item \textbf{Training:} Models were trained using a \texttt{CombinedLoss} (weighted sum of Dice Loss and Weighted Binary Cross-Entropy, \texttt{class\_weight=100.0} to heavily penalize misclassifying tumor pixels) and the Adam optimizer (\texttt{initial\_learning\_rate=1e-4}) for 30 epochs. Training utilized \texttt{tf.distribute.MirroredStrategy} where multiple GPUs were available, with a \texttt{BATCH\_SIZE\_PER\_REPLICA = 4}. Callbacks for saving best/last checkpoints, learning rate reduction, and early stopping were employed.
+    \item \textbf{Evaluation Metrics:} Performance was evaluated on a held-out validation set using:
+    \begin{itemize}
+        \item Dice Similarity Coefficient (Dice Coef / F1 Score)
+        \item Intersection over Union (IoU / Jaccard Index)
+        \item Binary Accuracy
+        \item Precision
+        \item Recall (Sensitivity)
+    \end{itemize}
+    \item \textbf{Computational Efficiency:} Measured primarily by the total training time recorded in the completion notification files.
+\end{itemize}
+
+\section{Quantitative Results}
+
+The quantitative performance of the AS-Net architecture with each of the five encoder backbones on the validation set is summarized in \ref{tab:quantitative_results}, based on the metrics reported in the completion notification files (*-asnet-finished-training.txt). 
+
+\begin{table}
+    \centering
+    \caption{Quantitative performance of AS-Net with different encoder backbones on the validation set.}
+    \label{tab:quantitative_results}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|c|c|c|c|c|c|c|c|}
+        \hline
+        \textbf{Encoder Backbone} & \textbf{Input Size} & \textbf{Dice Coef / F1} & \textbf{IoU} & \textbf{Precision} & \textbf{Recall} & \textbf{Binary Acc.} & \textbf{Approx. Training Time} \\ 
+        \hline
+        VGG16 & 192x192 & 0.9319 & 0.8724 & 0.8765 & 0.9947 & 0.9985 & $\sim$11h 26m \\ 
+        MobileNetV3-Large & 224x224 & 0.9326 & 0.8736 & 0.8871 & 0.9829 & 0.9986 & $\sim$1h 30m \\ 
+        MobileNetV3-Small & 224x224 & 0.8995 & 0.8174 & 0.8292 & 0.9828 & 0.9978 & $\sim$1h 20m \\ 
+        EfficientNetV2-B0 & 224x224 & 0.9295 & 0.8683 & 0.8769 & 0.9887 & 0.9985 & $\sim$1h 39m \\ 
+        EfficientNetV2-B1 & 240x240 & 0.9053 & 0.8270 & 0.8313 & 0.9937 & 0.9979 & $\sim$1h 34m \\ 
+        \hline
+    \end{tabular}%
+    }
+\end{table}
+
+The training process for each model generated history plots showing the progression of loss and key metrics (Dice Coefficient, IoU, Accuracy) over epochs for both the training and validation sets. These plots provide insights into model convergence and potential overfitting.
+
+\section{Qualitative Results}
+
+In addition to quantitative metrics, visual inspection of the segmentation results provides valuable qualitative insights. The \texttt{evaluate\_model} function generated example outputs comparing the reference FLAIR image, the ground truth segmentation (multi-class overlay), the model's predicted probability map, and the final binary segmentation overlay based on the 0.5 threshold.
+
+Qualitatively, the models with higher Dice scores (VGG16, MobileNetV3-Large, EfficientNetV2-B0) generally produced segmentation masks that closely matched the ground truth tumor regions, accurately capturing the core tumor and edema boundaries in many cases. The probability maps often showed high confidence within the tumor area. Differences between the top performers were often subtle on visual inspection of individual slices, highlighting the importance of quantitative metrics for fine-grained comparison. Models with lower Dice scores (MobileNetV3-Small, EfficientNetV2-B1) occasionally showed slight under- or over-segmentation compared to the ground truth in the visualized examples.
+
+\section{Discussion}
+
+The results presented provide a basis for comparing the different encoder backbones within the AS-Net architecture for MRI brain tumor segmentation.
+
+\subsection{Comparison of Encoder Performance (Segmentation Accuracy)}
+
+The quantitative results (\ref{tab:quantitative_results}) indicate that several encoder configurations achieved high segmentation performance on this dataset.
+
+\begin{itemize}
+    \item \textbf{Top Performers:} MobileNetV3-Large achieved the highest Dice score (0.9326), marginally surpassing VGG16 (0.9319) and EfficientNetV2-B0 (0.9295). These three encoders demonstrated excellent performance, with Dice scores exceeding 0.929 and IoU scores above 0.868. This is noteworthy because MobileNetV3-Large and EfficientNetV2-B0 are considered significantly more lightweight than VGG16.
+    \item \textbf{Lightweight Models:} MobileNetV3-Large stands out as a highly effective lightweight encoder, offering top-tier segmentation accuracy. EfficientNetV2-B0 also performed very competitively. MobileNetV3-Small (Dice 0.8995) and EfficientNetV2-B1 (Dice 0.9053), while still achieving respectable results, performed slightly below the top three. The performance difference between MobileNetV3-Large and Small suggests that the increased capacity of the Large variant was beneficial for this task. Similarly, the B0 variant of EfficientNetV2 outperformed the B1 variant in this setup, which might be related to the specific dataset characteristics or fine-tuning strategy.
+    \item \textbf{VGG16:} As the original encoder used in the AS-Net paper (for skin lesions) and a traditionally strong (though heavy) architecture, VGG16 performed very well (Dice 0.9319), serving as a solid baseline. However, it did not significantly outperform the best lightweight options in terms of Dice score in this experiment.
+\end{itemize}
+
+\subsection{Comparison of Computational Efficiency}
+
+Training time provides a practical measure of computational efficiency.
+
+\begin{itemize}
+    \item \textbf{VGG16:} Was significantly slower, taking approximately 11 hours and 26 minutes to train. This aligns with its known computational heaviness due to a large number of parameters and standard convolutions.
+    \item \textbf{Lightweight Encoders:} MobileNetV3 (Large: ~1h 30m, Small: ~1h 20m) and EfficientNetV2 (B0: ~1h 39m, B1: ~1h 34m) variants were substantially faster, completing training in roughly 1.5 hours. This represents an approximate 7-8x speedup compared to VGG16 under the experimental conditions. MobileNetV3-Small was the fastest, consistent with its design goal of maximum efficiency.
+\end{itemize}
+
+The drastic difference in training time highlights the practical advantage of using lightweight encoders like MobileNetV3 or EfficientNetV2, especially in research settings with limited computational resources or for potential deployment scenarios requiring faster retraining or inference.
+
+\subsection{Effectiveness of Attention Synergy (AS-Net)}
+
+The consistently high Dice scores achieved by the top-performing models (all >0.929) suggest that the core AS-Net architecture, with its synergistic combination of spatial (SAM) and channel (CAM) attention mechanisms, is effective for the task of MRI brain tumor segmentation. The attention modules likely helped the models focus on relevant tumor features and suppress background noise, contributing to the accurate segmentation across different encoder types. This supports the adaptation of the AS-Net concept from its original domain (skin lesions) to brain tumor MRI analysis.
+
+\subsection{Relation to Thesis Objectives}
+
+The findings directly address the objectives:
+
+\begin{enumerate}
+    \item \textbf{Primary Objective (Optimize AS-Net with different encoders):} This was achieved by implementing and comparing AS-Net with VGG16, MobileNetV3-Large/Small, and EfficientNetV2-B0/B1. The results provide a clear comparison of their segmentation performance and efficiency.
+    \item \textbf{Secondary Objective (Evaluate attention mechanisms):} The high performance achieved across the best models supports the effectiveness of the SAM, CAM, and Synergy modules within AS-Net for guiding feature extraction in brain tumor segmentation.
+    \item \textbf{Secondary Objective (Assess performance, efficiency, generalizability):}
+    \begin{itemize}
+        \item \textbf{Performance:} Segmentation accuracy was assessed using Dice, IoU, Precision, and Recall (\ref{tab:quantitative_results}). MobileNetV3-Large, VGG16, and EfficientNetV2-B0 showed the best accuracy.
+        \item \textbf{Efficiency:} Training time demonstrated the significant computational advantages of MobileNetV3 and EfficientNetV2 over VGG16.
+        \item \textbf{Generalizability:} While validation metrics indicate good performance on the held-out portion of the BraTS 2020 dataset, further testing on external datasets is needed to confirm broader generalizability.
+    \end{itemize}
+    \item \textbf{Secondary Objective (Provide recommendations):} The specific recommendations based on these findings are presented in Chapter 5.
+\end{enumerate}
+
+\section{Limitations}
+
+Several limitations should be acknowledged:
+
+\begin{itemize}
+    \item \textbf{Dataset Scope:} The study was conducted using only the BraTS 2020 dataset. While a standard benchmark, performance might vary on data from different scanners, institutions, or imaging protocols. Generalizability requires further validation.
+    \item \textbf{Hyperparameter Tuning:} While standard practices were followed (e.g., pre-trained weights, fine-tuning, common learning rate), extensive hyperparameter optimization (e.g., learning rate schedules, optimizer variations, loss weighting, fine-tuning depth) was not performed for each encoder, which could potentially influence the relative rankings.
+    \item \textbf{Binary Segmentation Focus:} The primary evaluation used a combined loss targeting binary segmentation (tumor vs. background). Although multi-class ground truth masks were available and used for visualization, the models were not explicitly trained or evaluated for multi-class segmentation performance (i.e., distinguishing NCR/NET, ED, and ET separately).
+    \item \textbf{Implementation Details:} Specific choices in the implementation (e.g., exact skip connection layers, number of filters in SAM/CAM based on encoder output) could affect performance.
+    \item \textbf{Hardware Dependence:} Training times are specific to the hardware used (GPUs, CPU, memory) and serve as a relative comparison within this study.
+\end{itemize}
