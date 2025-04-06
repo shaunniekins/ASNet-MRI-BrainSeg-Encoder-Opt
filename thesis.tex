@@ -1,8 +1,11 @@
 % !TeX root = thesis.tex
+% !TeX program = xelatex  % Or lualatex
 
 \documentclass[12pt]{gatechthesis}
 
 % preamble
+\usepackage{fontspec} % Add fontspec package
+\setmainfont{Candara} % Set main font to Candara (ensure it's installed)
 
 % \usepackage{natbib}
 % % Add the following line to configure citation style
@@ -20,11 +23,10 @@
 \begin{document}
 
 \makeTitlePage{May}{2024}
-\input{declaration}
-%\input{approvalPage.tex}
-\makeDedication{For our parents, who have always supported us in our endeavors.}
 
 \begin{frontmatter}
+    \input{approvalPage.tex}
+    \makeDedication{For our parents, who have always supported us in our endeavors.}
     \input{acknowledgments}
     \makeTOC
     \makeListOfFigures
@@ -38,9 +40,9 @@
     \input{chapters/chapter2}
     \input{chapters/chapter3}
     \input{chapters/chapter4}
-    \input{chapters/chapter5.tex}
+    \input{chapters/chapter5}
     \makeBibliography
-    \input{chapters/appendix.tex}
+    \input{chapters/appendix}
 \end{thesisbody}
 
 \end{document}

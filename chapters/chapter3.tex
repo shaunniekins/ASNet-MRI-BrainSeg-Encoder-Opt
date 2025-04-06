@@ -1,152 +1,206 @@
 \chapter{METHODOLOGY}
 
-\section{Oveview}
-
-The methodology employed in this study focused on adapting and optimizing the Attention Synergy Network (AS-Net) architecture for the task of Magnetic Resonance Imaging (MRI) brain tumor segmentation. This involved integrating the core AS-Net attention mechanisms (Spatial Attention Module - SAM, Channel Attention Module - CAM, and Synergy Module) with various encoder backbones, including the original VGG16 and computationally lighter alternatives like MobileNetV3 (Large and Small variants) and EfficientNetV2 (B0 and B1 variants). The performance of these different AS-Net configurations was evaluated using a publicly available MRI brain tumor dataset (BraTS 2020, processed into H5 slices). The primary comparison focused on segmentation accuracy, measured by metrics such as the Dice Similarity Coefficient (Dice Coef) and Intersection over Union (IoU), alongside computational efficiency, assessed primarily through training duration.
-
-\begin{figure}[ht]
-    \centering
-	\includegraphics[width=0.85\textwidth]{figures/fig3-1.png}
-	\caption[Conceptual Framework]{Conceptual Framework}
-	\label{fig:fig3-1}
-\end{figure}
+\section{Overview}
+This chapter details the methodology employed to adapt, train, and evaluate the Attention Synergy Network (AS-Net) for the task of MRI brain tumor segmentation. The primary goal was to compare the effectiveness of different encoder backbones within the AS-Net framework, specifically contrasting the original VGG16 encoder with more modern, lightweight alternatives (MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, EfficientNetV2-B1). The methodology encompasses dataset selection and preprocessing, architectural adaptations, training procedures, evaluation metrics, and the comparative analysis strategy used to address the research questions outlined in Chapter 1.
 
 \section{Dataset and Preprocessing}
 
-The study utilized the BraTS 2020 (Brain Tumor Segmentation) challenge training dataset. The original 3D volumes were pre-processed and converted into individual 2D slice files stored in the HDF5 (H5) format. Each H5 file contained:
+The study utilized the BraTS 2020 (Brain Tumor Segmentation) challenge training dataset, which had been pre-processed into a collection of HDF5 (H5) files, each representing a single 2D axial slice. This format facilitated efficient data loading and processing.
 
+\subsection{Data Source and Structure}
+Each H5 file contained two primary data arrays:
 \begin{itemize}
-    \item image: A multi-channel array (240x240x4) representing the four MRI modalities: T1-weighted (T1), post-contrast T1-weight
-    \item mask: A 3-channel array (240x240x3) representing the ground truth segmentation masks for different tumor sub-regions: non-enhancing tumor core/necrotic core (NCR/NET), peritumoral edema (ED), and GD-enhancing tumor (ET).
+    \item \texttt{image}: A (240, 240, 4) numpy array containing pixel data for the four standard MRI modalities: T1-weighted (T1), post-contrast T1-weighted (T1ce), T2-weighted (T2), and Fluid-Attenuated Inversion Recovery (FLAIR).
+    \item \texttt{mask}: A (240, 240, 3) numpy array representing the expert-annotated ground truth segmentation masks for three distinct tumor sub-regions: Channel 0 for NCR/NET (non-enhancing tumor core/necrotic core), Channel 1 for ED (peritumoral edema), and Channel 2 for ET (GD-enhancing tumor).
 \end{itemize}
+A metadata CSV file provided the mapping between patient identifiers, slice indices, and the corresponding H5 file paths within the data directory (\texttt{H5\_DATA\_DIR}).
 
-The following preprocessing steps were implemented within the data loading pipeline (\texttt{prepare\_brats\_data\_gpu} function in \texttt{asnet\_common.py}) using \texttt{tf.data} for efficiency:
+\subsection{Data Loading and Preprocessing Pipeline}
+A custom data loading and preprocessing pipeline was implemented using TensorFlow's \texttt{tf.data} API for efficiency and integration with distributed training strategies. This pipeline, defined in the \texttt{prepare\_brats\_data\_gpu} function within \texttt{asnet\_common.py}, performed the following steps for each H5 file:
 
 \begin{enumerate}
-    \item \textbf{Metadata Loading:} A CSV metadata file (BraTS20 Training Metadata.csv) was used to identify the paths to the individual H5 slice files.
-    \item \textbf{Data Splitting:} The dataset was randomly shuffled and split into training and validation sets (default 80\% training, 20\% validation).
-    \item \textbf{Modality Selection:} For model input, two modalities, T1ce and FLAIR (\texttt{MODALITY\_INDICES = [1, 3]}), were selected from the 4 available channels.
-    \item \textbf{RGB Channel Mapping:} The two selected modalities were mapped to three channels to match the input requirements of the pre-trained encoders (\texttt{RGB\_MAPPING\_INDICES = [0, 1, 0]}, mapping [T1ce, FLAIR] → [T1ce, FLAIR, T1ce]).
-    \item \textbf{Normalization:} Z-score normalization was applied independently to each of the selected input channels (T1ce and FLAIR before RGB mapping). Mean and standard deviation were calculated per slice, per channel.
-    \item \textbf{Binary Mask Creation:} The 3-channel ground truth mask (NCR/NET, ED, ET) was converted into a single-channel binary mask where any voxel belonging to any tumor class was labeled as 1 (tumor), and all other voxels were labeled as 0 (background). This binary mask was used for calculating the loss function during training.
-    \item \textbf{Resizing:} Both the input images (after RGB mapping and normalization) and the binary ground truth masks were resized to the specific input dimensions required by each encoder architecture (e.g., 192×192 for VGG16, 224×224 for MobileNetV3/EfficientNetV2-B0, 240×240 for EfficientNetV2-B1) using bilinear interpolation for images and nearest-neighbor interpolation for masks.
-    \item \textbf{Data Structure:} The pipeline was configured to yield tuples containing: (i) the preprocessed model input image, (ii) the binary ground truth mask for loss calculation, (iii) a normalized reference modality image (FLAIR) for visualization, and (iv) the multi-class ground truth mask (values 0, 1, 2, 4) also resized for visualization purposes.
+    \item \textbf{File Path Handling:} Read file paths from the metadata CSV, filtering for existing files.
+    \item \textbf{Data Splitting:} Randomly shuffled the dataset (using a fixed seed for reproducibility) and split it into training (80\%) and validation (20\%) sets based on the file list.
+    \item \textbf{H5 File Parsing:} Loaded the \texttt{image} and \texttt{mask} arrays from each H5 file.
+    \item \textbf{Modality Selection:} Selected the T1ce (index 1) and FLAIR (index 3) modalities from the 4-channel \texttt{image} array, based on \texttt{MODALITY\_INDICES = [1, 3]}.
+    \item \textbf{RGB Channel Mapping:} Mapped the two selected modalities ([T1ce, FLAIR]) to a 3-channel format suitable for the pre-trained encoders using \texttt{RGB\_MAPPING\_INDICES = [0, 1, 0]}, resulting in an input representation of [T1ce, FLAIR, T1ce].
+    \item \textbf{Normalization:} Applied Z-score normalization independently to each selected input channel (T1ce and FLAIR) *before* the RGB mapping. The mean and standard deviation were calculated on a per-slice, per-channel basis.
+    \item \textbf{Binary Mask Creation:} Converted the 3-channel ground truth \texttt{mask} into a single-channel binary mask. Any voxel labeled as NCR/NET, ED, or ET was assigned a value of 1 (tumor), while all other voxels (background) were assigned 0. This binary mask served as the target for the segmentation loss function.
+    \item \textbf{Multi-Class Mask Preparation:} Created a multi-class mask representation for visualization purposes, mapping NCR/NET to 1, ED to 2, and ET to 4 (overwriting in case of overlap), with background as 0.
+    \item \textbf{Resizing:} Resized the 3-channel input image and the single-channel binary mask to the specific target dimensions required by each encoder architecture using \texttt{tf.image.resize}. Bilinear interpolation was used for the images, and nearest-neighbor interpolation was used for the masks to preserve label integrity. The target sizes were:
+        \begin{itemize}
+            \item VGG16: 192x192
+            \item MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0: 224x224
+            \item EfficientNetV2-B1: 240x240
+        \end{itemize}
+    \item \textbf{Visualization Data Preparation:} Resized the selected reference modality (FLAIR, index 3, defined by \texttt{REFERENCE\_MODALITY\_INDEX\_FOR\_DISPLAY}) and the multi-class mask to the target dimensions for use in generating qualitative results, normalizing the reference image to [0, 1].
+    \item \textbf{Batching and Prefetching:} Grouped the processed samples into batches according to the global batch size and used \texttt{tf.data.AUTOTUNE} for prefetching to optimize GPU utilization.
 \end{enumerate}
+The final output structure yielded by the data pipeline for each batch consisted of a tuple: \texttt{(model\_input\_image, binary\_ground\_truth\_mask, reference\_display\_image, multi\_class\_display\_mask)}. Only the first two elements were used during model training and quantitative evaluation.
 
 \section{AS-Net Architecture Adaptation}
 
-The core AS-Net architecture, designed for 2D image segmentation, was adapted for this task by integrating different pre-trained encoder networks. The key components are described below:
+The study adapted the AS-Net architecture by combining its core attention and synergy modules with different encoder backbones.
 
 \subsection{Encoder Networks}
-
-Five distinct encoder architectures were evaluated within the AS-Net framework, utilizing weights pre-trained on ImageNet:
+Five pre-trained encoder networks were integrated into the AS-Net framework, leveraging weights learned from the ImageNet dataset:
 
 \begin{enumerate}
-    \item \textbf{VGG16:} The original encoder used in the reference AS-Net study (Hu et al., 2022), serving as a baseline. Input size: 192x192x3.
-    \item \textbf{MobileNetV3-Large:} A lightweight encoder optimized for high performance with efficiency. Input size: 224x224x3.
-    \item \textbf{MobileNetV3-Small:} A further optimized lightweight encoder prioritizing maximum efficiency. Input size: 224x224x3.
-    \item \textbf{EfficientNetV2-B0:} A baseline variant of the EfficientNetV2 family, balancing efficiency and accuracy. Input size: 224x224x3.
-    \item \textbf{EfficientNetV2-B1:} A slightly larger variant of EfficientNetV2. Input size: 240x240x3.
+    \item \textbf{VGG16:} Used as the baseline encoder, mirroring the original AS-Net paper \parencite{hu2022net}. Input size: 192x192x3. Implemented in \texttt{asnet\_vgg16\_brats.py}.
+    \item \textbf{MobileNetV3-Large:} A high-performance lightweight encoder. Input size: 224x224x3. Implemented in \texttt{asnet\_mobilenetv3\_brats.py}.
+    \item \textbf{MobileNetV3-Small:} An efficiency-focused lightweight encoder. Input size: 224x224x3. Implemented in \texttt{asnet\_mobilenetv3\_brats.py}.
+    \item \textbf{EfficientNetV2-B0:} The smallest variant of the EfficientNetV2 family. Input size: 224x224x3. Implemented in \texttt{asnet\_efficientnetv2\_brats.py}.
+    \item \textbf{EfficientNetV2-B1:} A slightly larger EfficientNetV2 variant. Input size: 240x240x3. Implemented in \texttt{asnet\_efficientnetv2\_brats.py}.
 \end{enumerate}
 
-For MobileNetV3 and EfficientNetV2, their respective \texttt{preprocess\_input} functions were applied within the model graph after the initial Input layer to scale inputs appropriately. VGG16's \texttt{preprocess\_input} was not used, relying instead on the Z-score normalization from the data pipeline.
+For MobileNetV3 and EfficientNetV2, their respective built-in \texttt{preprocess\_input} functions were applied as the first step within the model definition to scale the input pixel values appropriately. For VGG16, the Z-score normalization applied during data preprocessing served as the input normalization.
 
-\textbf{Fine-tuning:} To leverage pre-trained knowledge while adapting to the medical imaging domain, a fine-tuning strategy was employed. For each encoder, the initial layers/blocks were frozen (non-trainable), and only the later layers/blocks were made trainable. The specific point at which layers became trainable varied slightly between encoders (e.g., from block4 onwards for VGG16, from expanded\_conv\_6 for MobileNetV3-Large, from block4 for EfficientNetV2 variants), as defined in the respective \texttt{asnet\_*\_brats.py} scripts.
+\textbf{Fine-tuning Strategy:} A transfer learning approach with fine-tuning was employed. The initial convolutional blocks of each pre-trained encoder were frozen (weights were not updated during training), while the later blocks were unfrozen and allowed to train. The specific layers marking the transition from frozen to trainable were chosen based on common practices for transfer learning with these architectures and are detailed within the respective implementation scripts (e.g., starting from 'block4' for VGG16, 'expanded\_conv\_6' for MobileNetV3-Large, 'block4' for EfficientNetV2 variants). This strategy aimed to retain general features learned from ImageNet while adapting the deeper layers to the specifics of MRI brain tumor segmentation.
 
 \subsection{Core AS-Net Modules (SAM, CAM, Synergy)}
-
-The Spatial Attention Module (SAM), Channel Attention Module (CAM), and Synergy module, as defined in \texttt{asnet\_common.py}, were utilized in the decoder:
+The core components of the AS-Net decoder were used consistently across all encoder variants:
 
 \begin{itemize}
-    \item \textbf{Spatial Attention Module (SAM):} This module focuses on relevant spatial locations. It uses convolutional layers and max-pooling/upsampling operations to generate two spatial attention maps which are added and applied multiplicatively to guide feature extraction.
-    \item \textbf{Channel Attention Module (CAM):} This module adaptively recalibrates channel-wise feature responses. It uses global average pooling followed by fully connected layers (acting as a channel-wise MLP) to generate channel attention weights, which are applied multiplicatively.
-    \item \textbf{Synergy Module:} This module combines the outputs from parallel SAM and CAM branches at each decoder stage. It uses learnable scalar weights (alpha and beta, initialized to 0.5) to compute a weighted sum of the SAM and CAM feature maps, followed by a 1x1 convolution and Batch Normalization.
+    \item \textbf{Spatial Attention Module (SAM):} As illustrated in Figure \ref{fig:sam_module}, SAM processes input features through parallel convolutional pathways. One pathway generates spatial attention maps using pooling and upsampling to capture multi-scale spatial context, highlighting salient regions (likely tumor areas). These maps weight the features from the other pathway, effectively focusing computation on relevant spatial locations.
+    \item \textbf{Channel Attention Module (CAM):} As shown in Figure \ref{fig:cam_module}, CAM focuses on inter-channel relationships. It uses global average pooling to squeeze spatial information, followed by a small multi-layer perceptron (MLP) operating on channel descriptors to generate channel-wise attention weights. These weights rescale the input feature channels, emphasizing informative features and suppressing less useful ones.
+    \item \textbf{Synergy Module:} This module integrates the outputs from the parallel SAM and CAM branches. It computes a weighted sum of the SAM and CAM feature maps using learnable scalar parameters ($\alpha$ and $\beta$, initialized to 0.5 and trained alongside the network). This adaptive fusion is followed by a 1x1 convolution and Batch Normalization to refine the combined features before passing them to the next decoder stage.
 \end{itemize}
 
-A custom \texttt{ResizeToMatchLayer} was implemented and used specifically within the EfficientNetV2 decoder implementation to handle potential spatial dimension mismatches between upsampled feature maps and skip connection feature maps, ensuring compatibility for the concatenation step.
+A custom \texttt{ResizeToMatchLayer} was introduced (in \texttt{asnet\_common.py}) and utilized specifically in the EfficientNetV2 decoder (\texttt{asnet\_efficientnetv2\_brats.py}). This layer addresses potential minor discrepancies in spatial dimensions between upsampled features and skip connection features that can arise due to padding or striding differences in the EfficientNetV2 architecture, ensuring compatible shapes for the concatenation operation in the decoder.
 
-\begin{figure}[!h]
+% Placeholder for SAM Figure
+\begin{figure}[ht]
     \centering
-	\includegraphics[width=0.85\textwidth]{figures/fig3-2.png}
-	\caption[Spatial Attention Module (SAM)]{Spatial Attention Module (SAM)}
-	\label{fig:fig3-2}
+	% Replace with actual image path
+	\includegraphics[width=0.85\textwidth]{figures/placeholder_sam_diagram.png}
+	\caption[Spatial Attention Module (SAM)]{Diagram of the Spatial Attention Module (SAM) used in the AS-Net decoder.}
+	\label{fig:sam_module}
 \end{figure}
 
-\begin{figure}[!h]
+% Placeholder for CAM Figure
+\begin{figure}[ht]
     \centering
-	\includegraphics[width=0.85\textwidth]{figures/fig3-3.png}
-	\caption[Channel Attention Module (CAM)]{Channel Attention Module (CAM)}
-	\label{fig:fig3-3}
+	% Replace with actual image path
+	\includegraphics[width=0.85\textwidth]{figures/placeholder_cam_diagram.png}
+	\caption[Channel Attention Module (CAM)]{Diagram of the Channel Attention Module (CAM) used in the AS-Net decoder.}
+	\label{fig:cam_module}
 \end{figure}
 
 \subsection{Decoder Structure}
+The decoder followed a standard U-Net-like symmetric structure, designed to progressively upsample features while integrating high-resolution spatial information from the encoder via skip connections. At each decoder stage:
+\begin{enumerate}
+    \item The feature map from the preceding decoder stage was upsampled by a factor of 2 using bilinear interpolation (\texttt{UpSampling2D}).
+    \item The upsampled feature map was concatenated with the corresponding feature map extracted from the encoder backbone at the same spatial resolution (skip connection).
+    \item The concatenated feature map was fed into parallel SAM and CAM modules.
+    \item The outputs of the SAM and CAM modules were fused using the Synergy module.
+    \item The output of the Synergy module was passed to the next decoder stage.
+\end{enumerate}
+This process was repeated across multiple stages (typically 4 stages, corresponding to the skip connections used). After the final upsampling stage, which restored the feature map to the original input resolution, a 1x1 convolutional layer with a sigmoid activation function was applied. This final layer produced a single-channel output map representing the pixel-wise probability of belonging to the tumor class (values between 0 and 1).
 
-A U-Net-like decoder structure was implemented, mirroring the encoder's feature hierarchy. At each stage, the feature map from the previous decoder stage was upsampled (using UpSampling2D with bilinear interpolation) and concatenated with the corresponding skip connection feature map from the encoder backbone. This merged feature map was then processed by parallel SAM and CAM modules. The outputs of the SAM and CAM were subsequently combined by the Synergy module before passing to the next decoder stage. This process was repeated until the feature map resolution matched the original input size. A final 1x1 convolutional layer with a sigmoid activation function produced the single-channel binary segmentation map (probability map).
+Figure \ref{fig:asnet_vgg16_arch}, Figure \ref{fig:asnet_mobilenet_arch}, and Figure \ref{fig:asnet_efficientnet_arch} provide high-level illustrations of the AS-Net architecture incorporating the different encoder types.
 
+% Placeholder for Architecture Figures
 \begin{figure}[!htb]
     \centering
-	\includegraphics[width=0.85\textwidth]{figures/fig3-4.png}
-	\caption[AS-Net Architecture with VGG16 Encoder]{AS-Net Architecture with VGG16 Encoder}
-	\label{fig:fig3-4}
+	% Replace with actual image path
+	\includegraphics[width=0.85\textwidth]{figures/placeholder_asnet_vgg16.png}
+	\caption[AS-Net Architecture with VGG16 Encoder]{High-level architecture of AS-Net using the VGG16 encoder backbone.}
+	\label{fig:asnet_vgg16_arch}
 \end{figure}
 
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=0.85\textwidth]{figures/fig3-5.png}
-    \caption[AS-Net Architecture with MobileNetV3 Encoder]{AS-Net Architecture with MobileNetV3 Encoder}
-    \label{fig:fig3-5}
+    % Replace with actual image path
+    \includegraphics[width=0.85\textwidth]{figures/placeholder_asnet_mobilenet.png}
+    \caption[AS-Net Architecture with MobileNetV3 Encoder]{High-level architecture of AS-Net using MobileNetV3 (Large/Small) encoder backbones.}
+    \label{fig:asnet_mobilenet_arch}
 \end{figure}
 
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=0.85\textwidth]{figures/fig3-6.png}
-    \caption[AS-Net Architecture with EfficientNetV2 Encoder]{AS-Net Architecture with EfficientNetV2 Encoder}
-    \label{fig:fig3-6}
+    % Replace with actual image path
+    \includegraphics[width=0.85\textwidth]{figures/placeholder_asnet_efficientnet.png}
+    \caption[AS-Net Architecture with EfficientNetV2 Encoder]{High-level architecture of AS-Net using EfficientNetV2 (B0/B1) encoder backbones.}
+    \label{fig:asnet_efficientnet_arch}
 \end{figure}
 
 \section{Training}
 
-The models were trained using the following setup:
+The training process was managed by the \texttt{train\_model\_distributed} function in \texttt{asnet\_common.py}, incorporating the following configurations:
 
 \begin{itemize}
-    \item \textbf{Framework:} TensorFlow (v2.10+) and Keras.
-    \item \textbf{Distribution Strategy:} \texttt{tf.distribute.MirroredStrategy} was used to leverage multiple GPUs when available, distributing the training workload.
-    \item \textbf{Loss Function:} A custom \texttt{CombinedLoss} function was used, defined as a weighted sum of Dice Loss and Weighted Binary Cross-Entropy (WBCE):
+    \item \textbf{Framework and Hardware:} TensorFlow (v2.10+) and Keras. All training and evaluation experiments were conducted on a virtual machine equipped with 16GB RAM, an Intel Xeon Silver 4210 CPU, and accelerated using a single NVIDIA Tesla V100 GPU with 32GB of memory.
+    \item \textbf{Distribution Strategy:} \texttt{tf.distribute.MirroredStrategy} was automatically enabled when multiple GPUs were detected, allowing for data parallelism to accelerate training. If only one GPU or only CPU was available, the default TensorFlow strategy was used.
+    \item \textbf{Loss Function:} A custom \texttt{CombinedLoss} was implemented (see \texttt{asnet\_common.py}). This loss is a weighted sum of Dice Loss and Weighted Binary Cross-Entropy (WBCE), defined as:
     \begin{equation}
-        \text{Loss} = \text{bce\_weight} \times \text{WBCE} + \text{dice\_weight} \times \text{DiceLoss}
+        \text{Loss} = \text{bce\_weight} \times \text{WBCE}(y_{true}, y_{pred}, \text{class\_weight}) + \text{dice\_weight} \times \text{DiceLoss}(y_{true}, y_{pred})
     \end{equation}
-    The weights were set to \texttt{bce\_weight=0.5} and \texttt{dice\_weight=0.5}. The WBCE component included a \texttt{class\_weight=100.0} parameter to heavily penalize the misclassification of positive (tumor) pixels, addressing the inherent class imbalance between tumor and background voxels.
-    \item \textbf{Optimizer:} The Adam optimizer was used with an initial learning rate of 1e-4.
-    \item \textbf{Epochs:} Models were trained for a maximum of 30 epochs.
-    \item \textbf{Batch Size:} A batch size of 4 per replica (\texttt{BATCH\_SIZE\_PER\_REPLICA=4}) was used. The global batch size was \texttt{4 * strategy.num\_replicas\_in\_sync}.
-    \item \textbf{Callbacks:} Several Keras callbacks were employed during training:
-    \begin{itemize}
-        \item \texttt{ModelCheckpoint:} To save the model weights after each epoch (\texttt{checkpoint\_path}) and to save only the best weights based on validation Dice Coefficient (\texttt{val\_dice\_coef}) improvement (\texttt{checkpoint\_best\_path}).
-        \item \texttt{ReduceLROnPlateau:} To reduce the learning rate by a factor of 0.5 if the validation loss (\texttt{val\_loss}) did not improve for 5 consecutive epochs.
-        \item \texttt{EarlyStopping:} To stop training if the validation loss (\texttt{val\_loss}) did not improve for 15 consecutive epochs, restoring the best weights found.
-        \item \texttt{LearningRateScheduler:} To apply a step decay schedule to the learning rate (reducing by \texttt{drop=0.5} every \texttt{epochs\_drop=10} epochs, based on the initial LR).
-        \item \texttt{ConciseProgressCallback:} A custom callback for concise epoch logging and periodic garbage collection.
-    \end{itemize}
-    \item \textbf{Mixed Precision:} While the setup included configuration for mixed-precision training (\texttt{tf.keras.mixed\_precision}), it was explicitly disabled (\texttt{USE\_MIXED\_PRECISION = False}) for the experiments reported, meaning training was conducted using full float32 precision.
+    Based on the configuration files (e.g., \texttt{asnet\_vgg16\_brats.py}), the weights were set to \texttt{bce\_weight = 0.5} and \texttt{dice\_weight = 0.5}. The WBCE component used a \texttt{class\_weight = 100.0} parameter applied to the positive class (tumor). This high weight significantly increases the penalty for misclassifying tumor pixels, aiming to counteract the class imbalance inherent in medical images where background pixels vastly outnumber foreground (tumor) pixels.
+    \item \textbf{Optimizer:} The Adam optimizer (\texttt{tf.keras.optimizers.Adam}) was used with an initial learning rate of \texttt{1e-4}.
+    \item \textbf{Epochs:} Training was set to run for a maximum of \texttt{NUM\_EPOCHS = 30}.
+    \item \textbf{Batch Size:} The batch size per GPU replica was set to \texttt{BATCH\_SIZE\_PER\_REPLICA = 4}. The effective global batch size was this value multiplied by the number of GPUs participating in the mirrored strategy.
+    \item \textbf{Callbacks:} Standard Keras callbacks were used to manage the training process:
+        \begin{itemize}
+            \item \texttt{ModelCheckpoint}: Saved model weights after every epoch to \texttt{checkpoint\_path} and separately saved the weights corresponding to the best validation Dice Coefficient (\texttt{monitor='val\_dice\_coef', mode='max'}) achieved so far to \texttt{checkpoint\_best\_path}.
+            \item \texttt{ReduceLROnPlateau}: Monitored the validation loss (\texttt{monitor='val\_loss'}) and reduced the learning rate by a factor of 0.5 if no improvement was seen for 5 consecutive epochs (\texttt{patience=5}).
+            \item \texttt{EarlyStopping}: Monitored the validation loss (\texttt{monitor='val\_loss'}) and stopped training if no improvement was observed for 15 consecutive epochs (\texttt{patience=15}), restoring the weights from the epoch with the best validation loss.
+            \item \texttt{LearningRateScheduler}: Applied a predefined learning rate schedule (step decay: reducing LR by 0.5 every 10 epochs based on the initial LR). Note: This might interact with \texttt{ReduceLROnPlateau}; typically, one would be prioritized or configured carefully. Based on the code structure, both were included.
+            \item \texttt{TensorBoard}: Logged training metrics, including histograms of weights and activations, for visualization in TensorBoard.
+            \item \texttt{ConciseProgressCallback}: A custom callback (defined in \texttt{asnet\_common.py}) provided summarized progress updates per epoch and triggered garbage collection periodically.
+        \end{itemize}
+    \item \textbf{Mixed Precision:} The capability for mixed-precision training (using float16 for computations where possible to speed up training and reduce memory usage) was included in the setup code (\texttt{setup\_gpu\_and\_mixed\_precision}). However, for the experiments conducted and reported here, it was explicitly disabled (\texttt{USE\_MIXED\_PRECISION = False}), meaning all training computations were performed using standard float32 precision.
+    \item \textbf{Checkpoint Resumption:} The training script checked for existing checkpoints in the specified directory. If a checkpoint was found, training resumed from that point, loading the weights and estimating the starting epoch from the checkpoint filename.
 \end{itemize}
 
 \section{Evaluation}
 
-The performance of the trained models was evaluated on the held-out validation set using the following metrics:
+Model performance was assessed on the held-out validation dataset using the \texttt{evaluate\_model} function (in \texttt{asnet\_common.py}) after training completion (or loading the best checkpoint if training was skipped).
+
+\subsection{Quantitative Metrics}
+The following metrics were calculated using Keras built-in functions or custom implementations (from \texttt{asnet\_common.py}), applying a threshold of 0.5 to the model's sigmoid output to generate binary predictions:
 
 \begin{itemize}
-    \item \textbf{Segmentation Accuracy Metrics:}
-    \begin{itemize}
-        \item \textbf{Dice Similarity Coefficient (Dice Coef / F1 Score):} Measures the overlap between the predicted segmentation and the ground truth mask. Calculated using the custom DiceCoefficient metric with a threshold of 0.5.
-        \item \textbf{Intersection over Union (IoU / Jaccard Index):} Another overlap metric, calculated as the ratio of the intersection to the union of the predicted and ground truth masks. Calculated using the custom IoU metric with a threshold of 0.5.
-        \item \textbf{Binary Accuracy: Standard pixel-wise accuracy.}
-        \item \textbf{Precision:} Measures the proportion of correctly predicted tumor pixels among all pixels predicted as tumor (TP / (TP + FP)). Calculated using tf.keras.metrics.Precision with thresholds=0.5.
-        \item \textbf{Recall (Sensitivity):} Measures the proportion of correctly predicted tumor pixels among all actual tumor pixels (TP / (TP + FN)). Calculated using tf.keras.metrics.Recall with thresholds=0.5.
-    \end{itemize}
-    \item \textbf{Computational Efficiency:} Primarily assessed by comparing the total training time required for each model configuration to complete the specified number of epochs (or until early stopping), as recorded in the completion notification files.
-    \item \textbf{Qualitative Analysis:} Visual inspection of segmentation results was performed by generating example plots (save\_prediction\_examples). These plots compared the reference FLAIR image, the multi-class ground truth overlay, the model's predicted probability map, and the final binary segmentation overlay (thresholded at 0.5).
+    \item \textbf{Dice Similarity Coefficient (Dice Coef / F1 Score):} Calculated using the custom \texttt{DiceCoefficient} metric class. Measures the harmonic mean of precision and recall, representing overlap. Ranges from 0 (no overlap) to 1 (perfect overlap).
+    \begin{equation}
+        \text{Dice} = \frac{2 \times |P \cap G|}{|P| + |G|} = \frac{2 \times TP}{2 \times TP + FP + FN}
+    \end{equation}
+    \item \textbf{Intersection over Union (IoU / Jaccard Index):} Calculated using the custom \texttt{IoU} metric class. Measures the ratio of the intersection to the union of predicted and ground truth areas. Ranges from 0 to 1.
+    \begin{equation}
+        \text{IoU} = \frac{|P \cap G|}{|P \cup G|} = \frac{TP}{TP + FP + FN}
+    \end{equation}
+    \item \textbf{Binary Accuracy:} Standard pixel-wise classification accuracy (\texttt{tf.keras.metrics.BinaryAccuracy}).
+    \begin{equation}
+        \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+    \end{equation}
+    \item \textbf{Precision:} Proportion of true positive predictions among all positive predictions (\texttt{tf.keras.metrics.Precision(thresholds=0.5)}).
+    \begin{equation}
+        \text{Precision} = \frac{TP}{TP + FP}
+    \end{equation}
+    \item \textbf{Recall (Sensitivity):} Proportion of true positive predictions among all actual positive instances (\texttt{tf.keras.metrics.Recall(thresholds=0.5)}).
+    \begin{equation}
+        \text{Recall} = \frac{TP}{TP + FN}
+    \end{equation}
 \end{itemize}
+Where TP, TN, FP, FN represent True Positives, True Negatives, False Positives, and False Negatives at the pixel level, and P and G represent the set of pixels in the prediction and ground truth masks, respectively.
+
+\subsection{Computational Efficiency}
+The primary indicator of computational efficiency used for comparison was the \textbf{Total Training Time}. This was recorded automatically at the end of each training run and included in the completion notification text file (\texttt{*-asnet-finished-training.txt}). This time reflects the duration from the start of the training script execution to the completion of training (or evaluation if training was skipped but evaluation ran). While influenced by hardware and potential background processes, it provides a practical comparison of the relative cost of training each model configuration under the same experimental conditions.
+
+\subsection{Qualitative Analysis}
+Visual assessment of segmentation quality was performed using example outputs generated by the \texttt{save\_prediction\_examples} function (in \texttt{asnet\_common.py}). For a small number of validation samples (typically 5), this function saved PNG images containing side-by-side plots of:
+\begin{itemize}
+    \item The reference input modality (FLAIR, normalized).
+    \item The ground truth segmentation overlaid on the reference image (using distinct colors for NCR/NET, ED, ET).
+    \item The model's raw probability map output (before thresholding).
+    \item The final binary segmentation mask (thresholded at 0.5) overlaid on the reference image.
+\end{itemize}
+These visualizations allowed for subjective assessment of how well the model captured tumor boundaries, handled different tumor components, and avoided false positives/negatives compared to the ground truth.
 
 \section{Comparative Analysis}
 
-The core of the methodology involved a comparative analysis of the AS-Net models built with the different encoder backbones (VGG16, MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, EfficientNetV2-B1). This comparison focused on evaluating the trade-offs between segmentation accuracy (using the metrics defined in Section 3.5) and computational efficiency (training time). The goal was to identify which encoder(s) provided the optimal balance for the task of MRI brain tumor segmentation within the AS-Net framework, leading to the recommendations presented in the subsequent chapters.
+The core methodological approach was the direct comparison of the AS-Net architecture when paired with the five different encoder backbones. The analysis focused on evaluating the trade-offs between:
+\begin{itemize}
+    \item \textbf{Segmentation Accuracy:} Primarily using Dice Coefficient and IoU as the key indicators of segmentation quality.
+    \item \textbf{Computational Efficiency:} Primarily using the recorded total training time.
+\end{itemize}
+By comparing these aspects across the VGG16 baseline and the lightweight alternatives (MobileNetV3-Large/Small, EfficientNetV2-B0/B1), the study aimed to identify the encoder(s) that provide the most advantageous balance for MRI brain tumor segmentation within the AS-Net framework, thereby addressing the research questions and objectives. The results of this comparative analysis are presented in Chapter 4.

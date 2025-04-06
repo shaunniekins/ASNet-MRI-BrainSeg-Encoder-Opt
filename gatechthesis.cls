@@ -11,7 +11,7 @@
 
 % package imports - add your own in preamble to the document file with \usepackage{}
 \RequirePackage{graphicx}  % for images and plots
-\RequirePackage[a4paper, left=1.5in, right=1in, top=1in, bottom=1in]{geometry}
+\RequirePackage[letterpaper, left=1.5in, right=1in, top=1in, bottom=1in]{geometry}
 \RequirePackage{multicol} % for multicolumn environments
 \RequirePackage{setspace}  % use this package to set linespacing as desired
 \RequirePackage{times} % use times new roman font
@@ -30,12 +30,29 @@
 \RequirePackage{subcaption} % allows subfigures in a reasonable way, plays nice with caption
 \RequirePackage[acronym,nogroupskip,nopostdot]{glossaries} % only for list of acronyms
 \RequirePackage{doi} % and this is laster, makes easier hyperlinking for doi sources
+\RequirePackage{fancyhdr} % Add fancyhdr for header/footer customization
 
 \sisetup{
     sticky-per=true,
     detect-mode=true,
     per-mode = symbol-or-fraction
 }
+
+% --- Fancyhdr setup for page number in top right ---
+\pagestyle{fancy} % Use the fancy style
+\fancyhf{} % Clear all header and footer fields
+\fancyhead[R]{\thepage} % Page number in the top right corner
+\renewcommand{\headrulewidth}{0pt} % No header rule
+\renewcommand{\footrulewidth}{0pt} % No footer rule
+
+% Redefine the 'plain' style used for chapter start pages to be empty
+\fancypagestyle{plain}{%
+  \fancyhf{}% Clear header/footer
+  % \fancyhead[R]{\thepage}% Remove or comment out this line to hide page number on chapter pages
+  \renewcommand{\headrulewidth}{0pt}% No header rule
+  \renewcommand{\footrulewidth}{0pt}% No footer rule
+}
+% --- End Fancyhdr setup ---
 
 \doublespacing  % set line spacing
 \AtBeginDocument{\renewcommand{\ref}[1]{\autoref{#1}}} % for concision, but can be removed if you know what you're doing
@@ -109,14 +126,14 @@
 % thesisbody environment, handles text and other formatting 
 \newenvironment{thesisbody}{%
     \clearpage
-    \pagestyle{plain}
+    \pagestyle{fancy} % Apply the fancy style defined above
     \pagenumbering{arabic} % resumes page numbering after front matter
     \setcounter{page}{1} % set the page number appropriately
     \titleformat{\chapter}[block]{\normalfont\bfseries\filcenter}{\MakeUppercase{CHAPTER \thechapter.}}{0.5em}{\MakeUppercase{##1}}  % modified to put chapter and title on same line
     \titlespacing*{\chapter}
       {0pt}{0pt}{30pt}	% controls vertical margins on title
     \titleformat{\section}{\normalfont\bfseries}{\thesection}{1em}{##1}
-    \titleformat{\subsection}{\normalfont}{\uline{\thesubsection}}{0em}{\uline{\hspace{1em}##1}}
+    \titleformat{\subsection}{\normalfont\small\bfseries}{\thesubsection}{1em}{##1}
     \titleformat{\subsubsection}{\normalfont\itshape}{\thesubsection}{1em}{##1}
 }%
 {
@@ -165,10 +182,10 @@
 \newenvironment{approvalPage}
 {
     \clearpage
-    %\phantomsection
-    %\addcontentsline{toc}{chapter}{Thesis Approval}
+    \phantomsection
+    \addcontentsline{toc}{chapter}{\MakeUppercase{Approval Sheet}} % Capitalize here
     \begin{centering}
-    \textbf{THESIS APPROVAL}\\
+    \textbf{APPROVAL SHEET}\\
     \vspace{\baselineskip}
     \end{centering}
 }
@@ -176,37 +193,12 @@
     \clearpage
 }
 
-% ------------------ Endorsement environment/formatting ------------------
-\newenvironment{declaration}
-{
-    \clearpage
-    %\phantomsection
-    %\addcontentsline{toc}{chapter}{Endorsement}
-    \begin{centering}
-    %\textbf{THE ORIGINAL DECLARATION OF THESIS}\\
-    %\vspace{\baselineskip}
-        \begin{singlespacing}
-        \@department\\
-        College of Science\\
-        University of the Philippines\\
-        Diliman, Quezon City\\
-        \end{singlespacing}
-        \vspace{\baselineskip}
-    \end{centering}
-    \begin{centering}
-        \textbf{ENDORSEMENT}\\
-        \vspace{\baselineskip}
-    \end{centering}
-}
-{
-    \clearpage
-}
 % ------------------ Dedication ------------------
 \newcommand{\makeDedication}[1]
 {
     \clearpage
-    %\phantomsection
-    %\addcontentsline{toc}{chapter}{Dedication}
+    \phantomsection
+    \addcontentsline{toc}{chapter}{\MakeUppercase{Dedication}} % Capitalize here
    \begin{centering}
     \textbf{DEDICATION}\\
     \vspace{\baselineskip}
@@ -223,7 +215,7 @@
 {
     \clearpage
     \phantomsection
-    \addcontentsline{toc}{chapter}{Acknowledgments}
+    \addcontentsline{toc}{chapter}{\MakeUppercase{Acknowledgments}} % Capitalize here
     \begin{centering}
     \textbf{ACKNOWLEDGMENT}\\
     \vspace{\baselineskip}
@@ -235,11 +227,11 @@
 
 % --------------- table of contents formatting and command creation ---------------
 \renewcommand{\cftchapdotsep}{\cftdotsep}  % add dot separators
-\renewcommand{\cftchapfont}{\bfseries}  % set title font weight
+\renewcommand{\cftchapfont}{\bfseries\MakeUppercase}  % set title font weight and uppercase
 \renewcommand{\cftchappagefont}{}  % set page number font weight
-\renewcommand{\cftchappresnum}{Chapter }
+\renewcommand{\cftchappresnum}{\MakeUppercase{Chapter} } % Uppercase "Chapter" prefix
 \renewcommand{\cftchapaftersnum}{:}
-\renewcommand{\cftchapnumwidth}{5em}
+\renewcommand{\cftchapnumwidth}{6em} % Adjusted width slightly for uppercase "CHAPTER"
 \renewcommand{\cftchapafterpnum}{\vskip\baselineskip} % set correct spacing for entries in single space environment
 \renewcommand{\cftsecafterpnum}{\vskip\baselineskip}  % set correct spacing for entries in single space environment
 \renewcommand{\cftsubsecafterpnum}{\vskip\baselineskip} % set correct spacing for entries in single space environment
@@ -257,7 +249,7 @@
 % ------------------ List of Tables ------------------
 \newcommand{\makeListOfTables}{
 \phantomsection
-\addcontentsline{toc}{chapter}{List of Tables}
+\addcontentsline{toc}{chapter}{\MakeUppercase{List of Tables}} % Capitalize here
 \begin{singlespace}
 \setlength\cftbeforetabskip{\baselineskip}  % manually set spacing between entries
 \listoftables
@@ -268,7 +260,7 @@
 % ------------------ List of Figures ------------------
 \newcommand{\makeListOfFigures}{
 \phantomsection
-\addcontentsline{toc}{chapter}{List of Figures}
+\addcontentsline{toc}{chapter}{\MakeUppercase{List of Figures}} % Capitalize here
 \begin{singlespace}
 \setlength\cftbeforefigskip{\baselineskip}  % manually set spacing between entries
 \listoffigures
@@ -280,7 +272,7 @@
 \newcommand{\makeListOfAcronyms}{
 \phantomsection
 \singlespacing
-\addcontentsline{toc}{chapter}{List of Acronyms}
+\addcontentsline{toc}{chapter}{\MakeUppercase{List of Acronyms}} % Capitalize here
 \printacronyms[nonumberlist,title={List of Acronyms}]
 \clearpage
 \doublespacing
@@ -289,7 +281,7 @@
 % ------------------ summary environment definition ------------------
 \newenvironment{summary}{
     \clearpage
-    \addcontentsline{toc}{chapter}{Abstract}
+    \addcontentsline{toc}{chapter}{\MakeUppercase{Abstract}} % Capitalize here
     \begin{centering}
     \textbf{ABSTRACT}\\
     \vspace{\baselineskip}
@@ -321,13 +313,14 @@
     }
     \bookmarksetupnext{level=part}
     \begin{appendices}
-    \addtocontents{toc}{\protect\renewcommand{\protect\cftsecpresnum}{\appendixname\space}}
-    \addtocontents{toc}{\protect\renewcommand{\protect\cftsecnumwidth}{5.75em}}
+    \addtocontents{toc}{\protect\renewcommand{\protect\cftsecpresnum}{\MakeUppercase{\appendixname}\space}} % Uppercase "APPENDIX" prefix
+    \addtocontents{toc}{\protect\renewcommand{\protect\cftsecnumwidth}{7em}} % Adjusted width slightly for uppercase "APPENDIX"
     \addtocontents{toc}{\protect\renewcommand{\protect\cftsecaftersnum}{:}}
     \addtocontents{toc}{%
     \begingroup
         \let\protect\l@chapter\protect\l@section
         \let\protect\l@section\protect\l@subsection
+        \protect\renewcommand{\protect\cftsecfont}{\protect\bfseries\protect\MakeUppercase} % Uppercase appendix titles and make bold
     }
 }{
     \addtocontents{toc}{\endgroup}
@@ -344,8 +337,8 @@
 \AtEveryBibitem{\clearlist{issn}}
 \AtEveryBibitem{\clearfield{language}}
 \AtEveryBibitem{\clearlist{language}}
-\AtEveryBibitem{\clearfield{doi}}
-\AtEveryBibitem{\clearlist{doi}}
+% \AtEveryBibitem{\clearfield{doi}} % Commented out
+% \AtEveryBibitem{\clearlist{doi}} % Commented out
 \AtEveryBibitem{\clearfield{url}}
 \AtEveryBibitem{\clearlist{url}}
 \AtEveryBibitem{%
@@ -356,7 +349,7 @@
     \clearpage
     \bookmarksetupnext{level=part}
     \phantomsection
-    \addcontentsline{toc}{chapter}{References}
+    \addcontentsline{toc}{chapter}{\MakeUppercase{References}} % Capitalize here
     \begin{centering}
     \textbf{REFERENCES}\\
     \end{centering}
