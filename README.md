@@ -13,7 +13,7 @@ This repository contains the LaTeX source files for a thesis focused on optimizi
 
 - `declaration.tex`: Contains the thesis approval and certification text.
 - `acknowledgments.tex`: Where you write your acknowledgments.
-- `summary.tex`: Contains the abstract of your thesis.
+- `sections/abstract.tex`: Contains the abstract of your thesis.
 - `abbrevs.tex`: Defines acronyms and abbreviations used in your document.
 - `approvalPage.tex`: Contains the approval page format.
 
@@ -35,7 +35,7 @@ This repository contains the LaTeX source files for a thesis focused on optimizi
 1. Edit `thesis.tex` to update your title, name, and other basic information.
 2. Modify the content in the chapter files under the `chapters/` directory.
 3. Update your references in `references.bib`.
-4. Update your acknowledgments, summary, and declaration files.
+4. Update your acknowledgments, abstract, and declaration files.
 5. Compile the document using a LaTeX compiler.
 
 ## COMPILATION SEQUENCE

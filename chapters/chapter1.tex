@@ -1,31 +1,16 @@
 \chapter{INTRODUCTION}
 
-% Marek Section: Define the Problem (Combines original Background and Statement)
-\section{Introduction and Problem Statement}
+\section{Background of the Study}
 
 Medical image segmentation, particularly the delineation of brain tumors from Magnetic Resonance Imaging (MRI) scans, is a cornerstone of modern clinical oncology \parencite{cai2022novel, liu2021review}. Accurate segmentation provides critical information for diagnosis, treatment planning, and monitoring disease progression by precisely identifying tumor boundaries and characteristics \parencite{liu2021review, tang2019role}. This process involves partitioning an image into distinct regions based on shared properties, thereby enhancing the interpretability of complex medical images and mitigating potential diagnostic errors \parencite{liu2021review, handels2013viewpoints}.
 
 The field of computer-aided diagnosis (CAD) has witnessed significant advancements, largely driven by the success of deep learning, especially Convolutional Neural Networks (CNNs). These techniques have demonstrated superior accuracy and robustness compared to traditional image processing methods for medical image segmentation tasks \parencite{litjens2017survey}. Architectures such as U-Net \parencite{ronneberger2015u} and its derivatives have become standard tools for segmenting organs and lesions across various imaging modalities, including MRI for brain tumor analysis \parencite{cai2022novel, moorthy2022survey, tang2019role}. The automation offered by these deep learning models promises not only to improve the speed and consistency of tumor segmentation but also to alleviate the workload of radiologists and other healthcare professionals \parencite{moorthy2022survey, tang2019role}.
 
+\section{Statement of the Problem}
+
 Despite these strides, challenges remain. A recent advancement in image segmentation is the Attention Synergy Network (AS-Net), proposed by \textcite{hu2022net} for skin lesion segmentation. AS-Net effectively utilizes spatial and channel attention mechanisms to improve segmentation performance. However, the original study acknowledged significant limitations related to the computational demands and potential generalizability issues stemming from its reliance on the relatively heavy VGG16 encoder architecture. This computational inefficiency poses a barrier to practical deployment in clinical settings where resources may be constrained and rapid processing is often desirable.
 
 Therefore, the central problem addressed by this research is the suboptimal computational efficiency of the original AS-Net architecture when considering its potential application to the demanding task of MRI brain tumor segmentation. While the attention mechanisms show promise, the VGG16 encoder limits its practicality. This study investigates whether adapting AS-Net with more modern, lightweight encoder architectures can maintain or improve segmentation accuracy while significantly enhancing computational efficiency.
-
-% Marek Section: Purpose of the Study (Adapted from original Objectives)
-\section{Purpose of the Study}
-
-The primary purpose of this research is to adapt and optimize the Attention Synergy Network (AS-Net) architecture for the task of MRI-based brain tumor segmentation by systematically comparing the performance and efficiency of different encoder backbones.
-
-Specifically, this study aims to:
-\begin{itemize}
-    \item Evaluate the integration of lightweight encoder architectures (MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, EfficientNetV2-B1) into the AS-Net framework as alternatives to the original VGG16 encoder.
-    \item Quantify and compare the segmentation performance (using metrics like Dice Coefficient, IoU, Precision, Recall) and computational efficiency (measured by training time) of the AS-Net variants equipped with these different encoders.
-    \item Assess the effectiveness of the AS-Net's spatial and channel attention mechanisms when applied to the specific domain of MRI brain tumor segmentation.
-    \item Provide evidence-based recommendations regarding the most suitable encoder architecture for balancing accuracy and efficiency within the AS-Net framework for this application.
-\end{itemize}
-
-% Marek Section: Research Questions (Extracted from original Statement of Problem)
-\section{Research Questions}
 
 This study seeks to answer the following research questions:
 
@@ -39,7 +24,18 @@ This study seeks to answer the following research questions:
     \item Does the synergy of spatial and channel attention mechanisms within AS-Net remain effective for segmenting brain tumors in MRI data when paired with different encoder backbones?
 \end{enumerate}
 
-% Marek Section: Significance of the Study (Content from original)
+\section{Objectives of the Study}
+
+The primary purpose of this research is to adapt and optimize the Attention Synergy Network (AS-Net) architecture for the task of MRI-based brain tumor segmentation by systematically comparing the performance and efficiency of different encoder backbones.
+
+Specifically, this study aims to:
+\begin{itemize}
+    \item Evaluate the integration of lightweight encoder architectures (MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, EfficientNetV2-B1) into the AS-Net framework as alternatives to the original VGG16 encoder.
+    \item Quantify and compare the segmentation performance (using metrics like Dice Coefficient, IoU, Precision, Recall) and computational efficiency (measured by training time) of the AS-Net variants equipped with these different encoders.
+    \item Assess the effectiveness of the AS-Net's spatial and channel attention mechanisms when applied to the specific domain of MRI brain tumor segmentation.
+    \item Provide evidence-based recommendations regarding the most suitable encoder architecture for balancing accuracy and efficiency within the AS-Net framework for this application.
+\end{itemize}
+
 \section{Significance of the Study}
 
 This research holds significant potential for advancing knowledge in medical image analysis, particularly concerning deep learning applications for brain tumor CAD. Adapting and optimizing the AS-Net architecture \parencite{hu2022net} for MRI brain tumor segmentation contributes valuable insights into the design and application of attention-based deep learning models for complex medical imaging tasks.
@@ -55,31 +51,29 @@ The findings are expected to benefit multiple stakeholders:
 
 Ultimately, this research aims to bridge the gap between cutting-edge deep learning techniques and practical clinical application, contributing to the development of more accessible and effective tools for brain tumor analysis.
 
-% Marek Section: Definition of Terms (New Section)
-\section{Definition of Terms}
+% \section{Definition of Terms} % Kept commented out
 
-For clarity and consistency, the following key terms are defined as used in this thesis:
+% For clarity and consistency, the following key terms are defined as used in this thesis:
 
-\begin{itemize}
-    \item \textbf{Magnetic Resonance Imaging (MRI):} A medical imaging technique that uses magnetic fields and radio waves to create detailed images of organs and tissues. Common modalities for brain tumors include T1-weighted (T1), T1-weighted post-contrast (T1ce), T2-weighted (T2), and Fluid-Attenuated Inversion Recovery (FLAIR).
-    \item \textbf{Image Segmentation:} The process of partitioning a digital image into multiple segments or regions, often to locate objects and boundaries. In this context, it refers to identifying and delineating brain tumor regions from surrounding healthy tissue in MRI scans.
-    \item \textbf{Convolutional Neural Network (CNN):} A class of deep neural networks, highly effective in computer vision tasks, that uses convolutional layers to automatically learn spatial hierarchies of features from input images.
-    \item \textbf{Encoder-Decoder Architecture:} A common structure for segmentation networks (e.g., U-Net) where an encoder path progressively downsamples the input to capture context and a decoder path progressively upsamples to generate a high-resolution segmentation map.
-    \item \textbf{Attention Mechanism:} A technique in deep learning that allows a network to dynamically weight the importance of different parts of the input data (e.g., spatial locations or feature channels) when making predictions.
-    \item \textbf{AS-Net (Attention Synergy Network):} The specific deep learning architecture proposed by \textcite{hu2022net}, characterized by its synergistic use of spatial and channel attention modules within its decoder.
-    \item \textbf{Encoder Backbone:} The initial part of a CNN (often pre-trained on a large dataset like ImageNet) used for feature extraction in architectures like AS-Net. Examples include VGG16, MobileNetV3, EfficientNetV2.
-    \item \textbf{Lightweight Model:} A deep learning model designed to have significantly fewer parameters and lower computational requirements (FLOPs) compared to standard models, aiming for efficiency often suitable for mobile or edge devices.
-    \item \textbf{VGG16:} A specific deep CNN architecture known for its simplicity and depth, but also its relatively high computational cost.
-    \item \textbf{MobileNetV3:} A family of efficient CNN architectures designed for mobile devices, utilizing techniques like inverted residuals and squeeze-and-excitation blocks.
-    \item \textbf{EfficientNetV2:} A family of CNN architectures achieving high accuracy and efficiency through compound scaling and optimized building blocks.
-    \item \textbf{Dice Coefficient (F1 Score):} A metric used to evaluate the overlap between a predicted segmentation and a ground truth segmentation, ranging from 0 (no overlap) to 1 (perfect overlap). It is the harmonic mean of precision and recall.
-    \item \textbf{IoU (Intersection over Union / Jaccard Index):} Another overlap metric for segmentation evaluation, calculated as the ratio of the intersection area to the union area of the prediction and ground truth.
-\end{itemize}
+% \begin{itemize}
+%     \item \textbf{Magnetic Resonance Imaging (MRI):} A medical imaging technique that uses magnetic fields and radio waves to create detailed images of organs and tissues. Common modalities for brain tumors include T1-weighted (T1), T1-weighted post-contrast (T1ce), T2-weighted (T2), and Fluid-Attenuated Inversion Recovery (FLAIR).
+%     \item \textbf{Image Segmentation:} The process of partitioning a digital image into multiple segments or regions, often to locate objects and boundaries. In this context, it refers to identifying and delineating brain tumor regions from surrounding healthy tissue in MRI scans.
+%     \item \textbf{Convolutional Neural Network (CNN):} A class of deep neural networks, highly effective in computer vision tasks, that uses convolutional layers to automatically learn spatial hierarchies of features from input images.
+%     \item \textbf{Encoder-Decoder Architecture:} A common structure for segmentation networks (e.g., U-Net) where an encoder path progressively downsamples the input to capture context and a decoder path progressively upsamples to generate a high-resolution segmentation map.
+%     \item \textbf{Attention Mechanism:} A technique in deep learning that allows a network to dynamically weight the importance of different parts of the input data (e.g., spatial locations or feature channels) when making predictions.
+%     \item \textbf{AS-Net (Attention Synergy Network):} The specific deep learning architecture proposed by \textcite{hu2022net}, characterized by its synergistic use of spatial and channel attention modules within its decoder.
+%     \item \textbf{Encoder Backbone:} The initial part of a CNN (often pre-trained on a large dataset like ImageNet) used for feature extraction in architectures like AS-Net. Examples include VGG16, MobileNetV3, EfficientNetV2.
+%     \item \textbf{Lightweight Model:} A deep learning model designed to have significantly fewer parameters and lower computational requirements (FLOPs) compared to standard models, aiming for efficiency often suitable for mobile or edge devices.
+%     \item \textbf{VGG16:} A specific deep CNN architecture known for its simplicity and depth, but also its relatively high computational cost.
+%     \item \textbf{MobileNetV3:} A family of efficient CNN architectures designed for mobile devices, utilizing techniques like inverted residuals and squeeze-and-excitation blocks.
+%     \item \textbf{EfficientNetV2:} A family of CNN architectures achieving high accuracy and efficiency through compound scaling and optimized building blocks.
+%     \item \textbf{Dice Coefficient (F1 Score):} A metric used to evaluate the overlap between a predicted segmentation and a ground truth segmentation, ranging from 0 (no overlap) to 1 (perfect overlap). It is the harmonic mean of precision and recall.
+%     \item \textbf{IoU (Intersection over Union / Jaccard Index):} Another overlap metric for segmentation evaluation, calculated as the ratio of the intersection area to the union area of the prediction and ground truth.
+% \end{itemize}
 
-% Marek Section: Delimitations and Limitations of the Study (Adapted from Scope and Limitation)
-\section{Delimitations and Limitations of the Study}
+\section{Scope and Limitation of the Study}
 
-\subsection{Delimitations (Scope)}
+\subsection{Scope}
 This research is specifically focused on:
 \begin{itemize}
     \item Adapting and evaluating the Attention Synergy Network (AS-Net) architecture.
@@ -97,29 +91,4 @@ The study acknowledges the following limitations:
     \item \textbf{Computational Resources:} Training and evaluation were conducted on specific hardware (NVIDIA Tesla V100). Training times are relative and would differ on other systems. The scale of experimentation (e.g., number of runs, extent of hyperparameter tuning) was constrained by available resources.
     \item \textbf{Hyperparameter Selection:} The study used a fixed set of primary hyperparameters (e.g., learning rate, loss weights) across models for comparability. Individual tuning for each encoder might yield slightly different performance rankings.
     \item \textbf{Implementation Details:} Specific choices regarding fine-tuning strategy (which layers to freeze/unfreeze) and skip connection points could impact results.
-\end{itemize}
-
-% Marek Section: Assumptions (New Section)
-\section{Assumptions}
-
-This study proceeds based on the following assumptions:
-\begin{itemize}
-    \item The BraTS 2020 dataset, despite being from a specific challenge year, provides a reasonably representative sample of MRI brain tumor characteristics suitable for evaluating segmentation algorithms.
-    \item The expert annotations provided within the BraTS dataset are sufficiently accurate to serve as reliable ground truth for training and evaluation.
-    \item Transfer learning using ImageNet pre-trained weights provides a beneficial starting point for the encoder backbones compared to training from scratch, even though ImageNet data differs significantly from medical images.
-    \item The core principles of the AS-Net's attention synergy mechanism, proven effective for skin lesions, are potentially transferable and beneficial for the task of MRI brain tumor segmentation.
-    \item The selected evaluation metrics (Dice, IoU, Precision, Recall, Training Time) provide meaningful and sufficient indicators of model performance and efficiency for the comparative purposes of this study.
-\end{itemize}
-
-% Marek Section: Organization of the Study / Thesis (New Section)
-\section{Organization of the Study}
-
-This thesis is organized into five chapters:
-
-\begin{itemize}
-    \item \textbf{Chapter 1: Introduction} introduces the research problem, outlines the purpose and significance of the study, presents the research questions, defines key terms, states delimitations and limitations, lists assumptions, and describes the overall organization of the thesis.
-    \item \textbf{Chapter 2: Review of Related Literature} provides a comprehensive overview of existing research on brain tumor segmentation (traditional and deep learning methods), attention mechanisms in deep learning, the AS-Net architecture, and lightweight encoder models relevant to this work.
-    \item \textbf{Chapter 3: Methodology} details the research design, including the dataset used, data preprocessing steps, the specific AS-Net architectural adaptations for each encoder, the training procedures, the evaluation metrics, and the comparative analysis strategy employed.
-    \item \textbf{Chapter 4: Results and Discussion} presents the quantitative and qualitative findings from the experiments, comparing the performance and efficiency of the different AS-Net model variants. It discusses these results in the context of the research questions.
-    \item \textbf{Chapter 5: Summary, Conclusion and Recommendation} summarizes the entire study, draws conclusions based on the findings, discusses their implications, provides recommendations for practice, and suggests directions for future research.
 \end{itemize}

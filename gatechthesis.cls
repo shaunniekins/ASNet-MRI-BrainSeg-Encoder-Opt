@@ -1,5 +1,4 @@
-% gatechthesis class - for use in preparation of Theses and Dissertations at Georgia Tech
-% revised May 2020
+% gatechthesis class
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{gatechthesis}[2020/05/07 GA Tech MS/PhD Thesis Class]
@@ -11,7 +10,7 @@
 
 % package imports - add your own in preamble to the document file with \usepackage{}
 \RequirePackage{graphicx}  % for images and plots
-\RequirePackage[letterpaper, left=1.5in, right=1in, top=1in, bottom=1in]{geometry}
+\RequirePackage[a4paper, left=1.5in, right=1in, top=1in, bottom=1in]{geometry}
 \RequirePackage{multicol} % for multicolumn environments
 \RequirePackage{setspace}  % use this package to set linespacing as desired
 \RequirePackage{times} % use times new roman font
@@ -126,7 +125,7 @@
 % thesisbody environment, handles text and other formatting 
 \newenvironment{thesisbody}{%
     \clearpage
-    \pagestyle{fancy} % Apply the fancy style defined above
+    \pagestyle{fancy}
     \pagenumbering{arabic} % resumes page numbering after front matter
     \setcounter{page}{1} % set the page number appropriately
     \titleformat{\chapter}[block]{\normalfont\bfseries\filcenter}{\MakeUppercase{CHAPTER \thechapter.}}{0.5em}{\MakeUppercase{##1}}  % modified to put chapter and title on same line
@@ -149,30 +148,31 @@
     \currentpdfbookmark{Title Page}{titlePage}
     \phantomsection
     \begin{center}
+    \bfseries % Add \bfseries here to make all text bold
     \begin{singlespacing}
-    \textbf{\@title}\\
+    \@title\\ % Removed explicit \textbf{} as \bfseries applies globally
     \vspace{6\baselineskip}
-    
-    \textbf{A Thesis by}\\
+
+    A Thesis by\\ % Removed explicit \textbf{}
     \vspace{6\baselineskip}
-    
-    \textbf{\@author}\\
+
+    \@author\\ % Removed explicit \textbf{}
     \vspace{7\baselineskip}
-    
+
     Submitted to the Department of Bachelor of Science in Computer Science\\
     College of Computing and Information Sciences (CCIS)\\
     Caraga State University – Main Campus\\
     \vspace{6\baselineskip}
-    
+
     In Partial Fulfillment\\
     of the Requirements for the Degree\\
     Bachelor of Science in Computer Science (BSCS)\\
-    
+
     \vfill % This will push the date to the bottom of the page
-    
+
     #1 #2 \\
     \vspace{0.5in} % Add some space at the bottom
-    
+
     \end{singlespacing}
     \end{center}
 }
@@ -183,7 +183,7 @@
 {
     \clearpage
     \phantomsection
-    \addcontentsline{toc}{chapter}{\MakeUppercase{Approval Sheet}} % Capitalize here
+    \addcontentsline{toc}{chapter}{\MakeUppercase{Approval Sheet}}
     \begin{centering}
     \textbf{APPROVAL SHEET}\\
     \vspace{\baselineskip}
@@ -193,29 +193,27 @@
     \clearpage
 }
 
-% ------------------ Dedication ------------------
-\newcommand{\makeDedication}[1]
+% --- Dedication Environment ---
+\newenvironment{dedication}
 {
     \clearpage
     \phantomsection
-    \addcontentsline{toc}{chapter}{\MakeUppercase{Dedication}} % Capitalize here
-   \begin{centering}
+    \addcontentsline{toc}{chapter}{\MakeUppercase{Dedication}}
+    \begin{centering}
     \textbf{DEDICATION}\\
     \vspace{\baselineskip}
     \end{centering}
-\begin{center}
-\vspace*{\fill}
-#1\\
-\vspace*{\fill}
-\end{center}
+}
+{
+    \clearpage
 }
 
-% ------------------ Acknowledgments environment/formatting ------------------
-\newenvironment{acknowledgments}
+% ------------------ Acknowledgment environment/formatting ------------------
+\newenvironment{acknowledgment}
 {
     \clearpage
     \phantomsection
-    \addcontentsline{toc}{chapter}{\MakeUppercase{Acknowledgments}} % Capitalize here
+    \addcontentsline{toc}{chapter}{\MakeUppercase{Acknowledgment}}
     \begin{centering}
     \textbf{ACKNOWLEDGMENT}\\
     \vspace{\baselineskip}
@@ -226,7 +224,10 @@
 }
 
 % --------------- table of contents formatting and command creation ---------------
-\renewcommand{\cftchapdotsep}{\cftdotsep}  % add dot separators
+% \renewcommand{\cftchapdotsep}{\cftdotsep}  % add dot separators
+\renewcommand{\cftsecdotsep}{\maxdimen} % Remove dot separators for sections
+\renewcommand{\cftsubsecdotsep}{\maxdimen} % Remove dot separators for subsections
+\renewcommand{\cftsubsubsecdotsep}{\maxdimen} % Remove dot separators for subsubsections
 \renewcommand{\cftchapfont}{\bfseries\MakeUppercase}  % set title font weight and uppercase
 \renewcommand{\cftchappagefont}{}  % set page number font weight
 \renewcommand{\cftchappresnum}{\MakeUppercase{Chapter} } % Uppercase "Chapter" prefix
@@ -249,7 +250,7 @@
 % ------------------ List of Tables ------------------
 \newcommand{\makeListOfTables}{
 \phantomsection
-\addcontentsline{toc}{chapter}{\MakeUppercase{List of Tables}} % Capitalize here
+\addcontentsline{toc}{chapter}{\MakeUppercase{List of Tables}}
 \begin{singlespace}
 \setlength\cftbeforetabskip{\baselineskip}  % manually set spacing between entries
 \listoftables
@@ -260,7 +261,7 @@
 % ------------------ List of Figures ------------------
 \newcommand{\makeListOfFigures}{
 \phantomsection
-\addcontentsline{toc}{chapter}{\MakeUppercase{List of Figures}} % Capitalize here
+\addcontentsline{toc}{chapter}{\MakeUppercase{List of Figures}}
 \begin{singlespace}
 \setlength\cftbeforefigskip{\baselineskip}  % manually set spacing between entries
 \listoffigures
@@ -269,24 +270,26 @@
 }
 
 % ------------------ List of Acronyms ------------------
-\newcommand{\makeListOfAcronyms}{
-\phantomsection
-\singlespacing
-\addcontentsline{toc}{chapter}{\MakeUppercase{List of Acronyms}} % Capitalize here
-\printacronyms[nonumberlist,title={List of Acronyms}]
-\clearpage
-\doublespacing
-}
+% \newcommand{\makeListOfAcronyms}{
+% \phantomsection
+% \singlespacing
+% \addcontentsline{toc}{chapter}{\MakeUppercase{List of Acronyms}}
+% \printacronyms[nonumberlist,title={List of Acronyms}]
+% \clearpage
+% \doublespacing
+% }
 
-% ------------------ summary environment definition ------------------
-\newenvironment{summary}{
+% ------------------ abstract environment definition ------------------
+\newenvironment{abstract}
+{
     \clearpage
-    \addcontentsline{toc}{chapter}{\MakeUppercase{Abstract}} % Capitalize here
+    \addcontentsline{toc}{chapter}{\MakeUppercase{Abstract}}
     \begin{centering}
     \textbf{ABSTRACT}\\
     \vspace{\baselineskip}
     \end{centering}
 }{
+    \clearpage
 }
 
 % ------------------ appendix environment definition ------------------
@@ -299,15 +302,17 @@
     \addtocontents{toc}{\setcounter{tocdepth}{1}}
     \renewcommand{\@chap@pppage}{%
         \clear@ppage
-        \addappheadtotoc
+        \phantomsection % Add phantom section for correct hyperlinking
+        \addcontentsline{toc}{chapter}{\MakeUppercase{\appendixpagename}} % Explicitly add uppercase entry
         \thispagestyle{empty}%
         \if@twocolumn\onecolumn\@tempswatrue\else\@tempswafalse\fi
-        \null\vfil
         \markboth{}{}%
-        {\centering
+        {\centering % <<< Center the title
         \interlinepenalty \@M
         \normalfont
-        \Huge \bfseries \appendixpagename\par}%
+        % \Huge % Optional: Adjust size if needed, keep consistent with others
+        \bfseries \MakeUppercase{\appendixpagename}\par}% <<< Make title bold and uppercase
+        \vspace{\baselineskip} % Add space after title like others
         \if@dotoc@pp
         \fi
     }
@@ -337,8 +342,8 @@
 \AtEveryBibitem{\clearlist{issn}}
 \AtEveryBibitem{\clearfield{language}}
 \AtEveryBibitem{\clearlist{language}}
-% \AtEveryBibitem{\clearfield{doi}} % Commented out
-% \AtEveryBibitem{\clearlist{doi}} % Commented out
+% \AtEveryBibitem{\clearfield{doi}} 
+% \AtEveryBibitem{\clearlist{doi}}
 \AtEveryBibitem{\clearfield{url}}
 \AtEveryBibitem{\clearlist{url}}
 \AtEveryBibitem{%
@@ -349,7 +354,7 @@
     \clearpage
     \bookmarksetupnext{level=part}
     \phantomsection
-    \addcontentsline{toc}{chapter}{\MakeUppercase{References}} % Capitalize here
+    \addcontentsline{toc}{chapter}{\MakeUppercase{References}}
     \begin{centering}
     \textbf{REFERENCES}\\
     \end{centering}
@@ -357,4 +362,19 @@
     \setlength\bibitemsep{\baselineskip}  % manually set separation between items in bibliography to double space
     \printbibliography[heading=none]
     \end{singlespace}
+}
+
+% --- Bionote Environment ---
+\newenvironment{bionote}
+{
+    \clearpage
+    \phantomsection
+    \addcontentsline{toc}{chapter}{\MakeUppercase{Bionote}}
+    \begin{centering}
+    \textbf{BIONOTE}\\ 
+    \vspace{\baselineskip}
+    \end{centering}
+}
+{
+    \clearpage
 }

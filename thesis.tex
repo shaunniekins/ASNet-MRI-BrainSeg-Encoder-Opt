@@ -22,17 +22,17 @@
 % document body
 \begin{document}
 
-\makeTitlePage{May}{2024}
+\makeTitlePage{April}{2025}
 
 \begin{frontmatter}
-    \input{approvalPage.tex}
-    \makeDedication{For our parents, who have always supported us in our endeavors.}
-    \input{acknowledgments}
+    \input{sections/approvalPage} 
+    \input{sections/dedication}
+    \input{sections/acknowledgment}
     \makeTOC
     \makeListOfFigures
     \makeListOfTables
-    \input{summary}
-    \input{abbrevs}
+    \input{sections/abstract}
+    \input{sections/abbrevs}
 \end{frontmatter}
 
 \begin{thesisbody}
@@ -42,7 +42,8 @@
     \input{chapters/chapter4}
     \input{chapters/chapter5}
     \makeBibliography
-    \input{chapters/appendix}
+    \input{sections/appendix}
+    \input{sections/bionote}
 \end{thesisbody}
 
 \end{document}
