@@ -4,35 +4,54 @@
 \documentclass[12pt]{gatechthesis}
 
 % preamble
-\usepackage{fontspec} % Add fontspec package
-\setmainfont{Candara} % Set main font to Candara (ensure it's installed)
+\usepackage{wrapfig}
+\usepackage{fontspec}
+\setmainfont{Candara}[
+  Path = fonts/Candara/,
+  Extension = .ttf,
+  UprightFont = *,
+  BoldFont = *_Bold,
+  ItalicFont = *_Italic,
+  BoldItalicFont = *_Bold_Italic
+]
 
-% \usepackage{natbib}
-% % Add the following line to configure citation style
-% \setcitestyle{round,authoryear}
+\setlength{\headheight}{14.5pt}
+\addtolength{\topmargin}{-2.5pt}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes,positioning,fit,calc}
+
+\usepackage{graphicx}
+\graphicspath{{figures/}} % Set the path to the figures directory
+
+\usepackage{ifthen}
+\newcommand{\inputifexists}[1]{%
+  \IfFileExists{#1}{\input{#1}}{\typeout{Warning: File #1 does not exist.}}%
+}
+
+\usepackage{adjustbox}
 
 \title{Optimizing AS-Net for MRI Brain Tumor Segmentation: A Comparative Study of Different Encoders for Improved Segmentation Performance}
 \author{Shaun Niel A. Ochavo \\ Armiex Jay J. Roble}
-%\vspace*{0.5cm} \\{Nunas Eluzai\\ Index No: 12-CC-1027}}
 	
 \approvaldate{\underline{\hspace{2in}}}
 \department{Institute of XXXXX}
 \bibliography{references}
 
-% document body
 \begin{document}
 
 \makeTitlePage{April}{2025}
 
 \begin{frontmatter}
-    \input{sections/approvalPage} 
-    \input{sections/dedication}
-    \input{sections/acknowledgment}
+    \inputifexists{sections/approvalPage} 
+    \inputifexists{sections/dedication}
+    \inputifexists{sections/acknowledgment}
     \makeTOC
     \makeListOfFigures
     \makeListOfTables
     \input{sections/abstract}
-    \input{sections/abbrevs}
+    \inputifexists{sections/abbrevs}
+    \makeListOfAcronyms
 \end{frontmatter}
 
 \begin{thesisbody}
@@ -42,8 +61,8 @@
     \input{chapters/chapter4}
     \input{chapters/chapter5}
     \makeBibliography
-    \input{sections/appendix}
-    \input{sections/bionote}
+    \inputifexists{sections/appendix}
+    \inputifexists{sections/bionote}
 \end{thesisbody}
 
 \end{document}

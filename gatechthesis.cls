@@ -1,35 +1,31 @@
-% gatechthesis class
-
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{gatechthesis}[2020/05/07 GA Tech MS/PhD Thesis Class]
-
-% based on report class, so pass options to it
+\ProvidesClass{gatechthesis}[2025/04/22 GA Tech MS/Ungraduate Thesis]
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{report}}
 \ProcessOptions\relax
 \LoadClass{report}
 
-% package imports - add your own in preamble to the document file with \usepackage{}
-\RequirePackage{graphicx}  % for images and plots
+% package imports
+\RequirePackage{graphicx}
 \RequirePackage[a4paper, left=1.5in, right=1in, top=1in, bottom=1in]{geometry}
-\RequirePackage{multicol} % for multicolumn environments
-\RequirePackage{setspace}  % use this package to set linespacing as desired
-\RequirePackage{times} % use times new roman font
-\RequirePackage[explicit]{titlesec}  % title control and formatting
-\RequirePackage[titles]{tocloft}  % table of contents control and formatting
-\RequirePackage{ifoddpage} % logical page parity checking, used with rotating
-\RequirePackage{rotating}  % for rotated, landscape images
-\RequirePackage[backend=biber,sorting=nyt, style=apa]{biblatex}  % reference manager %bibstyle=ieee
-\RequirePackage[toc,page]{appendix}  % for appendices
-\RequirePackage[normalem]{ulem}  % for underlining text
-\RequirePackage{url} % in case explicit URL's are needed
-\RequirePackage{siunitx} % several functions related to expressing units
-\RequirePackage[bookmarks=true,hidelinks]{hyperref} % should be last(ish)
-\RequirePackage{bookmark} % allows reformatting of pdf bookmarks
-\RequirePackage{caption} % captions for figures
-\RequirePackage{subcaption} % allows subfigures in a reasonable way, plays nice with caption
-\RequirePackage[acronym,nogroupskip,nopostdot]{glossaries} % only for list of acronyms
-\RequirePackage{doi} % and this is laster, makes easier hyperlinking for doi sources
-\RequirePackage{fancyhdr} % Add fancyhdr for header/footer customization
+\RequirePackage{multicol}
+\RequirePackage{setspace}  
+\RequirePackage{times} 
+\RequirePackage[explicit]{titlesec} 
+\RequirePackage[titles]{tocloft}
+\RequirePackage{ifoddpage}
+\RequirePackage{rotating} 
+\RequirePackage[backend=biber,sorting=nyt, style=apa]{biblatex}
+\RequirePackage[toc,page]{appendix} 
+\RequirePackage[normalem]{ulem} 
+\RequirePackage{url} 
+\RequirePackage{siunitx} 
+\RequirePackage[bookmarks=true,hidelinks]{hyperref}
+\RequirePackage{bookmark} 
+\RequirePackage{caption}
+\RequirePackage{subcaption} 
+\RequirePackage[acronym,nogroupskip,nopostdot]{glossaries}
+\RequirePackage{doi} 
+\RequirePackage{fancyhdr} 
 
 \sisetup{
     sticky-per=true,
@@ -38,29 +34,25 @@
 }
 
 % --- Fancyhdr setup for page number in top right ---
-\pagestyle{fancy} % Use the fancy style
-\fancyhf{} % Clear all header and footer fields
+\pagestyle{fancy} 
+\fancyhf{} 
 \fancyhead[R]{\thepage} % Page number in the top right corner
-\renewcommand{\headrulewidth}{0pt} % No header rule
-\renewcommand{\footrulewidth}{0pt} % No footer rule
+\renewcommand{\headrulewidth}{0pt} 
+\renewcommand{\footrulewidth}{0pt}
 
-% Redefine the 'plain' style used for chapter start pages to be empty
 \fancypagestyle{plain}{%
-  \fancyhf{}% Clear header/footer
-  % \fancyhead[R]{\thepage}% Remove or comment out this line to hide page number on chapter pages
-  \renewcommand{\headrulewidth}{0pt}% No header rule
-  \renewcommand{\footrulewidth}{0pt}% No footer rule
+  \fancyhf{}
+  % \fancyhead[R]{\thepage} % Remove or comment out this line to hide page number on chapter pages
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
 }
-% --- End Fancyhdr setup ---
 
-\doublespacing  % set line spacing
-\AtBeginDocument{\renewcommand{\ref}[1]{\autoref{#1}}} % for concision, but can be removed if you know what you're doing
-\makeglossaries % process glossaries
-\urlstyle{same} % uses the text font, not a monospace one, for URLs
-\hbadness=9000 % suppress some hbox warnings
-\setcounter{biburlnumpenalty}{99999} % ensure bibliography URLs don't run far outside margins)
-
-% hyperlink coloring, or lack thereof
+\doublespacing 
+\AtBeginDocument{\renewcommand{\ref}[1]{\autoref{#1}}}
+\makeglossaries 
+\urlstyle{same}
+\hbadness=9000 
+\setcounter{biburlnumpenalty}{99999}
 \hypersetup{
     colorlinks,
     linkcolor={black},
@@ -72,7 +64,7 @@
 
 % formatting of chapter numbers in bookmarks
 \bookmarksetup{%
-    depth=1, % bookmark depth - 1 goes to section depth, 2 to subsection, etc.
+    depth=1, 
     addtohook={%
     \ifnum 0=\bookmarkget{level}\relax
       \renewcommand*{\numberline}[1]{#1 | }%
@@ -83,7 +75,6 @@
     }
 }
 
-% so that using ref with algorithms works correctly
 \newcommand{\ALC@uniqueautorefname}{Line}
 \newcommand{\algorithmautorefname}{Algorithm}
 
@@ -183,7 +174,7 @@
 {
     \clearpage
     \phantomsection
-    \addcontentsline{toc}{chapter}{\MakeUppercase{Approval Sheet}}
+    \addcontentsline{toc}{chapter}{APPROVAL SHEET}
     \begin{centering}
     \textbf{APPROVAL SHEET}\\
     \vspace{\baselineskip}
@@ -198,7 +189,7 @@
 {
     \clearpage
     \phantomsection
-    \addcontentsline{toc}{chapter}{\MakeUppercase{Dedication}}
+    \addcontentsline{toc}{chapter}{DEDICATION}
     \begin{centering}
     \textbf{DEDICATION}\\
     \vspace{\baselineskip}
@@ -213,7 +204,7 @@
 {
     \clearpage
     \phantomsection
-    \addcontentsline{toc}{chapter}{\MakeUppercase{Acknowledgment}}
+    \addcontentsline{toc}{chapter}{ACKNOWLEDGMENT}
     \begin{centering}
     \textbf{ACKNOWLEDGMENT}\\
     \vspace{\baselineskip}
@@ -224,19 +215,22 @@
 }
 
 % --------------- table of contents formatting and command creation ---------------
-% \renewcommand{\cftchapdotsep}{\cftdotsep}  % add dot separators
-\renewcommand{\cftsecdotsep}{\maxdimen} % Remove dot separators for sections
-\renewcommand{\cftsubsecdotsep}{\maxdimen} % Remove dot separators for subsections
-\renewcommand{\cftsubsubsecdotsep}{\maxdimen} % Remove dot separators for subsubsections
-\renewcommand{\cftchapfont}{\bfseries\MakeUppercase}  % set title font weight and uppercase
+% \renewcommand{\cftchapdotsep}{\cftdotsep}  % add dot separators for chapters
+\renewcommand{\cftsecdotsep}{10000} % remove dots for sections
+\renewcommand{\cftsubsecdotsep}{10000} % remove dots for subsections
+\renewcommand{\cftsubsubsecdotsep}{10000} % remove dots for subsubsections
+\renewcommand{\cftfigdotsep}{10000} % remove dots for List of Figures
+\renewcommand{\cfttabdotsep}{10000} % remove dots for List of Tables
+\renewcommand{\cftchapfont}{\bfseries}  % set title font weight but remove uppercase
 \renewcommand{\cftchappagefont}{}  % set page number font weight
-\renewcommand{\cftchappresnum}{\MakeUppercase{Chapter} } % Uppercase "Chapter" prefix
+\renewcommand{\cftchappresnum}{CHAPTER }
 \renewcommand{\cftchapaftersnum}{:}
-\renewcommand{\cftchapnumwidth}{6em} % Adjusted width slightly for uppercase "CHAPTER"
+\renewcommand{\cftchapnumwidth}{6em} 
 \renewcommand{\cftchapafterpnum}{\vskip\baselineskip} % set correct spacing for entries in single space environment
 \renewcommand{\cftsecafterpnum}{\vskip\baselineskip}  % set correct spacing for entries in single space environment
 \renewcommand{\cftsubsecafterpnum}{\vskip\baselineskip} % set correct spacing for entries in single space environment
 \renewcommand{\cftsubsubsecafterpnum}{\vskip\baselineskip} % set correct spacing for entries in single space environment
+
 \newcommand{\makeTOC}{
     % format title font size and position (this also applies to list of figures and list of tables)
     \currentpdfbookmark{Table of Contents}{TOC}
@@ -250,7 +244,7 @@
 % ------------------ List of Tables ------------------
 \newcommand{\makeListOfTables}{
 \phantomsection
-\addcontentsline{toc}{chapter}{\MakeUppercase{List of Tables}}
+\addcontentsline{toc}{chapter}{LIST OF TABLES}
 \begin{singlespace}
 \setlength\cftbeforetabskip{\baselineskip}  % manually set spacing between entries
 \listoftables
@@ -261,7 +255,7 @@
 % ------------------ List of Figures ------------------
 \newcommand{\makeListOfFigures}{
 \phantomsection
-\addcontentsline{toc}{chapter}{\MakeUppercase{List of Figures}}
+\addcontentsline{toc}{chapter}{LIST OF FIGURES}
 \begin{singlespace}
 \setlength\cftbeforefigskip{\baselineskip}  % manually set spacing between entries
 \listoffigures
@@ -269,27 +263,26 @@
 \clearpage
 }
 
-% ------------------ List of Acronyms ------------------
-% \newcommand{\makeListOfAcronyms}{
-% \phantomsection
-% \singlespacing
-% \addcontentsline{toc}{chapter}{\MakeUppercase{List of Acronyms}}
-% \printacronyms[nonumberlist,title={List of Acronyms}]
-% \clearpage
-% \doublespacing
-% }
-
 % ------------------ abstract environment definition ------------------
-\newenvironment{abstract}
+\renewenvironment{abstract}
 {
     \clearpage
-    \addcontentsline{toc}{chapter}{\MakeUppercase{Abstract}}
+    \phantomsection
+    \addcontentsline{toc}{chapter}{ABSTRACT}
     \begin{centering}
     \textbf{ABSTRACT}\\
     \vspace{\baselineskip}
     \end{centering}
 }{
     \clearpage
+}
+
+% ------------------ List of Acronyms ------------------
+\newcommand{\makeListOfAcronyms}{
+\phantomsection
+\addcontentsline{toc}{chapter}{LIST OF ACRONYMS}
+\printglossary[type=\acronymtype,title=LIST OF ACRONYMS]
+\clearpage
 }
 
 % ------------------ appendix environment definition ------------------
@@ -302,30 +295,27 @@
     \addtocontents{toc}{\setcounter{tocdepth}{1}}
     \renewcommand{\@chap@pppage}{%
         \clear@ppage
-        \phantomsection % Add phantom section for correct hyperlinking
-        \addcontentsline{toc}{chapter}{\MakeUppercase{\appendixpagename}} % Explicitly add uppercase entry
+        \addappheadtotoc
         \thispagestyle{empty}%
         \if@twocolumn\onecolumn\@tempswatrue\else\@tempswafalse\fi
+        \null\vfil
         \markboth{}{}%
-        {\centering % <<< Center the title
+        {\centering
         \interlinepenalty \@M
         \normalfont
-        % \Huge % Optional: Adjust size if needed, keep consistent with others
-        \bfseries \MakeUppercase{\appendixpagename}\par}% <<< Make title bold and uppercase
-        \vspace{\baselineskip} % Add space after title like others
+        \Huge \bfseries \appendixpagename\par}%
         \if@dotoc@pp
         \fi
     }
     \bookmarksetupnext{level=part}
     \begin{appendices}
-    \addtocontents{toc}{\protect\renewcommand{\protect\cftsecpresnum}{\MakeUppercase{\appendixname}\space}} % Uppercase "APPENDIX" prefix
-    \addtocontents{toc}{\protect\renewcommand{\protect\cftsecnumwidth}{7em}} % Adjusted width slightly for uppercase "APPENDIX"
+    \addtocontents{toc}{\protect\renewcommand{\protect\cftsecpresnum}{\appendixname\space}}
+    \addtocontents{toc}{\protect\renewcommand{\protect\cftsecnumwidth}{5.75em}}
     \addtocontents{toc}{\protect\renewcommand{\protect\cftsecaftersnum}{:}}
     \addtocontents{toc}{%
     \begingroup
         \let\protect\l@chapter\protect\l@section
         \let\protect\l@section\protect\l@subsection
-        \protect\renewcommand{\protect\cftsecfont}{\protect\bfseries\protect\MakeUppercase} % Uppercase appendix titles and make bold
     }
 }{
     \addtocontents{toc}{\endgroup}
@@ -354,7 +344,7 @@
     \clearpage
     \bookmarksetupnext{level=part}
     \phantomsection
-    \addcontentsline{toc}{chapter}{\MakeUppercase{References}}
+    \addcontentsline{toc}{chapter}{REFERENCES}
     \begin{centering}
     \textbf{REFERENCES}\\
     \end{centering}
@@ -369,7 +359,7 @@
 {
     \clearpage
     \phantomsection
-    \addcontentsline{toc}{chapter}{\MakeUppercase{Bionote}}
+    \addcontentsline{toc}{chapter}{BIONOTE}
     \begin{centering}
     \textbf{BIONOTE}\\ 
     \vspace{\baselineskip}

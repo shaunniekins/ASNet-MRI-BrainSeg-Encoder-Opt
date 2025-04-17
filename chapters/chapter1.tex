@@ -78,16 +78,16 @@ This research is specifically focused on:
 \begin{itemize}
     \item Adapting and evaluating the Attention Synergy Network (AS-Net) architecture.
     \item The task of binary brain tumor segmentation (tumor vs. background) using MRI data. Multi-class segmentation (differentiating tumor sub-regions) is outside the scope.
-    \item Comparing the performance of five specific encoder backbones: VGG16, MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, and EfficientNetV2-B1. Other potential encoders are not evaluated.
-    \item Utilizing the pre-processed BraTS 2020 dataset provided in HDF5 format. The study does not involve acquiring or primarily pre-processing raw MRI data.
+    \item Comparing the performance of five specific encoder backbones: VGG16, MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, and EfficientNetV2-B1. Other potential encoders are not evaluated. Input sizes were 224x224 for VGG16, MobileNetV3-Large/Small, and EfficientNetV2-B0, and 240x240 for EfficientNetV2-B1.
+    \item Utilizing the BraTS 2023-GLI (Task 1) dataset. The original NIfTI files were preprocessed into 2D HDF5 slices for efficient loading. The study focuses only on the glioma segmentation task (Task 1) from the BraTS 2023 challenge and does not involve acquiring raw MRI data.
     \item Evaluating performance based on standard segmentation metrics (Dice, IoU, etc.) and computational efficiency based on training time on specific hardware.
 \end{itemize}
 
 \subsection{Limitations}
 The study acknowledges the following limitations:
 \begin{itemize}
-    \item \textbf{Dataset Specificity:} Findings are based on the BraTS 2020 dataset. The generalizability of the results to other datasets with different patient populations, tumor types, or imaging protocols requires further investigation.
-    \item \textbf{Data Characteristics:} The quality, resolution, and potential artifacts within the specific dataset slices used could influence model performance. The study relies on the provided pre-processing.
+    \item \textbf{Dataset Specificity:} Findings are based on the BraTS 2023-GLI (Task 1) dataset. The generalizability of the results to other datasets (including other BraTS 2023 tasks) with different patient populations, tumor types, or imaging protocols requires further investigation.
+    \item \textbf{Data Characteristics:} The quality, resolution, and potential artifacts within the original NIfTI files, as well as the specific method used for preprocessing into HDF5 slices, could influence model performance.
     \item \textbf{Computational Resources:} Training and evaluation were conducted on specific hardware (NVIDIA Tesla V100). Training times are relative and would differ on other systems. The scale of experimentation (e.g., number of runs, extent of hyperparameter tuning) was constrained by available resources.
     \item \textbf{Hyperparameter Selection:} The study used a fixed set of primary hyperparameters (e.g., learning rate, loss weights) across models for comparability. Individual tuning for each encoder might yield slightly different performance rankings.
     \item \textbf{Implementation Details:} Specific choices regarding fine-tuning strategy (which layers to freeze/unfreeze) and skip connection points could impact results.
