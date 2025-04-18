@@ -110,7 +110,6 @@
     \titleformat{\chapter}[display]{\normalfont\bfseries\filcenter}{\chaptertitlename\ \thechapter}{0pt}{\MakeUppercase{##1}}
 }%
 {%
-    \clearpage
 }
 
 % thesisbody environment, handles text and other formatting 
@@ -214,6 +213,19 @@
     \clearpage
 }
 
+% ------------------ abstract environment definition ------------------
+\renewenvironment{abstract}
+{
+    \clearpage
+    \phantomsection
+    \addcontentsline{toc}{chapter}{ABSTRACT}
+    \begin{centering}
+    \textbf{ABSTRACT}\\
+    \vspace{\baselineskip}
+    \end{centering}
+}{
+}
+
 % --------------- table of contents formatting and command creation ---------------
 % \renewcommand{\cftchapdotsep}{\cftdotsep}  % add dot separators for chapters
 \renewcommand{\cftsecdotsep}{10000} % remove dots for sections
@@ -263,26 +275,11 @@
 \clearpage
 }
 
-% ------------------ abstract environment definition ------------------
-\renewenvironment{abstract}
-{
-    \clearpage
-    \phantomsection
-    \addcontentsline{toc}{chapter}{ABSTRACT}
-    \begin{centering}
-    \textbf{ABSTRACT}\\
-    \vspace{\baselineskip}
-    \end{centering}
-}{
-    \clearpage
-}
-
 % ------------------ List of Acronyms ------------------
 \newcommand{\makeListOfAcronyms}{
 \phantomsection
 \addcontentsline{toc}{chapter}{LIST OF ACRONYMS}
 \printglossary[type=\acronymtype,title=LIST OF ACRONYMS]
-\clearpage
 }
 
 % ------------------ appendix environment definition ------------------
@@ -293,9 +290,13 @@
 \newenvironment{theappendices}{
     \bookmarksetup{depth=0,open}
     \addtocontents{toc}{\setcounter{tocdepth}{1}}
+    \renewcommand{\addappheadtotoc}{%
+      \phantomsection
+      \addcontentsline{toc}{chapter}{\MakeUppercase{\appendixpagename}}%
+    }
     \renewcommand{\@chap@pppage}{%
         \clear@ppage
-        \addappheadtotoc
+        \addappheadtotoc 
         \thispagestyle{empty}%
         \if@twocolumn\onecolumn\@tempswatrue\else\@tempswafalse\fi
         \null\vfil
@@ -303,7 +304,7 @@
         {\centering
         \interlinepenalty \@M
         \normalfont
-        \Huge \bfseries \appendixpagename\par}%
+        \Huge \bfseries \MakeUppercase{\appendixpagename}\par}% 
         \if@dotoc@pp
         \fi
     }

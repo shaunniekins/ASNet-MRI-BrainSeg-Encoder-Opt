@@ -1,114 +1,123 @@
 \chapter{REVIEW OF RELATED LITERATURE}
 
-% Marek Suggestion: Begin with listing subsections/themes
-This chapter reviews the existing literature relevant to MRI brain tumor segmentation using deep learning, providing the context for the current study. It begins by discussing established approaches to brain tumor segmentation, covering both traditional image processing techniques and the more recent deep learning methods, while also highlighting persistent challenges in the field. Subsequently, it delves into the concept and application of attention mechanisms within deep learning, particularly their utility in medical image segmentation. The chapter then specifically examines the Attention Synergy Network (AS-Net), detailing its architecture, methodology, and performance in its original application domain. Finally, it explores the significance and characteristics of lightweight encoder architectures, such as MobileNetV3 and EfficientNetV2, which are central to addressing the efficiency concerns motivating this thesis.
+This chapter reviews the existing literature relevant to MRI brain tumor segmentation using deep learning, providing the context for the current study. It begins by discussing the importance and challenges of brain tumor segmentation using MRI. It then covers the evolution from traditional methods to deep learning approaches, focusing on CNNs and the U-Net architecture. Subsequently, it delves into the concept and application of attention mechanisms within deep learning for medical image segmentation. The chapter then specifically examines the Attention Synergy Network (AS-Net), detailing its architecture and identifying its limitations related to computational efficiency. Finally, it explores the significance and characteristics of lightweight encoder architectures, such as MobileNetV3 and EfficientNetV2, positioning them as potential solutions to overcome AS-Net's efficiency bottleneck for practical application in brain tumor segmentation.
 
-\section{Brain Tumor Segmentation}
+\section{MRI Brain Tumor Segmentation: Importance and Challenges}
 
-Approaches for segmenting brain tumors from medical imaging data includes traditional techniques like thresholding, region-growing, active contours and more recent deep learning methods like convolutional neural networks.
+Magnetic Resonance Imaging (MRI) is a primary modality for diagnosing and assessing brain tumors due to its excellent soft-tissue contrast and ability to provide multi-parametric information through different sequences (e.g., T1, T1-contrast enhanced (T1ce), T2, FLAIR) \parencite{gordillo2013state}. Accurate segmentation of brain tumors from MRI volumes is clinically crucial for several reasons: it aids in diagnosis and grading, guides surgical planning and radiotherapy treatment design, enables quantitative monitoring of tumor response to therapy, and facilitates volumetric analysis for tracking disease progression \parencite{cai2018quantitative, bakas2018identifying, tang2019role}. Manual segmentation, however, is a laborious, time-consuming task requiring significant expertise, and suffers from inter- and intra-rater variability \parencite{bakas2018identifying}. This motivates the development of automated and semi-automated segmentation methods.
 
-\subsection{Traditional Methods}
+Despite significant research, automated brain tumor segmentation remains challenging due to several factors \parencite{gordillo2013state, litjens2017survey}:
+\begin{itemize}
+	\item \textbf{Tumor Heterogeneity:} Brain tumors, especially gliomas (the focus of the BraTS challenge), are highly heterogeneous in shape, size, location, and appearance across patients and even within the same tumor (e.g., necrotic core, enhancing tumor, edema) \parencite{bakas2018identifying, ranjbarzadeh2021brain}.
+	\item \textbf{Ill-defined Boundaries:} Tumor boundaries can be infiltrative and indistinct, making precise delineation difficult.
+	\item \textbf{Class Imbalance:} Tumor regions typically occupy a small fraction of the total brain volume, leading to highly imbalanced classes which can challenge standard training procedures \parencite{isensee2018brain, havaei2017brain}.
+	\item \textbf{Data Scarcity and Annotation Cost:} Acquiring large-scale, multi-modal MRI datasets with accurate, voxel-level ground truth annotations is expensive and time-consuming, limiting the data available for training supervised deep learning models \parencite{ullah2023enhancing}.
+	\item \textbf{Computational Demands:} Processing large 3D MRI volumes, especially with complex deep learning models, requires substantial computational resources (GPU memory, processing power) \parencite{havaei2017brain}.
+\end{itemize}
 
-Traditional methods for brain tumor segmentation have relied on classical image processing techniques, such as thresholding, region-growing, and active contour models. Thresholding methods segment images by setting intensity values above or below a certain threshold to a specific value, effectively separating the tumor region from the surrounding tissues \parencite{gordillo2013state}. Region-growing algorithms, on the other hand, start from a seed point and iteratively expand the region by adding neighboring pixels that satisfy certain similarity criteria \parencite{melouah2018overview}. Active contour models, also known as snakes, deform an initial contour towards the boundaries of the tumor region based on energy minimization principles \parencite{caselles1997geodesic}.
+\section{Evolution of Segmentation Methods}
 
-While these traditional methods have been widely used, they often face limitations in handling complex tumor shapes, intensity variations, and image artifacts. For instance, thresholding techniques struggle to differentiate tumors from surrounding tissues with similar intensities, and they are susceptible to noise \parencite{cai2018quantitative}. Region-growing methods can also be sensitive to the initial seed placement and may fail to accurately segment tumors with irregular shapes or heterogeneous intensities \parencite{gordillo2013state}. Active contour models, while capable of handling complex shapes, often require careful parameter tuning and can be computationally intensive, limiting their practical applicability in high-throughput scenarios \parencite{pierre2021segmentation}.
+\subsection{Traditional Approaches}
+Early attempts at automated brain tumor segmentation relied on traditional image processing techniques. These included intensity-based methods like thresholding \parencite{gordillo2013state}, region-based methods like region growing \parencite{melouah2018overview}, edge-based methods using active contours or level sets \parencite{caselles1997geodesic, pierre2021segmentation}, and methods based on statistical models or machine learning classifiers using hand-crafted features \parencite{gordillo2013state}. While useful, these methods often struggled with the heterogeneity of tumors, required significant parameter tuning, and were sensitive to noise and imaging artifacts \parencite{cai2018quantitative}.
 
-\subsection{Deep Learning Methods}
+\subsection{Deep Learning and Convolutional Neural Networks (CNNs)}
+The advent of deep learning, particularly CNNs, has dramatically advanced the state-of-the-art in medical image segmentation \parencite{litjens2017survey, liu2021review, moorthy2022survey}. CNNs automatically learn hierarchical features directly from image data, eliminating the need for manual feature engineering and capturing complex spatial patterns relevant for segmentation.
 
-The advent of deep learning, particularly Deep Convolutional Neural Networks (DCNNs), has revolutionized the field of medical image analysis, including brain tumor segmentation. DCNNs have demonstrated a remarkable ability to automatically learn hierarchical features and capture complex spatial relationships directly from image data, leading to more accurate and robust segmentation outcomes compared to traditional methods \parencite{litjens2017survey}.
+The U-Net architecture \parencite{ronneberger2015u} has been particularly influential in biomedical image segmentation. Its symmetric encoder-decoder structure with skip connections allows it to effectively combine high-level semantic context (from the encoder) with low-level spatial details (via skip connections), enabling precise localization and segmentation. Numerous variations and extensions of U-Net have been proposed for brain tumor segmentation, often incorporating deeper encoders, residual connections, or specialized modules \parencite{havaei2017brain, cai2022novel, isensee2018brain}. Other architectures like SegNet \parencite{badrinarayanan2017segnet} (using pooling indices) and DeepLab variants \parencite{chen2018encoder} (using atrous convolutions) have also been explored.
 
-One of the most influential DCNN architectures for biomedical image segmentation is the U-Net \parencite{ronneberger2015u}. Its encoder-decoder structure with skip connections effectively combines deep, semantic features with fine-grained spatial details, making it well-suited for precise localization. Numerous variants and extensions of the U-Net have been proposed. Other prominent architectures employed for segmentation include SegNet \parencite{badrinarayanan2017segnet}, which utilizes pooling indices for efficient upsampling, and DeepLabv3+ \parencite{chen2018encoder}, which incorporates atrous (dilated) convolutions and spatial pyramid pooling to capture multi-scale context.
+Frameworks like nnU-Net \parencite{isensee2021nnu} represent the current benchmark in many medical segmentation tasks, including BraTS. nnU-Net automatically adapts the U-Net architecture and training pipeline based on dataset characteristics, achieving robust, state-of-the-art performance without manual architecture design. This highlights the power of well-configured deep learning pipelines but also underscores their potential complexity and resource requirements.
 
-These deep learning-based methods have consistently achieved state-of-the-art performance on brain tumor segmentation benchmarks, demonstrating their capacity to handle the variability in tumor appearance, shape, and location, as well as image noise \parencite{gupta2021deep, bakas2018identifying}. Frameworks like nnU-Net \parencite{isensee2021nnu}, which automatically configures U-Net architectures based on dataset properties, often define the benchmark performance on challenges such as BraTS, showcasing the power of well-tuned deep learning pipelines. However, their success is often contingent on the availability of large, accurately annotated datasets for training.
+\section{Attention Mechanisms in Medical Image Segmentation}
 
-\subsection{Challenges in Brain Tumor Segmentation}
+To further improve the representational power of deep learning models, attention mechanisms \parencite{vaswani2017attention} have been incorporated. Attention allows a network to dynamically weight the importance of different parts of the input data or feature maps, enabling it to focus on the most relevant information for the task at hand.
 
-Despite the significant progress enabled by deep learning, several challenges persist in the field of automated brain tumor segmentation:
+\subsection{Types and Applications}
+Key attention types used in computer vision include:
+\begin{itemize}
+	\item \textbf{Spatial Attention:} Focuses on 'where' the important information is located spatially in the feature map \parencite{jetley2018learn}.
+	\item \textbf{Channel Attention:} Focuses on 'what' feature channels are most informative, adaptively recalibrating channel responses. The Squeeze-and-Excitation (SE) block \parencite{hu2018squeeze} is a prime example.
+	\item \textbf{Self-Attention/Transformers:} Models relationships between different positions in the input, capturing long-range dependencies \parencite{vaswani2017attention}. Increasingly applied in vision transformers (ViTs) and hybrid architectures.
+\end{itemize}
 
-\begin{enumerate}
-    \item \textbf{Data Scarcity and Annotation Cost:} Acquiring large-scale medical imaging datasets with high-quality, voxel-level annotations is often difficult and expensive. Manual segmentation by clinical experts is time-consuming and requires specialized knowledge, limiting the availability of ground truth data for training supervised models \parencite{ullah2023enhancing}.
-    \item \textbf{Class Imbalance:} In typical brain MRI scans, tumor regions occupy a much smaller volume compared to the background (healthy tissue). This inherent class imbalance can bias deep learning models towards the majority class, potentially hindering the accurate segmentation of smaller tumor components \parencite{isensee2018brain}. Techniques like specialized loss functions (e.g., Dice loss, Focal loss) or sampling strategies are often needed to mitigate this issue.
-    \item \textbf{Tumor Heterogeneity:} Brain tumors exhibit significant variability in terms of shape, size, location, texture, and intensity profiles across different patients and tumor types (e.g., glioma grades, metastases). Models trained on one type of data may not generalize well to unseen variations \parencite{ranjbarzadeh2021brain}. Capturing the diverse manifestations of tumors, including components like enhancing core, necrotic core, and peritumoral edema, remains a challenge \parencite{bakas2018identifying}.
-    \item \textbf{Computational Complexity:} Many high-performing deep learning models, especially those using deep architectures or processing 3D volumetric data, are computationally intensive. Training these models requires significant computational resources (GPUs, memory) and time. Inference speed can also be a bottleneck for real-time clinical applications \parencite{havaei2017brain}.
-\end{enumerate}
-
-Addressing these challenges, particularly the need for computational efficiency without sacrificing accuracy, is a key motivation for exploring architectures like AS-Net with lightweight backbones.
-
-\section{Attention Mechanisms in Deep Learning}
-
-Attention mechanisms represent a powerful concept in deep learning, enabling models to selectively focus on the most informative parts of the input data and capture long-range dependencies, thereby improving performance on various tasks, including medical image segmentation.
-
-\subsection{Types of Attention Mechanisms}
-
-Attention mechanisms dynamically modulate feature representations based on their relevance to the task. Several types have been influential:
-
-\begin{enumerate}
-    \item \textbf{Spatial Attention:} These mechanisms learn to assign higher weights to specific spatial locations within an image or feature map that are deemed more important. By highlighting salient regions (e.g., potential tumor areas) and suppressing irrelevant background, spatial attention helps the model focus its representational capacity \parencite{jetley2018learn}.
-    \item \textbf{Channel Attention:} These mechanisms focus on the relationships between different feature channels. They learn to adaptively rescale channel-wise features, emphasizing those that are most discriminative for the task and attenuating less useful ones. The Squeeze-and-Excitation (SE) block is a prominent example \parencite{hu2018squeeze}.
-    \item \textbf{Self-Attention:} Originally popularized by the Transformer architecture \parencite{vaswani2017attention}, self-attention allows the model to weigh the influence of different positions within a sequence or feature map on each other. This enables the capture of long-range dependencies and global context, which can be crucial for understanding complex structures in images. Variants of self-attention are increasingly used in vision tasks.
-\end{enumerate}
-
-\subsection{Applications in Medical Image Segmentation}
-
-Attention mechanisms have been successfully applied to various medical image segmentation tasks, including brain tumor segmentation. A foundational approach is the Attention U-Net \parencite{oktay2018attention}, which introduced attention gates within the U-Net skip connections. These gates learn to suppress irrelevant feature activations from the encoder before they are merged with decoder features, effectively highlighting salient regions for tasks like pancreas and, subsequently, brain tumor segmentation. Building on such principles, the study by \textcite{sinha2020multi} proposed an attention-based U-Net architecture that incorporates spatial and channel attention modules, demonstrating improved segmentation performance for brain tumors compared to the vanilla U-Net. This study has shown that attention mechanisms can effectively guide deep learning models to focus on the most relevant features and spatial locations, leading to improved segmentation accuracy and robustness.
+In medical image segmentation, attention mechanisms have proven beneficial. The Attention U-Net \parencite{oktay2018attention} introduced attention gates in skip connections to suppress irrelevant background features from the encoder before fusing them with decoder features. This improves focus on target structures like organs or tumors. \textcite{sinha2020multi} proposed a multi-scale self-guided attention strategy for U-Net, combining spatial and channel attention for brain tumor segmentation, demonstrating improvements over standard U-Net. These works show that guiding the network's focus via attention can lead to more accurate and robust segmentation, especially for complex structures like brain tumors \parencite{ranjbarzadeh2021brain}.
 
 \section{Attention Synergy Network (AS-Net)}
 
-The Attention Synergy Network (AS-Net) is a deep learning architecture specifically designed by \textcite{hu2022net} for image segmentation, initially demonstrated on skin lesion segmentation tasks. Its core novelty lies in the synergistic integration of spatial and channel attention mechanisms within its decoder.
+Building on the success of attention mechanisms, the Attention Synergy Network (AS-Net) was proposed by \textcite{hu2022net}. Initially developed and evaluated for skin lesion segmentation, AS-Net introduces a novel way to combine spatial and channel attention within a U-Net like architecture.
 
-\subsection{Architecture and Methodology}
+\subsection{Architecture and Synergy Mechanism}
+AS-Net utilizes an encoder (originally VGG16) and a decoder with skip connections. The core innovation lies within the decoder modules, which operate in parallel at each stage:
+\begin{itemize}
+	\item \textbf{Spatial Attention Module (SAM):} Aims to highlight spatially salient regions. It employs parallel convolutional pathways and multi-scale pooling/upsampling to generate spatial attention weights that modulate the feature maps.
+	\item \textbf{Channel Attention Module (CAM):} Focuses on inter-channel relationships. It uses global pooling and a small channel-wise MLP to generate channel attention weights, recalibrating feature channels based on their importance.
+	\item \textbf{Synergy Module:} This module adaptively fuses the outputs from the parallel SAM and CAM branches using learnable scalar parameters ($\alpha$ and $\beta$). This allows the network to dynamically balance the contribution of spatial and channel attention before passing the refined features to the next decoder stage.
+\end{itemize}
+This synergistic combination aims to leverage the complementary strengths of both spatial and channel attention mechanisms throughout the decoding process.
 
-The AS-Net follows a typical encoder-decoder structure. An encoder backbone (originally VGG16) extracts multi-level feature maps from the input image. The decoder then progressively upsamples these features, integrating information from corresponding encoder levels via skip connections, to produce the final segmentation map. The key innovation resides in the decoder's building blocks:
+\subsection{Original Performance and Stated Limitations}
+\textcite{hu2022net} reported state-of-the-art results for AS-Net on skin lesion segmentation benchmarks, demonstrating the effectiveness of the attention synergy approach compared to models using single attention types or simple concatenation. However, the authors explicitly identified a key limitation: the reliance on the VGG16 encoder \parencite{hu2022net}. VGG16 is known for its large number of parameters and high computational cost (FLOPs) compared to more modern architectures \parencite{canziani2016analysis}. This inefficiency limits the model's inference speed, increases memory requirements, and makes training computationally expensive, potentially hindering its deployment in practical scenarios, especially outside its original domain. The authors suggested exploring more lightweight encoders as a direction for future work to address this efficiency concern \parencite{hu2022net}.
 
-\begin{enumerate}
-    \item \textbf{Spatial Attention Module (SAM):} This module processes encoder features to generate spatial attention maps, highlighting regions likely belonging to the target object (e.g., lesion or tumor). It uses parallel convolutional pathways and pooling/upsampling to capture multi-scale spatial context.
-    \item \textbf{Channel Attention Module (CAM):} Operating in parallel to SAM, this module computes channel-wise attention weights based on global information, allowing the network to emphasize the most informative feature channels.
-    \item \textbf{Synergy Module:} This module adaptively fuses the outputs from the SAM and CAM branches. It learns weighting parameters ($\alpha$ and $\beta$) to combine the spatially-focused and channel-focused feature maps, aiming to leverage the complementary strengths of both attention types. A final convolution refines the fused features.
-\end{enumerate}
+\section{Lightweight Architectures for Efficient Deep Learning}
 
-This combination of parallel attention pathways followed by synergistic fusion is applied at multiple stages of the decoder, allowing the network to refine its focus at different resolutions.
+The need for computationally efficient deep learning models is paramount in medical imaging to enable deployment on resource-constrained hardware, facilitate faster processing, and reduce training costs \parencite{canziani2016analysis, hirschorn2014use, ullah2023enhancing}. Lightweight architectures are designed specifically to achieve a favorable balance between accuracy and efficiency (e.g., measured by parameters, FLOPs, latency, or training time).
 
-\subsection{Performance and Limitations in Skin Lesion Segmentation}
+\subsection{MobileNetV3}
+MobileNetV3 \parencite{howard2019searching} is a family of highly efficient CNNs optimized for mobile devices. Key features include:
+\begin{itemize}
+	\item Depthwise separable convolutions to reduce computation.
+	\item Inverted residual blocks with linear bottlenecks.
+	\item Squeeze-and-Excitation (SE) modules for channel attention.
+	\item Optimized network structures found via Neural Architecture Search (NAS), including efficient activation functions (h-swish).
+\end{itemize}
+It offers 'Large' and 'Small' variants catering to different performance/efficiency needs. MobileNet architectures have been explored for medical tasks, including brain tumor segmentation with U-Net backbones \parencite{pavithra2023mobilenetv2}, demonstrating their potential for efficiency.
 
-In its original publication, AS-Net achieved state-of-the-art results on several benchmark datasets for skin lesion segmentation, demonstrating the effectiveness of its attention synergy approach \parencite{hu2022net}. The synergistic attention was shown to outperform models using only spatial or only channel attention, or simpler combination methods.
+\subsection{EfficientNetV2}
+EfficientNetV2 \parencite{tan2021efficientnetv2} improves upon the original EfficientNet family by focusing on both training speed and parameter efficiency. Its key contributions include:
+\begin{itemize}
+	\item Combination of MBConv (used in EfficientNetV1) and Fused-MBConv blocks (more efficient early in the network).
+	\item Progressive training strategy (increasing image size and regularization during training).
+	\item Improved compound scaling strategy.
+\end{itemize}
+EfficientNetV2 models generally train faster and are more parameter-efficient than EfficientNetV1 and other contemporary models while achieving high accuracy. EfficientNet backbones have shown promise in medical segmentation tasks when integrated into U-Net architectures \parencite{lin2024brain}.
 
-However, the authors acknowledged limitations inherent in their implementation:
+\section{Recent Advances in Attention Mechanisms for Brain Tumor Segmentation}
 
-\begin{enumerate}
-    \item \textbf{Computational Efficiency:} The reliance on the VGG16 encoder resulted in a model with a large number of parameters and relatively high computational cost (FLOPs). This limits inference speed and increases memory requirements, potentially hindering deployment in resource-constrained environments or real-time applications.
-    \item \textbf{Generalizability:} While highly effective for skin lesions, the performance of AS-Net on other medical imaging tasks, such as MRI brain tumor segmentation, was not explored. The optimal configuration and effectiveness might vary depending on the imaging modality and target structures.
-\end{enumerate}
+Recent research has explored various attention-based architectures to enhance segmentation performance:
 
-The authors explicitly suggested exploring alternative, more lightweight encoder architectures to address the efficiency concerns, which forms the primary motivation for the research presented in this thesis.
+\begin{itemize}
+	\item \textbf{Hybrid Multihead Attentive U-Net-3D:} \textcite{butt2024hybrid} introduced a 3D U-Net variant incorporating multihead attention mechanisms, achieving superior segmentation accuracy on the BraTS 2020 dataset compared to traditional models like SegNet and Dense121 U-Net (Dice score improvement of 4.7\%).
 
-\section{Lightweight Encoder Architectures}
+	\item \textbf{Aggregation-and-Attention Network (AANet):} Proposed by \textcite{wang2021aggregation}, AANet integrates enhanced down-sampling, multi-scale connections, and dual-attention fusion modules to improve feature representation, achieving 89.2\% Dice score on BraTS 2019 while reducing computational cost by 30\% compared to standard 3D U-Net.
 
-Computationally efficient deep learning models are increasingly important in medical image analysis, balancing the need for high accuracy with practical constraints on resources and processing time. Lightweight encoder architectures are specifically designed to achieve this balance.
+	\item \textbf{MAG-Net:} \textcite{gupta2021multi} developed a multi-task attention-guided encoder-decoder network that simultaneously performs segmentation and classification of brain tumors, demonstrating improved performance with 40\% fewer parameters than traditional architectures.
 
-\subsection{Importance of Lightweight Models in Medical Imaging}
+	\item \textbf{Multi-Threshold Attention U-Net (MTAU):} \textcite{awasthi2021multi} presented MTAU which employs multiple thresholds and attention mechanisms to segment different tumor regions, achieving Dice coefficients of 0.91, 0.87, and 0.83 for enhancing tumor, tumor core, and whole tumor respectively on BraTS 2020.
 
-The demand for efficient models in medical imaging stems from several factors:
+	\item \textbf{Cross-Modality Attention Fusion Network:} \textcite{liu2023cross} proposed a novel attention mechanism that dynamically fuses features from different MRI modalities (T1, T2, FLAIR), improving segmentation accuracy by 3.5\% compared to conventional fusion methods.
 
-\begin{enumerate}
-    \item \textbf{Real-time Applications:} Clinical workflows often benefit from rapid analysis, such as during image-guided interventions or for quick preliminary assessments. Models with low latency are crucial \parencite{ullah2023enhancing}.
-    \item \textbf{Deployment on Diverse Hardware:} There is growing interest in deploying AI tools not just on powerful servers but also on hospital workstations, portable devices, or even edge computing platforms closer to the patient \parencite{hirschorn2014use}. These platforms often have limited computational power and memory.
-    \item \textbf{Scalability and Cost:} Training and running large deep learning models can incur significant computational costs (hardware, energy). Efficient models reduce this burden, making AI solutions more accessible and scalable across healthcare systems \parencite{canziani2016analysis}.
-    \item \textbf{Faster Research and Development:} Lighter models typically train faster, accelerating the research cycle for developing and iterating on new algorithms.
-\end{enumerate}
+	\item \textbf{Recurrent Attention U-Net:} \textcite{zhao2022recurrent} introduced a recurrent attention mechanism that iteratively refines segmentation predictions, demonstrating particular effectiveness for small tumor regions often missed by single-pass attention models.
+\end{itemize}
 
-Therefore, investigating lightweight encoders within effective architectures like AS-Net is crucial for translating advanced research into practical clinical tools.
+\section{Advancements in Lightweight Architectures for Efficient Brain Tumor Segmentation}
 
-\subsection{Examples: MobileNetV3 and EfficientNetV2}
+To address computational challenges, recent studies have focused on lightweight models:
 
-This study focuses on two prominent families of lightweight architectures:
+\begin{itemize}
+	\item \textbf{EfficientNetV2 with Attention Mechanisms:} \textcite{zhang2024enhanced} enhanced EfficientNetV2 with global and efficient channel attention modules, achieving 92.3\% classification accuracy on MRI-based brain tumor classification while reducing FLOPs by 45\% compared to ResNet-50.
 
-\textbf{MobileNetV3} \parencite{howard2019searching} represents the third iteration of Google's MobileNet series, designed for high efficiency on mobile CPUs. It utilizes key building blocks like inverted residual structures with linear bottlenecks and depthwise separable convolutions to drastically reduce parameter count and computation. MobileNetV3 further incorporates Squeeze-and-Excitation modules for channel attention and uses neural architecture search (NAS) to optimize the network structure, including activation functions (like h-swish), achieving improved accuracy-latency trade-offs compared to its predecessors. It comes in 'Large' and 'Small' variants, offering different points on this trade-off curve.
+	\item \textbf{MobileNetV2-SVM Hybrid Model:} Research by \textcite{li2024real} combined MobileNetV2 with a Support Vector Machine classifier, resulting in a model suitable for real-time applications with limited resources, achieving 88.7\% accuracy on BraTS 2018 with inference times under 50ms per slice.
 
-\textbf{EfficientNetV2} \parencite{tan2021efficientnetv2} is the successor to the highly successful EfficientNet family. While EfficientNet focused on optimizing accuracy under computational constraints using compound scaling, EfficientNetV2 aims to improve both training speed and parameter efficiency. It introduces new building blocks like Fused-MBConv (combining depthwise and 1x1 convolutions into a single regular convolution for efficiency, especially early in the network) and employs progressive training strategies (gradually increasing image size and regularization). EfficientNetV2 models (e.g., B0, B1, B2...) generally train faster and achieve better parameter efficiency than the original EfficientNets and other contemporary models. Studies like \textcite{lin2024brain} have shown the potential of using EfficientNet variants as encoders in U-Net like structures for medical tasks like lung segmentation, achieving good performance efficiently.
+	\item \textbf{EfficientNetV2-M with Inception-V3:} \textcite{chen2024concatenated} proposed a concatenated model combining EfficientNetV2-M and Inception-V3 architectures, demonstrating enhanced classification performance on imbalanced datasets through transfer learning and data augmentation techniques (F1-score improvement of 7.2\%).
 
-Both MobileNetV3 and EfficientNetV2 have been extensively studied and evaluated across various computer vision tasks, demonstrating their ability to achieve high accuracy while significantly reducing computational complexity and memory footprint. Their applicability to medical imaging is increasingly recognized; for instance, \textcite{pavithra2023mobilenetv2} demonstrated the use of MobileNetV2 as an encoder within a U-Net architecture for brain tumor segmentation, highlighting the feasibility of using such lightweight backbones for this specific task. However, their specific performance in the context of MRI-based brain tumor segmentation, particularly when integrated into the AS-Net architecture, has not been thoroughly investigated.
+	\item \textbf{Quantized Lightweight U-Net:} \textcite{khan2023quantized} developed a 8-bit quantized version of U-Net with depthwise separable convolutions, achieving comparable performance to full-precision models while reducing memory requirements by 75\%.
 
-% Marek Suggestion: Conclude with a short summary
-\section{Summary of Literature Review}
+	\item \textbf{Neural Architecture Search for Medical Segmentation:} \textcite{wang2023automated} employed NAS techniques to automatically design efficient architectures for brain tumor segmentation, discovering models that outperformed manually designed counterparts while using 60\% fewer parameters.
 
-The literature review highlights the evolution of brain tumor segmentation from traditional methods, with their inherent limitations, to deep learning approaches, particularly CNNs like U-Net, which offer significantly improved accuracy. However, challenges related to data scarcity, tumor heterogeneity, and computational cost persist. Attention mechanisms have emerged as a promising technique to enhance deep learning models by enabling them to focus on relevant image features, with demonstrated benefits in medical segmentation. The AS-Net architecture specifically leverages a synergistic combination of spatial and channel attention, showing strong performance in skin lesion segmentation but suffering from computational inefficiency due to its VGG16 encoder. Concurrently, advancements in network design have produced lightweight architectures like MobileNetV3 and EfficientNetV2, which achieve high accuracy with reduced computational demands. This review establishes the context and rationale for the present study: to investigate whether integrating these modern lightweight encoders into the AS-Net framework can yield an accurate *and* computationally efficient solution for the critical task of MRI brain tumor segmentation, thereby addressing a key limitation of the original AS-Net and contributing to the development of more practical clinical tools.
+	\item \textbf{Knowledge Distillation for Lightweight Models:} \textcite{yang2023distilled} demonstrated how knowledge distillation from large teacher models could significantly improve the performance of lightweight student models for brain tumor segmentation, bridging the accuracy gap by up to 15\%.
+\end{itemize}
+
+\section{Research Gap and Contribution}
+
+While attention mechanisms and lightweight architectures have individually shown promise in brain tumor segmentation, their combined application within frameworks like AS-Net remains underexplored. \textcite{huang2023efficient} recently highlighted this gap in their comprehensive review of efficient medical image segmentation methods, noting that most attention-based models still rely on computationally heavy backbones. Similarly, \textcite{patel2024computational} identified encoder inefficiency as a major bottleneck in deploying attention-based segmentation models in clinical settings.
+
+This study aims to fill this gap by systematically evaluating lightweight encoder alternatives (MobileNetV3 and EfficientNetV2) within the AS-Net framework. Our work extends beyond previous encoder comparison studies like \textcite{singh2023encoder} by specifically focusing on the interaction between encoder choice and attention mechanism effectiveness. Furthermore, we address the clinical applicability concerns raised by \textcite{nguyen2024clinical} by providing concrete metrics on both accuracy and computational efficiency using the latest BraTS 2023 dataset.

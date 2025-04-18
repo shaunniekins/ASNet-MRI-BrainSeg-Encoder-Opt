@@ -17,6 +17,7 @@ The models were trained using the following hyperparameters:
     \centering
     \caption{Training Hyperparameters for AS-Net Variants}
     \label{tab:training_hyperparams}
+    \resizebox{\textwidth}{!}{%
     \begin{tabular}{|l|c|}
         \hline
         \textbf{Parameter} & \textbf{Value} \\
@@ -32,6 +33,7 @@ The models were trained using the following hyperparameters:
         Best Checkpoint Monitor & \texttt{val\_dice\_coef} (mode='max') \\
         \hline
     \end{tabular}
+    }
 \end{table}
 
 \section{Data Preprocessing}
@@ -162,31 +164,6 @@ The fine-tuning approach used for each encoder backbone:
     \end{tabular}%
     }
      \footnotesize{\\ Note: Specific layer names/indices defining the boundary between frozen and trainable layers may vary slightly based on implementation details.}
-\end{table}
-
-\chapter{Detailed Test Results}
-\label{app:detailed_results}
-
-This section provides the detailed performance metrics for each model variant evaluated on the test set, corresponding to the best checkpoint saved during training based on \texttt{val\_dice\_coef} (validation Dice coefficient).
-
-\begin{table}[h]
-    \centering
-    \caption{Detailed Test Metrics per Model Variant}
-    \label{tab:detailed_validation_metrics} % Note: Label kept same for consistency if referenced elsewhere, but caption changed.
-    \resizebox{\textwidth}{!}{%
-    \begin{tabular}{|l|c|c|c|c|c|c|}
-        \hline
-        \textbf{Encoder Backbone} & \textbf{Input Size} & \textbf{Dice Coef / F1} & \textbf{IoU} & \textbf{Precision} & \textbf{Recall} & \textbf{Binary Acc.} \\
-        \hline
-        VGG16 & 224x224 & 0.8873 & 0.7974 & 0.8334 & 0.9487 & 0.9974 \\
-        MobileNetV3-Large & 224x224 & 0.8738 & 0.7759 & 0.8186 & 0.9371 & 0.9971 \\
-        MobileNetV3-Small & 224x224 & 0.8570 & 0.7498 & 0.7912 & 0.9348 & 0.9967 \\
-        EfficientNetV2-B0 & 224x224 & 0.8853 & 0.7942 & 0.8327 & 0.9451 & 0.9974 \\
-        EfficientNetV2-B1 & 240x240 & 0.8815 & 0.7881 & 0.8185 & 0.9550 & 0.9973 \\
-        \hline
-    \end{tabular}%
-    }
-    \footnotesize{\\ Note: Metrics obtained from evaluating the best checkpoint (selected based on validation performance) on the test split of the BraTS 2023-GLI (Task 1) dataset.}
 \end{table}
 
 \chapter{Supplementary Figures}
