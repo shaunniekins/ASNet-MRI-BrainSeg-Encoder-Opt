@@ -9,7 +9,7 @@
     \label{fig:conceptual_framework}
 \end{figure}
 
-Figure \ref{fig:conceptual_framework} outlines the conceptual framework guiding this research. The process begins with the BraTS 2023-GLI (Task 1) dataset, which undergoes a standardized preprocessing pipeline. The preprocessed data serves as input to multiple parallel streams, each representing an implementation of AS-Net with a different encoder. Performance metrics are computed for each model variant and systematically compared.
+Figure \ref{fig:conceptual_framework} illustrates the conceptual framework guiding this research. The process initiates with the BraTS 2023-GLI (Task 1) dataset, which undergoes a standardized preprocessing pipeline. The resulting data is then fed into multiple parallel processing streams. Each stream implements the Attention Synergy Network (AS-Net) architecture but utilizes a distinct encoder backbone, such as VGG16, MobileNetV3, and EfficientNetV2, as explored in this study. Within each stream, the encoder's features are processed by Spatial Attention Modules (SAM) and Channel Attention Modules (CAM), whose outputs are integrated by a Synergy module. Each AS-Net variant generates its own segmentation output, from which performance metrics are calculated. Finally, these metrics are systematically compared across the different encoder variants to evaluate their relative performance and efficiency.
 
 % 2. The Attention Synergy Network (AS-Net) Architecture
 \section{The Attention Synergy Network (AS-Net) Architecture}
@@ -77,16 +77,30 @@ This strategy aimed to leverage general features while adapting deeper layers to
 
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_mobilenet.png}
-    \caption[AS-Net Architecture with MobileNetV3 Encoder]{High-level architecture of AS-Net using MobileNetV3 (Large/Small) encoder backbones.}
+    \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_mobilenetv3l.png}
+    \caption[AS-Net Architecture with MobileNetV3 Encoder]{High-level architecture of AS-Net using MobileNetV3 (Large/Small) encoder backbones. Example shown uses MobileNetV3-Large.}
     \label{fig:asnet_mobilenet_arch}
 \end{figure}
 
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_efficientnet.png}
-    \caption[AS-Net Architecture with EfficientNetV2 Encoder]{High-level architecture of AS-Net using EfficientNetV2 (B0/B1) encoder backbones.}
+    \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_mobilenetv3s.png}
+    \caption[AS-Net Architecture with MobileNetV3-Small Encoder]{High-level architecture of AS-Net using the MobileNetV3-Small encoder backbone.}
+    \label{fig:asnet_mobilenetv3s_arch}
+\end{figure}
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_efficientnetv2b0.png}
+    \caption[AS-Net Architecture with EfficientNetV2-B0 Encoder]{High-level architecture of AS-Net using the EfficientNetV2-B0 encoder backbone.}
     \label{fig:asnet_efficientnet_arch}
+\end{figure}
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_efficientnetv2b1.png}
+    \caption[AS-Net Architecture with EfficientNetV2-B1 Encoder]{High-level architecture of AS-Net using the EfficientNetV2-B1 encoder backbone.}
+    \label{fig:asnet_efficientnetv2b1_arch}
 \end{figure}
 
 % 4. Dataset and Preprocessing
