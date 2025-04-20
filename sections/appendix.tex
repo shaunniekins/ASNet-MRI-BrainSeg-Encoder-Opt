@@ -11,6 +11,26 @@ The experiments in this study were conducted using the following hardware config
     \item Storage: 500GB SSD for data caching
 \end{itemize}
 
+\section{Software Environment}
+Key software components and versions used:
+\begin{itemize}
+    \item Operating System: Ubuntu 22.04.5 LTS
+    \item Python: 3.10.12
+    \item TensorFlow: 2.19.0
+    \item Keras: 3.9.2
+    \item CUDA Toolkit: 12.2
+    \item cuDNN: 9.3.0
+    \item NumPy: 2.1.3
+    \item h5py: 3.13.0
+    \item Pandas: 2.2.3
+    \item Matplotlib: 3.10.1
+    \item Scipy: 1.15.2
+    \item Pillow: 11.1.0
+    \item imageio: 2.37.0
+    \item tqdm: 4.67.1
+    \item TensorBoard: 2.19.0
+\end{itemize}
+
 \section{Training Hyperparameters}
 The models were trained using the following hyperparameters:
 \begin{table}[h]
@@ -52,17 +72,27 @@ The preprocessing of BraTS 2023-GLI (Task 1) NIfTI files into H5 slices involved
 The custom loss function combined weighted binary cross-entropy with the Dice loss to address class imbalance:
 
 \begin{verbatim}
+import tensorflow as tf
+
+def dice_coef(y_true, y_pred, smooth=1.0):
+    y_true_f = tf.reshape(y_true, [-1])
+    y_pred_f = tf.reshape(y_pred, [-1])
+    intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    return (2. * intersection + smooth) / (
+        tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + smooth)
+
 def weighted_bce_dice_loss(y_true, y_pred, weight=100.0):
     # Weighted binary cross entropy component
     bce = tf.keras.losses.binary_crossentropy(y_true, y_pred)
-    weight_mask = tf.where(y_true > 0.5, weight, 1.0)
+    # Create a mask that applies the weight only to positive pixels
+    weight_mask = tf.where(y_true > 0.5, weight, 1.0) 
     weighted_bce = bce * weight_mask
     weighted_bce_loss = tf.reduce_mean(weighted_bce)
     
     # Dice loss component
     dice_loss = 1 - dice_coef(y_true, y_pred)
     
-    # Combined loss
+    # Combined loss (equal weighting)
     combined_loss = 0.5 * weighted_bce_loss + 0.5 * dice_loss
     return combined_loss
 \end{verbatim}
@@ -71,10 +101,13 @@ def weighted_bce_dice_loss(y_true, y_pred, weight=100.0):
 The key metrics used for model evaluation were implemented as follows:
 
 \begin{verbatim}
+import tensorflow as tf
+
 def dice_coef(y_true, y_pred, smooth=1.0):
     y_true_f = tf.reshape(y_true, [-1])
     y_pred_f = tf.reshape(y_pred, [-1])
     intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    # Calculate Dice coefficient
     return (2. * intersection + smooth) / (
         tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + smooth)
 
@@ -82,7 +115,9 @@ def iou_coef(y_true, y_pred, smooth=1.0):
     y_true_f = tf.reshape(y_true, [-1])
     y_pred_f = tf.reshape(y_pred, [-1])
     intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    # Calculate union
     union = tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) - intersection
+    # Calculate IoU coefficient
     return (intersection + smooth) / (union + smooth)
 \end{verbatim}
 
@@ -205,18 +240,9 @@ This section contains the training history plots for all evaluated model variant
     \label{fig:training_plot_env2b1}
 \end{figure}
 
-% \section{Qualitative Segmentation Examples}
-% This section provides additional visual examples of segmentation results from the validation set for different model variants.
+\chapter{Code Availability}
+\label{app:code_availability}
 
-% \begin{figure}[ht]
-%     \centering
-%     \IfFileExists{figures/placeholder_segmentation_examples.png}{%
-%         \includegraphics[width=0.9\textwidth]{figures/placeholder_segmentation_examples.png}
-%     }{%
-%         \fbox{\begin{minipage}{0.9\textwidth}\centering[Segmentation Examples Placeholder: Input MRI, Ground Truth, VGG16 Pred, ENv2-B0 Pred, etc.]\end{minipage}}
-%     }
-%     \caption{Example segmentation results on validation slices comparing different AS-Net variants.}
-%     \label{fig:segmentation_examples_appendix}
-% \end{figure}
+The Python code developed and used for the experiments described in this thesis, including data preprocessing, model implementation (AS-Net variants), training, evaluation, and visualization scripts, is contained within the \texttt{asnet-brats-encoder-comparison} directory accompanying this document. The code is available upon reasonable request to the author or can be found at \url{https://github.com/shaunniekins/asnet-brats-encoder-comparison}. Ensuring reproducibility was a key consideration, and the provided code, along with the specified software environment (Appendix A), allows for the replication of the study's results.
 
 \end{theappendices}

@@ -1,7 +1,7 @@
 \chapter{RESULTS AND DISCUSSION}
 
 \section{Introduction}
-This chapter presents the results from the experiments detailed in Chapter 3. Five variants of the Attention Synergy Network (AS-Net), differing only in their encoder backbone (VGG16, MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, EfficientNetV2-B1), were trained and evaluated on the preprocessed BraTS 2023-GLI (Task 1) dataset for binary brain tumor segmentation. The analysis focuses on comparing these variants based on segmentation accuracy and computational efficiency (training time).
+This chapter presents the results from the experiments detailed in Chapter 3. Five variants of the Attention Synergy Network (AS-Net), differing only in their encoder backbone (VGG16, MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, EfficientNetV2-B1), were trained and evaluated on the preprocessed BraTS 2023-GLI (Task 1) dataset for binary brain tumor segmentation. The analysis focuses on comparing these variants based on segmentation accuracy and computational efficiency (training time and inference time).
 
 \section{Experimental Setup Summary}
 To provide context for the results, the key experimental parameters are briefly reiterated:
@@ -20,26 +20,27 @@ To provide context for the results, the key experimental parameters are briefly 
 \section{Segmentation Performance Results}
 
 \subsection{Quantitative Results}
-The primary quantitative segmentation metrics, calculated on the held-out test set using the best checkpoint (selected based on validation Dice score), are summarized in Table \ref{tab:quantitative_results_updated}.
+The primary quantitative segmentation metrics, calculated on the held-out test set using the best checkpoint (selected based on validation Dice score), are summarized in Table \ref{tab:quantitative_results_updated}. The table also includes the epoch number at which the best validation Dice score was achieved, along with computational efficiency metrics.
 
 \begin{table}[ht]
     \centering
-    \caption{Quantitative performance of AS-Net with different encoder backbones on the BraTS 2023-GLI (Task 1) test set (based on best checkpoint selected during validation).}
+    \caption{Quantitative performance and efficiency of AS-Net with different encoder backbones on the BraTS 2023-GLI (Task 1) test set (based on best checkpoint selected during validation).}
     \label{tab:quantitative_results_updated}
     \resizebox{\textwidth}{!}{%
-    \begin{tabular}{|l|c|c|c|c|c|c|c|}
+    \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
         \hline
-        \textbf{Encoder Backbone} & \textbf{Input Size} & \textbf{Dice Coef / F1} & \textbf{IoU} & \textbf{Precision} & \textbf{Recall} & \textbf{Binary Acc.} & \textbf{Total Training Time} \\
+        \textbf{Encoder} & \textbf{Input} & \textbf{Dice Coef} & \textbf{IoU} & \textbf{Precision} & \textbf{Recall} & \textbf{Binary} & \textbf{Best} & \textbf{Total Training} & \textbf{Avg. Inference} \\
+        \textbf{Backbone} & \textbf{Size} & \textbf{/ F1} & & & & \textbf{Acc.} & \textbf{Epoch} & \textbf{Time (HH:MM)} & \textbf{Time (ms/slice)} \\
         \hline
-        VGG16 & 224x224 & \textbf{0.8873} & \textbf{0.7974} & \textbf{0.8334} & 0.9487 & \textbf{0.9974} & 23h 39m 23s \\
-        MobileNetV3-Large & 224x224 & 0.8738 & 0.7759 & 0.8186 & 0.9371 & 0.9971 & \textbf{18h 12m 48s} \\
-        MobileNetV3-Small & 224x224 & 0.8570 & 0.7498 & 0.7912 & 0.9348 & 0.9967 & 19h 15m 18s \\
-        EfficientNetV2-B0 & 224x224 & 0.8853 & 0.7942 & 0.8327 & 0.9451 & \textbf{0.9974} & 18h 56m 27s \\
-        EfficientNetV2-B1 & 240x240 & 0.8815 & 0.7881 & 0.8185 & \textbf{0.9550} & 0.9973 & 19h 22m 34s \\
+        VGG16 & 224x224 & \textbf{0.8873} & \textbf{0.7974} & 0.8334 & 0.9487 & 0.9974 & 19 & 23:39 & 5.43 \\
+        MobileNetV3-Large & 224x224 & 0.8738 & 0.7759 & 0.8186 & 0.9371 & 0.9971 & 16 & \textbf{18:12} & 2.77 \\
+        MobileNetV3-Small & 224x224 & 0.8570 & 0.7498 & 0.7912 & 0.9348 & 0.9967 & 21 & 18:25 & \textbf{2.42} \\
+        EfficientNetV2-B0 & 224x224 & 0.8853 & 0.7942 & 0.8327 & 0.9451 & \textbf{0.9974} & 17 & 18:56 & 3.84 \\
+        EfficientNetV2-B1 & 240x240 & 0.8815 & 0.7881 & 0.8185 & \textbf{0.9550} & 0.9973 & 21 & 19:22 & 4.22 \\
         \hline
-    \end{tabular}%
+    \end{tabular}% 
     }
-    \footnotesize{\\ Note: Training times reflect the total script execution time on the hardware used (NVIDIA Tesla V100 GPU with 32GB memory, Intel Xeon Silver 4210 CPU, 16GB RAM) and include data loading, training, and evaluation. Dataset used is BraTS 2023-GLI (Task 1). Best values for each metric are highlighted in bold.}
+    \footnotesize{\\ Note: Training times reflect the total script execution time. Inference time is the average per slice on the test set (lower is better). Hardware: NVIDIA Tesla V100 GPU (32GB), Intel Xeon Silver 4210 CPU, 16GB RAM. Dataset: BraTS 2023-GLI (Task 1). Best values (excluding time) are bolded. Best time values are bolded. Best epoch determined by maximum validation Dice Coefficient.}
 \end{table}
 
 \subsection{Training History}
@@ -87,7 +88,7 @@ These findings address Research Question 2a (accuracy comparison) and provide in
 \section{Computational Efficiency Results}
 
 \subsection{Quantitative Results}
-The total training time recorded for each AS-Net variant, reflecting the wall-clock time under the specified hardware and training configuration, is presented in Table \ref{tab:quantitative_results_updated} (last column). A visual comparison is shown in Figure \ref{fig:training_time_comparison}.
+The total training time and average inference time per slice for each AS-Net variant are presented in Table \ref{tab:quantitative_results_updated}. Visual comparisons are shown in Figure \ref{fig:training_time_comparison} and Figure \ref{fig:inference_time_comparison}.
 
 \begin{figure}[ht]
     \centering
@@ -123,22 +124,13 @@ The total training time recorded for each AS-Net variant, reflecting the wall-cl
 \end{figure}
 
 \subsection{Discussion of Computational Efficiency}
-The training times clearly demonstrate the efficiency benefits of the lightweight encoders:
+The training and inference times clearly demonstrate the efficiency benefits of the lightweight encoders:
 \begin{itemize}
-    \item \textbf{Significant Speed-up:} All lightweight variants trained considerably faster than the VGG16 baseline (23h 39m). MobileNetV3-Large was the fastest (18h 12m), followed closely by EfficientNetV2-B0 (18h 56m).
-    \item \textbf{Quantified Gains:} The time reductions ranged from ~18\% (ENv2-B1, ~4.3 hours faster) to ~23\% (MNv3-Large, ~5.4 hours faster) compared to VGG16. EfficientNetV2-B0 offered a ~20\% reduction (~4.7 hours faster).
-    \item \textbf{Encoder Complexity Correlation:} The observed training times generally align with the expected computational complexity of the encoders, with VGG16 being the most demanding and the lightweight models requiring less time, despite the smaller batch size used for the latter during training.
+    \item \textbf{Significant Training Speed-up:} All lightweight variants trained considerably faster than the VGG16 baseline (23h 39m). MobileNetV3-Large was the fastest (18h 12m), followed closely by EfficientNetV2-B0 (18h 56m).
+    \item \textbf{Quantified Training Gains:} The time reductions ranged from ~18\% (ENv2-B1, ~4.3 hours faster) to ~23\% (MNv3-Large, ~5.4 hours faster) compared to VGG16. EfficientNetV2-B0 offered a ~20\% reduction (~4.7 hours faster).
+    \item \textbf{Substantial Inference Speed-up:} All lightweight models offered significantly faster inference than VGG16 (5.43 ms/slice). MobileNetV3-Small was the fastest (2.42 ms/slice, ~55\% faster), followed by MobileNetV3-Large (2.77 ms/slice, ~49\% faster), EfficientNetV2-B0 (3.84 ms/slice, ~29\% faster), and EfficientNetV2-B1 (4.22 ms/slice, ~22\% faster). These faster inference times are particularly relevant for potential clinical application, enabling quicker analysis of patient scans \parencite{patel2024computational}.
+    \item \textbf{Encoder Complexity Correlation:} The observed training and inference times generally align with the expected computational complexity of the encoders, with VGG16 being the most demanding and the lightweight models requiring less time, despite the smaller batch size used for the latter during training.
 \end{itemize}
-These results directly address Research Question 2b (efficiency comparison), confirming the substantial computational savings offered by replacing VGG16 with modern lightweight backbones.
-
-\subsection{Discussion of Computational Efficiency}
-The training times clearly demonstrate the efficiency benefits of the lightweight encoders:
-\begin{itemize}
-    \item \textbf{Significant Speed-up:} All lightweight variants trained considerably faster than the VGG16 baseline (23h 39m). MobileNetV3-Large was the fastest (18h 12m), followed closely by EfficientNetV2-B0 (18h 56m).
-    \item \textbf{Quantified Gains:} The time reductions ranged from ~18\% (ENv2-B1, ~4.3 hours faster) to ~23\% (MNv3-Large, ~5.4 hours faster) compared to VGG16. EfficientNetV2-B0 offered a ~20\% reduction (~4.7 hours faster).
-    \item \textbf{Encoder Complexity Correlation:} The observed training times generally align with the expected computational complexity of the encoders, with VGG16 being the most demanding and the lightweight models requiring less time, despite the smaller batch size used for the latter during training.
-\end{itemize}
-
 These results directly address Research Question 2b (efficiency comparison), confirming the substantial computational savings offered by replacing VGG16 with modern lightweight backbones.
 
 \section{Overall Discussion and Synthesis}
@@ -239,8 +231,8 @@ This addresses Objective 4 by providing recommendations based on the observed tr
 \subsection{Effectiveness of AS-Net on MRI}
 The strong performance achieved across multiple encoder backbones (Dice > 0.85 for all except potentially MNv3-S depending on threshold) suggests that the core AS-Net attention synergy mechanism (SAM, CAM, Synergy) is effective and adaptable for enhancing feature representation in the context of MRI brain tumor segmentation. The attention modules likely contribute positively regardless of the specific features extracted by the encoder, supporting Research Question 3.
 
-\subsection{Comparison to Original AS-Net Study}
-The Dice scores obtained here (e.g., 0.8873 for VGG16) are within the range of high-performing models on BraTS datasets, although direct comparison to the skin lesion results in \textcite{hu2022net} is difficult due to the different task, modality, and dataset complexity. The key finding here is the relative performance of different encoders within AS-Net for this specific task.
+\subsection{Comparison to State-of-the-Art (SOTA)}
+While this study focused on comparing encoder backbones within the AS-Net framework, it is useful to contextualize the achieved performance. The best Dice scores obtained (around 0.88-0.89 for VGG16 and ENv2-B0) are competitive within the field of automated brain tumor segmentation. However, direct comparison to the absolute top performers in the BraTS 2023 challenge is complex due to differences in training data (this study used only training data, challenge winners use validation/test data with potential external data), preprocessing, model architectures (often ensembles or highly customized 3D networks), and evaluation protocols. State-of-the-art methods like nnU-Net \parencite{isensee2021nnu}, which automatically configures a U-Net pipeline, often achieve Dice scores exceeding 0.90 on BraTS benchmarks through extensive optimization and potentially 3D processing. The results here demonstrate that the AS-Net architecture, particularly when optimized with an efficient encoder like EfficientNetV2-B0, provides a strong foundation, achieving high accuracy with a specific architectural design, even if not matching the absolute peak performance of heavily tuned benchmark systems like nnU-Net.
 
 \subsection{Implications and Significance}
 The results highlight the potential for optimizing advanced attention-based models like AS-Net for clinical feasibility. Achieving near state-of-the-art accuracy with significantly reduced training time (and likely inference time) using encoders like EfficientNetV2-B0 makes such models more practical for research, development, and potential deployment in resource-aware clinical environments.
@@ -254,4 +246,4 @@ It is crucial to interpret these results within the context of the study's limit
     \item Training times are relative to the specific hardware used.
     \item The data split was slice-based, not patient-based, which might overestimate generalization compared to a patient-level split.
 \end{itemize}
-These factors should be considered when generalizing the findings. Further validation on diverse datasets and exploration of hyperparameter tuning per encoder would strengthen the conclusions.
+These factors should be considered when generalizing the findings. Further validation on diverse datasets, exploration of hyperparameter tuning per encoder, and formal statistical testing would strengthen the conclusions.

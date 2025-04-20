@@ -93,7 +93,16 @@ This strategy aimed to leverage general features while adapting deeper layers to
 \section{Dataset and Preprocessing}
 
 \subsection{Dataset Identification}
-The study utilized the BraTS 2023-GLI (Task 1) (Brain Tumor Segmentation) challenge training dataset \parencite{bakas2018identifying, menze2015multimodal}. Task 1 focuses on glioma segmentation.
+The study utilized the BraTS 2023-GLI (Task 1) (Brain Tumor Segmentation) challenge training dataset \parencite{baid2021rsna, menze2015multimodal, bakas2017advancing}. Task 1 focuses on glioma segmentation. The dataset is hosted on the Synapse platform.
+
+\subsection{Ethical Considerations and Data Access}
+Access to the BraTS 2023 dataset requires registration and adherence to specific usage agreements, ensuring responsible use of sensitive medical data. The dataset consists of anonymized MRI scans, protecting patient privacy. The steps followed to gain access were:
+\begin{enumerate}
+    \item Registration for the BraTS 2023 challenge via the Synapse platform.
+    \item Completion and submission of the official BraTS Data Access form, providing a Synapse username and associated email.
+    \item Acceptance of an email invitation to join the BraTS 2023 Data Access Team on Synapse.
+\end{enumerate}
+This process ensures that researchers agree to the data usage terms before downloading the dataset from Synapse. All data handling in this study complied with these terms. Researchers using this dataset are required to cite the relevant BraTS publications \parencite{baid2021rsna, menze2015multimodal, bakas2017advancing, bakas2017segmentationGBM, bakas2017segmentationLGG}.
 
 \subsection{Original Data Description}
 The original dataset provides multi-modal 3D MRI scans (T1, T1ce, T2, FLAIR) in NIfTI format, along with expert-annotated ground truth segmentation masks for tumor sub-regions (NCR/NET, ED, ET). This study focused on creating a binary segmentation target (tumor vs. background).
@@ -177,10 +186,11 @@ A threshold of 0.5 was applied to the sigmoid output for binary predictions. Met
 \end{itemize}
 (TP=True Positive, TN=True Negative, FP=False Positive, FN=False Negative pixels).
 
-\subsection{Computational Efficiency Metric}
+\subsection{Computational Efficiency Metrics}
 \begin{itemize}
     \item \textbf{Total Training Time:} Measured wall-clock time from the start of script execution to the completion of training (or evaluation if training skipped). Recorded in completion notification file. Provides a practical comparison under consistent hardware conditions.
+    \item \textbf{Average Inference Time:} Measured average wall-clock time required to generate a segmentation prediction for a single input slice on the test set using the trained model on the specified hardware (GPU). This reflects the model's speed during deployment.
 \end{itemize}
 
 \subsection{Experimental Design \& Comparison}
-The five AS-Net variants (VGG16, MobileNetV3-L/S, EfficientNetV2-B0/B1) were trained using the described configuration and evaluated on the test set using the defined accuracy and efficiency metrics. The primary analysis focuses on comparing these variants to understand the trade-offs between segmentation performance and computational cost associated with different encoder choices within the AS-Net framework for MRI brain tumor segmentation.
+The five AS-Net variants (VGG16, MobileNetV3-L/S, EfficientNetV2-B0/B1) were trained using the described configuration and evaluated on the test set using the defined accuracy and efficiency metrics (training time and inference time). The primary analysis focuses on comparing these variants to understand the trade-offs between segmentation performance and computational cost associated with different encoder choices within the AS-Net framework for MRI brain tumor segmentation.

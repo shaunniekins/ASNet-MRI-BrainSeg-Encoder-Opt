@@ -121,3 +121,31 @@ To address computational challenges, recent studies have focused on lightweight 
 While attention mechanisms and lightweight architectures have individually shown promise in brain tumor segmentation, their combined application within frameworks like AS-Net remains underexplored. \textcite{huang2023efficient} recently highlighted this gap in their comprehensive review of efficient medical image segmentation methods, noting that most attention-based models still rely on computationally heavy backbones. Similarly, \textcite{patel2024computational} identified encoder inefficiency as a major bottleneck in deploying attention-based segmentation models in clinical settings.
 
 This study aims to fill this gap by systematically evaluating lightweight encoder alternatives (MobileNetV3 and EfficientNetV2) within the AS-Net framework. Our work extends beyond previous encoder comparison studies like \textcite{singh2023encoder} by specifically focusing on the interaction between encoder choice and attention mechanism effectiveness. Furthermore, we address the clinical applicability concerns raised by \textcite{nguyen2024clinical} by providing concrete metrics on both accuracy and computational efficiency using the latest BraTS 2023 dataset.
+
+\section{Definition of Terms} 
+
+For clarity and consistency, the following key terms are defined as used in this thesis:
+
+\begin{itemize}
+	\item \textbf{Magnetic Resonance Imaging (MRI):} A medical imaging technique that uses magnetic fields and radio waves to create detailed images of organs and tissues. Common modalities for brain tumors include T1-weighted (T1), T1-weighted post-contrast (T1ce), T2-weighted (T2), and Fluid-Attenuated Inversion Recovery (FLAIR).
+	\item \textbf{Image Segmentation:} The process of partitioning a digital image into multiple segments or regions, often to locate objects and boundaries. In this context, it refers to identifying and delineating brain tumor regions from surrounding healthy tissue in MRI scans.
+	\item \textbf{Convolutional Neural Network (CNN):} A class of deep neural networks, highly effective in computer vision tasks, that uses convolutional layers to automatically learn spatial hierarchies of features from input images.
+	\item \textbf{Encoder-Decoder Architecture:} A common structure for segmentation networks (e.g., U-Net) where an encoder path progressively downsamples the input to capture context and a decoder path progressively upsamples to generate a high-resolution segmentation map.
+	\item \textbf{Attention Mechanism:} A technique in deep learning that allows a network to dynamically weight the importance of different parts of the input data (e.g., spatial locations or feature channels) when making predictions.
+	\item \textbf{AS-Net (Attention Synergy Network):} The specific deep learning architecture proposed by \textcite{hu2022net}, characterized by its synergistic use of spatial and channel attention modules within its decoder.
+	\item \textbf{Encoder Backbone:} The initial part of a CNN (often pre-trained on a large dataset like ImageNet) used for feature extraction in architectures like AS-Net. Examples include VGG16, MobileNetV3, EfficientNetV2.
+	\item \textbf{Lightweight Model:} A deep learning model designed to have significantly fewer parameters and lower computational requirements (FLOPs) compared to standard models, aiming for efficiency often suitable for mobile or edge devices.
+	\item \textbf{VGG16:} A specific deep CNN architecture known for its simplicity and depth, but also its relatively high computational cost.
+	\item \textbf{MobileNetV3:} A family of efficient CNN architectures designed for mobile devices, utilizing techniques like inverted residuals and squeeze-and-excitation blocks.
+	\item \textbf{EfficientNetV2:} A family of CNN architectures achieving high accuracy and efficiency through compound scaling and optimized building blocks.
+	\item \textbf{Dice Coefficient (F1 Score):} A metric used to evaluate the overlap between a predicted segmentation and a ground truth segmentation, ranging from 0 (no overlap) to 1 (perfect overlap). It is the harmonic mean of precision and recall.
+	\item \textbf{IoU (Intersection over Union / Jaccard Index):} Another overlap metric for segmentation evaluation, calculated as the ratio of the intersection area to the union area of the prediction and ground truth.
+	\item \textbf{BraTS Dataset:} The Brain Tumor Segmentation challenge dataset, a standard benchmark collection of annotated multimodal MRI scans used to evaluate and compare brain tumor segmentation algorithms in the research community.
+	\item \textbf{FLOPs (Floating Point Operations):} A common metric for measuring computational complexity of deep learning models, representing the number of floating-point operations required to execute a forward pass through the network.
+	\item \textbf{Inference Time:} The time taken by a trained model to make a prediction on new, unseen data, often measured per slice or per volume in medical imaging applications.
+	\item \textbf{Precision:} A performance metric that quantifies the proportion of positive identifications that were actually correct, calculated as true positives divided by the sum of true positives and false positives.
+	\item \textbf{Recall:} A performance metric that quantifies the proportion of actual positives that were correctly identified, calculated as true positives divided by the sum of true positives and false negatives.
+	\item \textbf{Binary Accuracy:} The proportion of pixels correctly classified as either tumor or background in a segmentation task.
+	\item \textbf{Fine-tuning:} The process of taking a model pre-trained on a large dataset (e.g., ImageNet) and further training it on a smaller, specific dataset (e.g., brain MRIs) for a related task, allowing knowledge transfer between domains.
+	\item \textbf{Skip Connections:} Connections that bypass one or more layers in a neural network, typically used in encoder-decoder architectures to directly connect corresponding layers in the encoder and decoder paths, helping to retain fine-grained spatial information and mitigate the vanishing gradient problem.
+\end{itemize}
