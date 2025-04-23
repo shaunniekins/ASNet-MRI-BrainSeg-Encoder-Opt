@@ -44,7 +44,7 @@ The models were trained using the following hyperparameters:
         \hline
         Optimizer & Adam \\
         Learning Rate & 1e-4 (initial) \\
-        Batch Size (per replica) & 32 (VGG16), 4 (Lightweight Models) \\
+        Batch Size (per replica) & 32 \\
         Maximum Epochs & 30 \\
         Early Stopping Patience & 15 epochs (monitoring \texttt{val\_loss}) \\
         Learning Rate Reduction & ReduceLROnPlateau (factor=0.5, patience=5 on \texttt{val\_loss}) \\
@@ -205,7 +205,29 @@ The fine-tuning approach used for each encoder backbone:
 \label{app:supplementary_figures}
 
 \section{Training History Plots}
-This section contains the training history plots for all evaluated model variants, showing key metrics over epochs. Figure \ref{fig:training_plots_placeholder} in Chapter 4 shows examples for VGG16 and EfficientNetV2-B0.
+This section contains the training history plots for all evaluated model variants, showing key metrics over epochs.
+
+\begin{figure}[ht]
+    \centering
+    \IfFileExists{figures/training-history-plots/placeholder_training_plot_vgg16.png}{%
+        \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_vgg16.png}
+    }{%
+        \fbox{\begin{minipage}{0.9\textwidth}\centering[VGG16 Training Plot Placeholder]\end{minipage}}
+    }
+    \caption{Training history plot for AS-Net with VGG16 encoder.}
+    \label{fig:training_plot_vgg16}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \IfFileExists{figures/training-history-plots/placeholder_training_plot_env2b0.png}{%
+        \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_env2b0.png}
+    }{%
+        \fbox{\begin{minipage}{0.9\textwidth}\centering[EfficientNetV2-B0 Training Plot Placeholder]\end{minipage}}
+    }
+    \caption{Training history plot for AS-Net with EfficientNetV2-B0 encoder.}
+    \label{fig:training_plot_env2b0}
+\end{figure}
 
 \begin{figure}[ht]
     \centering

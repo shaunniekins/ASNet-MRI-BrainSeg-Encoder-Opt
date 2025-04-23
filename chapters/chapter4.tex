@@ -44,25 +44,15 @@ The primary quantitative segmentation metrics, calculated on the held-out test s
 \end{table}
 
 \subsection{Training History}
-During training, metrics such as loss, Dice Coefficient, IoU, and accuracy were logged for both the training and validation sets at the end of each epoch. These logs were used to generate training history plots. These plots generally showed convergence for all models, with validation metrics plateauing, often triggering early stopping before the maximum 30 epochs were reached. Figure \ref{fig:training_plots_placeholder} presents representative examples for the VGG16 baseline and the EfficientNetV2-B0 variant, illustrating typical learning curves. The complete set of training history plots for all evaluated encoder variants can be found in \ref{app:supplementary_figures}.
+All models were trained using the Adam optimizer with an initial learning rate of $1 \times 10^{-4}$. During training, metrics such as loss, Dice Coefficient, IoU, and accuracy were logged for both the training and validation sets at the end of each epoch, as recorded for each encoder variant. These logs were used to generate training history plots (see \ref{app:supplementary_figures}).
 
-\begin{figure}[ht]
-    \centering
-    \IfFileExists{figures/training-history-plots/placeholder_training_plot_vgg16.png}{%
-        \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_vgg16.png}
-    }{%
-        \fbox{\begin{minipage}{0.9\textwidth}\centering[VGG16 Training Plot Placeholder]\end{minipage}}
-    }
-    \vspace{1em}
-    
-    \IfFileExists{figures/training-history-plots/placeholder_training_plot_env2b0.png}{%
-        \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_env2b0.png}
-    }{%
-        \fbox{\begin{minipage}{0.9\textwidth}\centering[EfficientNetV2-B0 Training Plot Placeholder]\end{minipage}}
-    }
-    \caption[Example Training History Plots]{Example training history plots showing metrics over epochs for AS-Net with VGG16 (top) and EfficientNetV2-B0 (bottom) encoders. The full set of plots for all variants is available in \ref{app:supplementary_figures}.}
-    \label{fig:training_plots_placeholder}
-\end{figure}
+The training process incorporated two key callbacks based on the validation loss (\texttt{val\_loss}):
+\begin{itemize}
+    \item \textbf{ReduceLROnPlateau:} The learning rate was reduced by a factor of 2 if \texttt{val\_loss} did not improve for 5 consecutive epochs. Analysis of the training histories shows this callback was triggered for all models, typically around epoch 9 or 10 for the first reduction (e.g., VGG16 and MNv3-L at epoch 9; MNv3-S, ENv2-B0, and ENv2-B1 at epoch 10), with subsequent reductions occurring later in training if \texttt{val\_loss} continued to plateau.
+    \item \textbf{EarlyStopping:} Training was configured to stop if \texttt{val\_loss} did not improve for 15 consecutive epochs, preventing overfitting and unnecessary computation. This mechanism successfully halted training for all models before the maximum 30 epochs were reached.
+\end{itemize}
+
+The training history plots and data generally showed convergence for all models. Training loss consistently decreased, while validation loss typically decreased steadily in the initial epochs before stabilizing or slightly increasing, triggering the learning rate reductions and eventual early stopping. Correspondingly, training and validation accuracy metrics (Dice, IoU, Accuracy) generally increased before plateauing. The training process for all variants appeared stable, without significant oscillations or divergence issues noted in the loss or accuracy curves. The epoch at which the best validation Dice score was achieved varied across models (ranging from 16 for MobileNetV3-Large to 21 for MobileNetV3-Small and EfficientNetV2-B1, see Table \ref{tab:quantitative_results_updated}), indicating differences in the learning dynamics and convergence points despite similar overall training configurations. The complete set of training history plots for all evaluated encoder variants, illustrating these learning curves, can be found in \ref{app:supplementary_figures}.
 
 \subsection{Illustrative Segmentation Examples}
 Representative segmentation examples from the test set are shown in Figure \ref{fig:qualitative_results_placeholder} to provide a visual illustration of the outputs produced by each AS-Net variant compared to the ground truth.
@@ -88,7 +78,7 @@ These findings address Research Question 2a (accuracy comparison) and provide in
 \section{Computational Efficiency Results}
 
 \subsection{Quantitative Results}
-The total training time and average inference time per slice for each AS-Net variant are presented in Table \ref{tab:quantitative_results_updated}. Visual comparisons are shown in Figure \ref{fig:training_time_comparison} and Figure \ref{fig:inference_time_comparison}.
+The total training time and average inference time per slice for each AS-Net variant are presented in Table \ref{tab:quantitative_results_updated}. Visual comparisons are shown in \ref{fig:training_time_comparison} and \ref{fig:inference_time_comparison}.
 
 \begin{figure}[ht]
     \centering
@@ -108,7 +98,7 @@ The total training time and average inference time per slice for each AS-Net var
             ymin=0,
             ymax=25,
             xticklabel style={rotate=45, anchor=east},
-            legend pos=outer north east % Keep in case needed later
+            legend pos=outer north east
         ]
         \addplot coordinates {
             (VGG16, 23.656)
@@ -119,8 +109,41 @@ The total training time and average inference time per slice for each AS-Net var
         };
         \end{axis}
     \end{tikzpicture}
-    \caption[Training Time Comparison]{Comparison of total training times (in hours) for AS-Net variants with different encoders.}
+    \caption[Training Time Comparison]{Comparison of total training times (in hours) for AS-Net variants with different encoders on the test set. Lower is better.}
     \label{fig:training_time_comparison}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar,
+            width=0.9\textwidth,
+            height=7cm,
+            bar width=20pt,
+            ylabel={Average Inference Time (ms/slice)},
+            xlabel={Encoder Backbone},
+            xlabel style={yshift=-30pt}, 
+            symbolic x coords={VGG16, MNv3-L, MNv3-S, ENv2-B0, ENv2-B1},
+            xtick=data,
+            nodes near coords,
+            nodes near coords align={vertical},
+            ymin=0,
+            ymax=6, 
+            xticklabel style={rotate=45, anchor=east},
+            legend pos=outer north east 
+        ]
+        \addplot coordinates {
+            (VGG16, 5.43)
+            (MNv3-L, 2.77)
+            (MNv3-S, 2.42)
+            (ENv2-B0, 3.84)
+            (ENv2-B1, 4.22)
+        };
+        \end{axis}
+    \end{tikzpicture}
+    \caption[Inference Time Comparison]{Comparison of average inference times (in milliseconds per slice) for AS-Net variants with different encoders on the test set. Lower is better.}
+    \label{fig:inference_time_comparison}
 \end{figure}
 
 \subsection{Discussion of Computational Efficiency}
@@ -217,7 +240,7 @@ Combining the segmentation accuracy and computational efficiency results reveals
     \label{fig:accuracy_efficiency_paired_bar}
 \end{figure}
 
-While AS-Net-VGG16 achieved the highest Dice score, AS-Net-EfficientNetV2-B0 provided nearly identical accuracy (~0.2\% lower Dice) with a significant (~20\%) reduction in training time. MobileNetV3-Large offered the fastest training but at the cost of a more noticeable drop in accuracy compared to VGG16/ENv2-B0. MobileNetV3-Small and EfficientNetV2-B1 represented other points on this trade-off curve.
+While AS-Net-VGG16 achieved the highest Dice score, AS-Net-EfficientNetV2-B0 provided nearly identical accuracy (~0.2\% lower Dice) with a significant (~20\%) reduction in training time. The comparable accuracy of EfficientNetV2-B0, despite its efficiency, can be attributed to its modern architecture. It utilizes computationally efficient building blocks like MBConv (incorporating depthwise separable convolutions) and Fused-MBConv, along with channel attention (SE blocks), as detailed in Chapter 2. These components allow it to learn rich feature representations effectively while drastically reducing the parameter count and computational load (FLOPs) compared to the simpler, heavier convolutional stacks of VGG16 \parencite{tan2021efficientnetv2, hu2018squeeze, canziani2016analysis}. The AS-Net decoder's own attention mechanisms may further help in refining features extracted by the efficient encoder. MobileNetV3-Large offered the fastest training but at the cost of a more noticeable drop in accuracy compared to VGG16/ENv2-B0. MobileNetV3-Small and EfficientNetV2-B1 represented other points on this trade-off curve.
 
 \subsection{Encoder Suitability}
 Based on these findings for MRI brain tumor segmentation using AS-Net on the BraTS 2023-GLI (Task 1) dataset:
