@@ -54,6 +54,23 @@ The training process incorporated two key callbacks based on the validation loss
 
 The training history plots and data generally showed convergence for all models. Training loss consistently decreased, while validation loss typically decreased steadily in the initial epochs before stabilizing or slightly increasing, triggering the learning rate reductions and eventual early stopping. Correspondingly, training and validation accuracy metrics (Dice, IoU, Accuracy) generally increased before plateauing. The training process for all variants appeared stable, without significant oscillations or divergence issues noted in the loss or accuracy curves. The epoch at which the best validation Dice score was achieved varied across models (ranging from 16 for MobileNetV3-Large to 21 for MobileNetV3-Small and EfficientNetV2-B1, see Table \ref{tab:quantitative_results_updated}), indicating differences in the learning dynamics and convergence points despite similar overall training configurations. The complete set of training history plots for all evaluated encoder variants, illustrating these learning curves, can be found in \ref{app:supplementary_figures}.
 
+\subsubsection{Comparative Analysis of Algorithm Behaviors}
+Analyzing the training histories reveals distinct behaviors among the different encoder architectures:
+
+\begin{itemize}
+    \item \textbf{Convergence Speed:} VGG16 demonstrated the fastest initial convergence, reaching a validation Dice coefficient of 0.90 by epoch 6, compared to MobileNetV3-Small which required until epoch 13 to achieve similar performance. This suggests VGG16's feature extraction capabilities may better suit the segmentation task without requiring extensive optimization.
+    
+    \item \textbf{Response to Learning Rate Reduction:} All models showed improved performance following learning rate reductions at epochs 9-10. However, the lightweight encoders (particularly EfficientNetV2-B0/B1) exhibited more significant gains post-reduction, with validation Dice scores improving by 0.01-0.02 in subsequent epochs, suggesting these architectures benefited more from fine-grained parameter adjustments.
+    
+    \item \textbf{Stability Patterns:} VGG16 maintained the most stable validation performance after reaching peak accuracy, with validation Dice fluctuating within ±0.005 after epoch 15. In contrast, MobileNetV3-Small showed more volatility (fluctuations of ±0.01), indicating a less stable optimization landscape potentially due to its reduced parameter count limiting representational capacity.
+    
+    \item \textbf{Training-Validation Gap:} EfficientNetV2 variants exhibited the narrowest gaps between training and validation metrics throughout training (typically <0.03 difference in Dice coefficient), suggesting better generalization properties. MobileNetV3-Small showed the widest gap (up to 0.05 difference), indicating greater tendency toward overfitting.
+    
+    \item \textbf{Fine-Tuning Phase Effectiveness:} The benefits of the fine-tuning strategy were particularly evident in VGG16 and EfficientNetV2-B1, which continued to show validation performance improvements for 8-10 epochs after the first learning rate reduction. MobileNetV3-Small showed diminishing returns more quickly, suggesting limited capacity to leverage the fine-tuning phase despite the learning rate adjustments.
+\end{itemize}
+
+These behavioral differences highlight how encoder architecture choices significantly influence not only final performance metrics but also the learning dynamics and training efficiency of the AS-Net framework, with implications for encoder selection in time-constrained or resource-limited environments.
+
 \subsection{Illustrative Segmentation Examples}
 Representative segmentation examples from the test set are shown in Figure \ref{fig:qualitative_results_placeholder} to provide a visual illustration of the outputs produced by each AS-Net variant compared to the ground truth.
 
