@@ -14,12 +14,12 @@
 % 2. The Attention Synergy Network (AS-Net) Architecture
 \section{The Attention Synergy Network (AS-Net) Architecture}
 
-The study adapts the AS-Net architecture, originally proposed by \textcite{hu2022net} for skin lesion segmentation. The core components include:
+The study adapts the AS-Net architecture, originally proposed by \textcite{hu2022asnet} for skin lesion segmentation. The core components include:
 
 \begin{itemize}
     \item \textbf{Encoder Backbone:} Extracts hierarchical features from the input image. The original AS-Net used VGG16. This study replaces it with various alternatives.
-    \item \textbf{Spatial Attention Module (SAM):} As illustrated in Figure \ref{fig:sam_module}, SAM processes input features through parallel convolutional pathways to generate spatial attention maps, highlighting salient regions (likely tumor areas) and focusing computation spatially.
-    \item \textbf{Channel Attention Module (CAM):} As shown in Figure \ref{fig:cam_module}, CAM focuses on inter-channel relationships using global pooling and an MLP to generate channel-wise attention weights, emphasizing informative feature channels.
+    \item \textbf{Spatial Attention Module (SAM):} As illustrated in \ref{fig:sam_module}, SAM processes input features through parallel convolutional pathways to generate spatial attention maps, highlighting salient regions (likely tumor areas) and focusing computation spatially.
+    \item \textbf{Channel Attention Module (CAM):} As shown in \ref{fig:cam_module}, CAM focuses on inter-channel relationships using global pooling and an MLP to generate channel-wise attention weights, emphasizing informative feature channels.
     \item \textbf{Synergy Module:} Integrates the outputs from SAM and CAM using learnable scalar parameters ($\alpha$ and $\beta$, initialized to 0.5), allowing adaptive fusion of spatial and channel attention before refinement and passing to the next decoder stage.
     \item \textbf{Decoder Structure:} Follows a standard U-Net-like symmetric structure, progressively upsampling features and integrating high-resolution spatial information from the encoder via skip connections at each stage. The fused features from the Synergy module are passed through the decoder stages.
 \end{itemize}
@@ -28,7 +28,7 @@ The study adapts the AS-Net architecture, originally proposed by \textcite{hu202
 \begin{figure}[ht]
     \centering
 	\includegraphics[width=0.85\textwidth]{figures/asnet-architecture/placeholder_sam_diagram.png}
-	\caption[Spatial Attention Module (SAM)]{Diagram of the Spatial Attention Module (SAM) used in the AS-Net decoder. Adapted from \textcite{hu2022net}.}
+	\caption[Spatial Attention Module (SAM)]{Diagram of the Spatial Attention Module (SAM) used in the AS-Net decoder. Adapted from \textcite{hu2022asnet}.}
 	\label{fig:sam_module}
 \end{figure}
 
@@ -36,7 +36,7 @@ The study adapts the AS-Net architecture, originally proposed by \textcite{hu202
 \begin{figure}[ht]
     \centering
 	\includegraphics[width=0.85\textwidth]{figures/asnet-architecture/placeholder_cam_diagram.png}
-	\caption[Channel Attention Module (CAM)]{Diagram of the Channel Attention Module (CAM) used in the AS-Net decoder. Adapted from \textcite{hu2022net}.}
+	\caption[Channel Attention Module (CAM)]{Diagram of the Channel Attention Module (CAM) used in the AS-Net decoder. Adapted from \textcite{hu2022asnet}.}
 	\label{fig:cam_module}
 \end{figure}
 
@@ -46,7 +46,7 @@ The study adapts the AS-Net architecture, originally proposed by \textcite{hu202
 Five pre-trained encoder networks were integrated into the AS-Net framework:
 
 \begin{enumerate}
-    \item \textbf{Baseline Model (VGG16):} Used as the reference encoder, adapted from the original AS-Net paper \parencite{hu2022net}. Input size: 224x224x3.
+    \item \textbf{Baseline Model (VGG16):} Used as the reference encoder, adapted from the original AS-Net paper \parencite{hu2022asnet}. Input size: 224x224x3.
     \item \textbf{Lightweight Encoders:}
         \begin{itemize}
             \item \textbf{MobileNetV3-Large \& MobileNetV3-Small \parencite{howard2019searching}:} Selected for their high efficiency, designed for mobile applications, representing different points on the accuracy/latency curve. Input size: 224x224x3.

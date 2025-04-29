@@ -8,7 +8,7 @@ The field of computer-aided diagnosis (CAD) has witnessed significant advancemen
 
 \section{Statement of the Problem}
 
-Despite these strides, challenges remain. A recent advancement in image segmentation is the Attention Synergy Network (AS-Net), proposed by \textcite{hu2022net} for skin lesion segmentation. AS-Net effectively utilizes spatial and channel attention mechanisms to improve segmentation performance. However, the original study acknowledged significant limitations related to the computational demands and potential generalizability issues stemming from its reliance on the relatively heavy VGG16 encoder architecture. This computational inefficiency poses a barrier to practical deployment in clinical settings where resources may be constrained and rapid processing is often desirable.
+Despite these strides, challenges remain. A recent advancement in image segmentation is the Attention Synergy Network (AS-Net), proposed by \textcite{hu2022asnet} for skin lesion segmentation. AS-Net effectively utilizes spatial and channel attention mechanisms to improve segmentation performance. However, the original study acknowledged significant limitations related to the computational demands and potential generalizability issues stemming from its reliance on the relatively heavy VGG16 encoder architecture. This computational inefficiency poses a barrier to practical deployment in clinical settings where resources may be constrained and rapid processing is often desirable.
 
 Therefore, the central problem addressed by this research is the suboptimal computational efficiency of the original AS-Net architecture when considering its potential application to the demanding task of MRI brain tumor segmentation. While the attention mechanisms show promise, the VGG16 encoder limits its practicality. This study investigates whether adapting AS-Net with more modern, lightweight encoder architectures can maintain or improve segmentation accuracy while significantly enhancing computational efficiency.
 
@@ -38,7 +38,7 @@ Specifically, this study aims to:
 
 \section{Significance of the Study}
 
-This research holds significant potential for advancing knowledge in medical image analysis, particularly concerning deep learning applications for brain tumor CAD. Adapting and optimizing the AS-Net architecture \parencite{hu2022net} for MRI brain tumor segmentation contributes valuable insights into the design and application of attention-based deep learning models for complex medical imaging tasks.
+This research holds significant potential for advancing knowledge in medical image analysis, particularly concerning deep learning applications for brain tumor CAD. Adapting and optimizing the AS-Net architecture \parencite{hu2022asnet} for MRI brain tumor segmentation contributes valuable insights into the design and application of attention-based deep learning models for complex medical imaging tasks.
 
 The exploration of lightweight encoders like MobileNetV3 and EfficientNetV2 within the AS-Net framework directly addresses a critical need for practical, deployable AI solutions in healthcare. By demonstrating the feasibility of achieving high segmentation accuracy with reduced computational cost, this study can facilitate the adoption of advanced segmentation tools in real-world clinical workflows, potentially operating on resource-constrained hardware or enabling faster processing times.
 

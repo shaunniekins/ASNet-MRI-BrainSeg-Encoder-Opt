@@ -43,7 +43,7 @@ In medical image segmentation, attention mechanisms have proven beneficial. The 
 
 \section{Attention Synergy Network (AS-Net)}
 
-Building on the success of attention mechanisms, the Attention Synergy Network (AS-Net) was proposed by \textcite{hu2022net}. Initially developed and evaluated for skin lesion segmentation, AS-Net introduces a novel way to combine spatial and channel attention within a U-Net like architecture.
+Building on the success of attention mechanisms, the Attention Synergy Network (AS-Net) was proposed by \textcite{hu2022asnet}. Initially developed and evaluated for skin lesion segmentation, AS-Net introduces a novel way to combine spatial and channel attention within a U-Net like architecture.
 
 \subsection{Architecture and Synergy Mechanism}
 AS-Net utilizes an encoder (originally VGG16) and a decoder with skip connections. The core innovation lies within the decoder modules, which operate in parallel at each stage:
@@ -55,7 +55,7 @@ AS-Net utilizes an encoder (originally VGG16) and a decoder with skip connection
 This synergistic combination aims to leverage the complementary strengths of both spatial and channel attention mechanisms throughout the decoding process.
 
 \subsection{Original Performance and Stated Limitations}
-\textcite{hu2022net} reported state-of-the-art results for AS-Net on skin lesion segmentation benchmarks, demonstrating the effectiveness of the attention synergy approach compared to models using single attention types or simple concatenation. However, the authors explicitly identified a key limitation: the reliance on the VGG16 encoder \parencite{hu2022net}. VGG16 is known for its large number of parameters and high computational cost (FLOPs) compared to more modern architectures \parencite{canziani2016analysis}. This inefficiency limits the model's inference speed, increases memory requirements, and makes training computationally expensive, potentially hindering its deployment in practical scenarios, especially outside its original domain. The authors suggested exploring more lightweight encoders as a direction for future work to address this efficiency concern \parencite{hu2022net}.
+\textcite{hu2022asnet} reported state-of-the-art results for AS-Net on skin lesion segmentation benchmarks, demonstrating the effectiveness of the attention synergy approach compared to models using single attention types or simple concatenation. However, the authors explicitly identified a key limitation: the reliance on the VGG16 encoder \parencite{hu2022asnet}. VGG16 is known for its large number of parameters and high computational cost (FLOPs) compared to more modern architectures \parencite{canziani2016analysis}. This inefficiency limits the model's inference speed, increases memory requirements, and makes training computationally expensive, potentially hindering its deployment in practical scenarios, especially outside its original domain. The authors suggested exploring more lightweight encoders as a direction for future work to address this efficiency concern \parencite{hu2022asnet}.
 
 \section{Lightweight Architectures for Efficient Deep Learning}
 
@@ -132,7 +132,7 @@ For clarity and consistency, the following key terms are defined as used in this
 	\item \textbf{Convolutional Neural Network (CNN):} A class of deep neural networks, highly effective in computer vision tasks, that uses convolutional layers to automatically learn spatial hierarchies of features from input images.
 	\item \textbf{Encoder-Decoder Architecture:} A common structure for segmentation networks (e.g., U-Net) where an encoder path progressively downsamples the input to capture context and a decoder path progressively upsamples to generate a high-resolution segmentation map.
 	\item \textbf{Attention Mechanism:} A technique in deep learning that allows a network to dynamically weight the importance of different parts of the input data (e.g., spatial locations or feature channels) when making predictions.
-	\item \textbf{AS-Net (Attention Synergy Network):} The specific deep learning architecture proposed by \textcite{hu2022net}, characterized by its synergistic use of spatial and channel attention modules within its decoder.
+	\item \textbf{AS-Net (Attention Synergy Network):} The specific deep learning architecture proposed by \textcite{hu2022asnet}, characterized by its synergistic use of spatial and channel attention modules within its decoder.
 	\item \textbf{Encoder Backbone:} The initial part of a CNN (often pre-trained on a large dataset like ImageNet) used for feature extraction in architectures like AS-Net. Examples include VGG16, MobileNetV3, EfficientNetV2.
 	\item \textbf{Lightweight Model:} A deep learning model designed to have significantly fewer parameters and lower computational requirements (FLOPs) compared to standard models, aiming for efficiency often suitable for mobile or edge devices.
 	\item \textbf{VGG16:} A specific deep CNN architecture known for its simplicity and depth, but also its relatively high computational cost.

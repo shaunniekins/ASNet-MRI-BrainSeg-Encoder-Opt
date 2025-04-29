@@ -20,7 +20,7 @@ To provide context for the results, the key experimental parameters are briefly 
 \section{Segmentation Performance Results}
 
 \subsection{Quantitative Results}
-The primary quantitative segmentation metrics, calculated on the held-out test set using the best checkpoint (selected based on validation Dice score), are summarized in Table \ref{tab:quantitative_results_updated}. The table also includes the epoch number at which the best validation Dice score was achieved, along with computational efficiency metrics.
+The primary quantitative segmentation metrics, calculated on the held-out test set using the best checkpoint (selected based on validation Dice score), are summarized in \ref{tab:quantitative_results_updated}. The table also includes the epoch number at which the best validation Dice score was achieved, along with computational efficiency metrics.
 
 \begin{table}[ht]
     \centering
@@ -52,7 +52,7 @@ The training process incorporated two key callbacks based on the validation loss
     \item \textbf{EarlyStopping:} Training was configured to stop if \texttt{val\_loss} did not improve for 15 consecutive epochs, preventing overfitting and unnecessary computation. This mechanism successfully halted training for all models before the maximum 30 epochs were reached.
 \end{itemize}
 
-The training history plots and data generally showed convergence for all models. Training loss consistently decreased, while validation loss typically decreased steadily in the initial epochs before stabilizing or slightly increasing, triggering the learning rate reductions and eventual early stopping. Correspondingly, training and validation accuracy metrics (Dice, IoU, Accuracy) generally increased before plateauing. The training process for all variants appeared stable, without significant oscillations or divergence issues noted in the loss or accuracy curves. The epoch at which the best validation Dice score was achieved varied across models (ranging from 16 for MobileNetV3-Large to 21 for MobileNetV3-Small and EfficientNetV2-B1, see Table \ref{tab:quantitative_results_updated}), indicating differences in the learning dynamics and convergence points despite similar overall training configurations. The complete set of training history plots for all evaluated encoder variants, illustrating these learning curves, can be found in \ref{app:supplementary_figures}.
+The training history plots and data generally showed convergence for all models. Training loss consistently decreased, while validation loss typically decreased steadily in the initial epochs before stabilizing or slightly increasing, triggering the learning rate reductions and eventual early stopping. Correspondingly, training and validation accuracy metrics (Dice, IoU, Accuracy) generally increased before plateauing. The training process for all variants appeared stable, without significant oscillations or divergence issues noted in the loss or accuracy curves. The epoch at which the best validation Dice score was achieved varied across models (ranging from 16 for MobileNetV3-Large to 21 for MobileNetV3-Small and EfficientNetV2-B1, see \ref{tab:quantitative_results_updated}), indicating differences in the learning dynamics and convergence points despite similar overall training configurations. The complete set of training history plots for all evaluated encoder variants, illustrating these learning curves, can be found in \ref{app:supplementary_figures}.
 
 \subsubsection{Comparative Analysis of Algorithm Behaviors}
 Analyzing the training histories reveals distinct behaviors among the different encoder architectures:
@@ -72,7 +72,7 @@ Analyzing the training histories reveals distinct behaviors among the different 
 These behavioral differences highlight how encoder architecture choices significantly influence not only final performance metrics but also the learning dynamics and training efficiency of the AS-Net framework, with implications for encoder selection in time-constrained or resource-limited environments.
 
 \subsection{Illustrative Segmentation Examples}
-Representative segmentation examples from the test set are shown in Figure \ref{fig:qualitative_results_placeholder} to provide a visual illustration of the outputs produced by each AS-Net variant compared to the ground truth.
+Representative segmentation examples from the test set are shown in \ref{fig:qualitative_results_placeholder} to provide a visual illustration of the outputs produced by each AS-Net variant compared to the ground truth.
 
 \begin{figure}[ht]
     \centering
@@ -82,7 +82,7 @@ Representative segmentation examples from the test set are shown in Figure \ref{
 \end{figure}
 
 \subsection{Discussion of Segmentation Performance}
-Analysis of the quantitative results (Table \ref{tab:quantitative_results_updated}) reveals:
+Analysis of the quantitative results (\ref{tab:quantitative_results_updated}) reveals:
 \begin{itemize}
     \item \textbf{Best Performance:} AS-Net-VGG16 achieved the highest Dice (0.8873) and IoU (0.7974) scores, establishing the baseline performance.
     \item \textbf{Lightweight Competitiveness:} AS-Net-EfficientNetV2-B0 demonstrated remarkably competitive performance (Dice 0.8853), nearly matching the VGG16 baseline with a difference of only ~0.2\%. EfficientNetV2-B1 (Dice 0.8815) and MobileNetV3-Large (Dice 0.8738) also achieved strong results, significantly outperforming MobileNetV3-Small (Dice 0.8570).
@@ -95,7 +95,7 @@ These findings address Research Question 2a (accuracy comparison) and provide in
 \section{Computational Efficiency Results}
 
 \subsection{Quantitative Results}
-The total training time and average inference time per slice for each AS-Net variant are presented in Table \ref{tab:quantitative_results_updated}. Visual comparisons are shown in \ref{fig:training_time_comparison} and \ref{fig:inference_time_comparison}.
+The total training time and average inference time per slice for each AS-Net variant are presented in \ref{tab:quantitative_results_updated}. Visual comparisons are shown in \ref{fig:training_time_comparison} and \ref{fig:inference_time_comparison}.
 
 \begin{figure}[ht]
     \centering
@@ -176,7 +176,7 @@ These results directly address Research Question 2b (efficiency comparison), con
 \section{Overall Discussion and Synthesis}
 
 \subsection{Accuracy vs. Efficiency Trade-off}
-Combining the segmentation accuracy and computational efficiency results reveals the trade-offs associated with each encoder choice. Figure \ref{fig:accuracy_efficiency_paired_bar} illustrates this relationship by plotting the Dice Coefficient and the total training time side-by-side for each variant.
+Combining the segmentation accuracy and computational efficiency results reveals the trade-offs associated with each encoder choice. \ref{fig:accuracy_efficiency_paired_bar} illustrates this relationship by plotting the Dice Coefficient and the total training time side-by-side for each variant.
 
 \begin{figure}[ht]
     \centering
