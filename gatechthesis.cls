@@ -123,7 +123,11 @@
       {0pt}{0pt}{30pt}	% controls vertical margins on title
     \titleformat{\section}{\normalfont\bfseries}{\thesection}{1em}{##1}
     \titleformat{\subsection}{\normalfont\small\bfseries}{\thesubsection}{1em}{##1}
-    \titleformat{\subsubsection}{\normalfont\itshape}{\thesubsection}{1em}{##1}
+    \titleformat{\subsubsection}{\normalfont\small\bfseries}{\thesubsubsection}{1em}{##1}
+    
+    % Ensure subsubsections are numbered in the document and TOC
+    \setcounter{secnumdepth}{3}  % Show numbers up to subsubsection level
+    \setcounter{tocdepth}{3}     % Include subsubsections in TOC
 }%
 {
     \clearpage
@@ -248,6 +252,7 @@
     \currentpdfbookmark{Table of Contents}{TOC}
     \renewcommand\contentsname{Table of Contents}
     \begin{singlespace}
+    \setcounter{tocdepth}{3}
     \tableofcontents
     \end{singlespace}
     \clearpage
