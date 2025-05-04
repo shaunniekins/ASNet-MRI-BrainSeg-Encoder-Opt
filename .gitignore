@@ -1,3 +1,19 @@
 .DS_Store
 asnet-brats-encoder-comparison
 file_pdf
+
+# latex build
+*.acn
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.glo
+*.glsdefs
+*.ist
+*.lof
+*.log
+*.lot
+*.xml
+*.gz
+*.toc

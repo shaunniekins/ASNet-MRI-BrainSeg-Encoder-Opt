@@ -1,19 +1,19 @@
 \begin{theappendices}
 
-\chapter{Model Training Details}
+  \chapter{Model Training Details}
 
-\section{Hardware Specifications}
-The experiments in this study were conducted using the following hardware configuration:
-\begin{itemize}
+  \section{Hardware Specifications}
+  The experiments in this study were conducted using the following hardware configuration:
+  \begin{itemize}
     \item GPU: NVIDIA Tesla V100 with 32GB memory
     \item CPU: Intel Xeon Silver 4210
     \item RAM: 16GB
     \item Storage: 500GB SSD for data caching
-\end{itemize}
+  \end{itemize}
 
-\section{Software Environment}
-Key software components and versions used:
-\begin{itemize}
+  \section{Software Environment}
+  Key software components and versions used:
+  \begin{itemize}
     \item Operating System: Ubuntu 22.04.5 LTS
     \item Python: 3.10.12
     \item TensorFlow: 2.19.0
@@ -29,17 +29,17 @@ Key software components and versions used:
     \item imageio: 2.37.0
     \item tqdm: 4.67.1
     \item TensorBoard: 2.19.0
-\end{itemize}
+  \end{itemize}
 
-\section{Training Hyperparameters}
-The models were trained using the following hyperparameters:
-\begin{table}[h]
+  \section{Training Hyperparameters}
+  The models were trained using the following hyperparameters:
+  \begin{table}[h]
     \centering
     \caption{Training Hyperparameters for AS-Net Variants}
     \label{tab:training_hyperparams}
     \resizebox{\textwidth}{!}{%
-    \begin{tabular}{|l|c|}
-        \hline
+      \begin{tabular}{lc}
+        \hline\hline
         \textbf{Parameter} & \textbf{Value} \\
         \hline
         Optimizer & Adam \\
@@ -51,25 +51,25 @@ The models were trained using the following hyperparameters:
         Loss Function & Combined Loss: 0.5*WBCE + 0.5*Dice Loss \\
         WBCE Class Weight & 100 for tumor class \\
         Best Checkpoint Monitor & \texttt{val\_dice\_coef} (mode='max') \\
-        \hline
-    \end{tabular}
+        \hline\hline
+      \end{tabular}
     }
-\end{table}
+  \end{table}
 
-\section{Data Preprocessing}
-The preprocessing of BraTS 2023-GLI (Task 1) NIfTI files into H5 slices involved:
-\begin{itemize}
+  \section{Data Preprocessing}
+  The preprocessing of BraTS 2023-GLI (Task 1) NIfTI files into H5 slices involved:
+  \begin{itemize}
     \item Extraction of 2D axial slices from 3D volumes
     \item Z-score normalization of MRI modalities (T1ce, FLAIR) per slice, per modality
     \item Mapping of selected MRI modalities to RGB channels: [T1ce, FLAIR, T1ce]
     \item Conversion of multi-class tumor labels (NCR/NET, ED, ET) into a single binary segmentation mask (Tumor vs. Background)
     \item Resizing input images and masks to target dimensions specific to each encoder (VGG16, MNv3-L/S, ENv2-B0: 224x224; ENv2-B1: 240x240) using appropriate interpolation (Bilinear for image, Nearest Neighbor for mask).
-\end{itemize}
+  \end{itemize}
 
-\chapter{Implementation Code Snippets}
+  \chapter{Implementation Code Snippets}
 
-\section{Combined Loss Function Implementation}
-The custom loss function combined weighted binary cross-entropy with the Dice loss to address class imbalance:
+  \section{Combined Loss Function Implementation}
+  The custom loss function combined weighted binary cross-entropy with the Dice loss to address class imbalance:
 
 \begin{verbatim}
 import tensorflow as tf
@@ -85,20 +85,20 @@ def weighted_bce_dice_loss(y_true, y_pred, weight=100.0):
     # Weighted binary cross entropy component
     bce = tf.keras.losses.binary_crossentropy(y_true, y_pred)
     # Create a mask that applies the weight only to positive pixels
-    weight_mask = tf.where(y_true > 0.5, weight, 1.0) 
+    weight_mask = tf.where(y_true > 0.5, weight, 1.0)
     weighted_bce = bce * weight_mask
     weighted_bce_loss = tf.reduce_mean(weighted_bce)
-    
+
     # Dice loss component
     dice_loss = 1 - dice_coef(y_true, y_pred)
-    
+
     # Combined loss (equal weighting)
     combined_loss = 0.5 * weighted_bce_loss + 0.5 * dice_loss
     return combined_loss
 \end{verbatim}
 
-\section{Evaluation Metrics Implementation}
-The key metrics used for model evaluation were implemented as follows:
+  \section{Evaluation Metrics Implementation}
+  The key metrics used for model evaluation were implemented as follows:
 
 \begin{verbatim}
 import tensorflow as tf
@@ -121,50 +121,50 @@ def iou_coef(y_true, y_pred, smooth=1.0):
     return (intersection + smooth) / (union + smooth)
 \end{verbatim}
 
-\chapter{AS-Net Module Configurations}
+  \chapter{AS-Net Module Configurations}
 
-\section{Spatial Attention Module (SAM) Configuration}
-The SAM module used the following key configurations:
-\begin{itemize}
+  \section{Spatial Attention Module (SAM) Configuration}
+  The SAM module used the following key configurations:
+  \begin{itemize}
     \item Feature refinement path with three 3×3 convolutions (F'(X))
     \item Feature extraction path with one 1×1 convolution (F''(X))
     \item Multi-scale spatial attention with max-pooling at scales 2×2 and 4×4
     \item Element-wise multiplication of refined features with spatial attention map
     \item Residual connection from feature extraction path
-\end{itemize}
+  \end{itemize}
 
-\section{Channel Attention Module (CAM) Configuration}
-The CAM module used the following configurations:
-\begin{itemize}
+  \section{Channel Attention Module (CAM) Configuration}
+  The CAM module used the following configurations:
+  \begin{itemize}
     \item Feature refinement path with three 3×3 convolutions (F'(X))
     \item Feature extraction path with one 1×1 convolution (F''(X))
     \item Global average pooling for channel statistics
     \item Two-layer MLP with reduction ratio = 16 for generating channel weights
     \item Element-wise multiplication for channel recalibration
     \item Residual connection from feature extraction path
-\end{itemize}
+  \end{itemize}
 
-\section{Synergy Module Configuration}
-The Synergy module used the following configuration:
-\begin{itemize}
+  \section{Synergy Module Configuration}
+  The Synergy module used the following configuration:
+  \begin{itemize}
     \item Learnable scalar weights (α, β) for balancing SAM and CAM features
     \item Adaptive fusion of spatial and channel attention features
     \item 1×1 convolution for feature refinement after fusion
     \item Batch normalization for stabilizing training
-\end{itemize}
+  \end{itemize}
 
-\chapter{Encoder Integration Details}
+  \chapter{Encoder Integration Details}
 
-\section{Skip Connection Layers}
-The specific encoder layers used for skip connections with the AS-Net decoder:
+  \section{Skip Connection Layers}
+  The specific encoder layers used for skip connections with the AS-Net decoder:
 
-\begin{table}[h]
+  \begin{table}[h]
     \centering
     \caption{Encoder Skip Connection Layer Names}
     \label{tab:skip_connections}
     \resizebox{\textwidth}{!}{%
-    \begin{tabular}{|l|c|c|c|c|}
-        \hline
+      \begin{tabular}{lcccc}
+        \hline\hline
         \textbf{Encoder} & \textbf{Skip 1} & \textbf{Skip 2} & \textbf{Skip 3} & \textbf{Skip 4} \\
         \hline
         VGG16 & \texttt{block1\_conv2} & \texttt{block2\_conv2} & \texttt{block3\_conv3} & \texttt{block4\_conv3} \\
@@ -172,22 +172,22 @@ The specific encoder layers used for skip connections with the AS-Net decoder:
         MobileNetV3-Small & \texttt{re\_lu\_1} & \texttt{re\_lu\_3} & \texttt{re\_lu\_8} & \texttt{re\_lu\_10} \\
         EfficientNetV2-B0 & \texttt{block1a\_project\_bn} & \texttt{block2b\_add} & \texttt{block4a\_project\_bn} & \texttt{block6a\_project\_bn} \\
         EfficientNetV2-B1 & \texttt{block1b\_add} & \texttt{block2c\_add} & \texttt{block4c\_add} & \texttt{block6d\_add} \\
-        \hline
-    \end{tabular}%
+        \hline\hline
+      \end{tabular}%
     }
     \footnotesize{\\ Note: Layer names are indicative and depend on the specific Keras implementation. Verification against model summaries is recommended.}
-\end{table}
+  \end{table}
 
-\section{Fine-Tuning Strategies}
-The fine-tuning approach used for each encoder backbone:
+  \section{Fine-Tuning Strategies}
+  The fine-tuning approach used for each encoder backbone:
 
-\begin{table}[h]
+  \begin{table}[h]
     \centering
     \caption{Encoder Fine-Tuning Strategies}
     \label{tab:fine_tuning}
     \resizebox{\textwidth}{!}{%
-    \begin{tabular}{|l|c|c|}
-        \hline
+      \begin{tabular}{lcc}
+        \hline\hline
         \textbf{Encoder} & \textbf{Frozen Layers (Approx.)} & \textbf{Trainable Layers (Approx.)} \\
         \hline
         VGG16 & Up to \texttt{block3\_conv3} & From \texttt{block4\_conv1} onwards \\
@@ -195,82 +195,92 @@ The fine-tuning approach used for each encoder backbone:
         MobileNetV3-Small & Up to block \texttt{expanded\_conv\_3} & From block \texttt{expanded\_conv\_4} onwards \\
         EfficientNetV2-B0 & Up to block \texttt{block3b} & From block \texttt{block4a} onwards \\
         EfficientNetV2-B1 & Up to block \texttt{block3c} & From block \texttt{block4a} onwards \\
-        \hline
-    \end{tabular}%
+        \hline\hline
+      \end{tabular}%
     }
-     \footnotesize{\\ Note: Specific layer names/indices defining the boundary between frozen and trainable layers may vary slightly based on implementation details.}
-\end{table}
+    \footnotesize{\\ Note: Specific layer names/indices defining the boundary between frozen and trainable layers may vary slightly based on implementation details.}
+  \end{table}
 
-\chapter{Supplementary Figures}
-\label{app:supplementary_figures}
+  \chapter{Supplementary Figures}
+  \label{app:supplementary_figures}
 
-\section{Training History Plots}
-This section contains the training history plots for all evaluated model variants, showing key metrics over epochs.
+  \section{Training History Plots}
+  This section contains the training history plots for all evaluated model variants, showing key metrics over epochs.
 
-\begin{figure}[ht]
+  \begin{figure}[ht]
     \centering
     \IfFileExists{figures/training-history-plots/placeholder_training_plot_vgg16.png}{%
-        \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_vgg16.png}
+      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_vgg16.png}
     }{%
-        \fbox{\begin{minipage}{0.9\textwidth}\centering[VGG16 Training Plot Placeholder]\end{minipage}}
+      \fbox{
+        \begin{minipage}{0.9\textwidth}\centering[VGG16 Training Plot Placeholder]
+      \end{minipage}}
     }
     \caption{Training history plot for AS-Net with VGG16 encoder.}
     \label{fig:training_plot_vgg16}
-\end{figure}
+  \end{figure}
 
-\begin{figure}[ht]
+  \begin{figure}[ht]
     \centering
     \IfFileExists{figures/training-history-plots/placeholder_training_plot_env2b0.png}{%
-        \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_env2b0.png}
+      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_env2b0.png}
     }{%
-        \fbox{\begin{minipage}{0.9\textwidth}\centering[EfficientNetV2-B0 Training Plot Placeholder]\end{minipage}}
+      \fbox{
+        \begin{minipage}{0.9\textwidth}\centering[EfficientNetV2-B0 Training Plot Placeholder]
+      \end{minipage}}
     }
     \caption{Training history plot for AS-Net with EfficientNetV2-B0 encoder.}
     \label{fig:training_plot_env2b0}
-\end{figure}
+  \end{figure}
 
-\begin{figure}[ht]
+  \begin{figure}[ht]
     \centering
     \IfFileExists{figures/training-history-plots/placeholder_training_plot_mnv3l.png}{%
-        \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_mnv3l.png}
+      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_mnv3l.png}
     }{%
-        \fbox{\begin{minipage}{0.9\textwidth}\centering[MobileNetV3-Large Training Plot Placeholder]\end{minipage}}
+      \fbox{
+        \begin{minipage}{0.9\textwidth}\centering[MobileNetV3-Large Training Plot Placeholder]
+      \end{minipage}}
     }
     \caption{Training history plot for AS-Net with MobileNetV3-Large encoder.}
     \label{fig:training_plot_mnv3l}
-\end{figure}
+  \end{figure}
 
-\begin{figure}[ht]
+  \begin{figure}[ht]
     \centering
     \IfFileExists{figures/training-history-plots/placeholder_training_plot_mnv3s.png}{%
-        \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_mnv3s.png}
+      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_mnv3s.png}
     }{%
-        \fbox{\begin{minipage}{0.9\textwidth}\centering[MobileNetV3-Small Training Plot Placeholder]\end{minipage}}
+      \fbox{
+        \begin{minipage}{0.9\textwidth}\centering[MobileNetV3-Small Training Plot Placeholder]
+      \end{minipage}}
     }
     \caption{Training history plot for AS-Net with MobileNetV3-Small encoder.}
     \label{fig:training_plot_mnv3s}
-\end{figure}
+  \end{figure}
 
-\begin{figure}[ht]
+  \begin{figure}[ht]
     \centering
     \IfFileExists{figures/training-history-plots/placeholder_training_plot_env2b1.png}{%
-        \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_env2b1.png}
+      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_env2b1.png}
     }{%
-        \fbox{\begin{minipage}{0.9\textwidth}\centering[EfficientNetV2-B1 Training Plot Placeholder]\end{minipage}}
+      \fbox{
+        \begin{minipage}{0.9\textwidth}\centering[EfficientNetV2-B1 Training Plot Placeholder]
+      \end{minipage}}
     }
     \caption{Training history plot for AS-Net with EfficientNetV2-B1 encoder.}
     \label{fig:training_plot_env2b1}
-\end{figure}
+  \end{figure}
 
-\chapter{Code Availability}
-\label{app:code_availability}
+  \chapter{Code Availability}
+  \label{app:code_availability}
 
-\begingroup % Start a group to keep \sloppy local
-\sloppy % Allow more flexible line breaking
+  \begingroup % Start a group to keep \sloppy local
+  \sloppy % Allow more flexible line breaking
 
-The Python code developed and used for the experiments described in this thesis, including data preprocessing, model implementation (AS-Net variants), training, evaluation, and visualization scripts, is contained within the \texttt{asnet-brats-encoder-comparison} directory accompanying this document. The code is available upon reasonable request to the author or can be found at \url{https://github.com/shaunniekins/asnet-brats-encoder-comparison}. Ensuring reproducibility was a key consideration, and the provided code, along with the specified software environment (Appendix A), allows for the replication of the study's results.
+  The Python code developed and used for the experiments described in this thesis, including data preprocessing, model implementation (AS-Net variants), training, evaluation, and visualization scripts, is contained within the \texttt{asnet-brats-encoder-comparison} directory accompanying this document. The code is available upon reasonable request to the author or can be found at \url{https://github.com/shaunniekins/asnet-brats-encoder-comparison}. Ensuring reproducibility was a key consideration, and the provided code, along with the specified software environment (Appendix A), allows for the replication of the study's results.
 
-\par % End the paragraph before switching back
-\endgroup % End the group, restoring previous \fussy setting
+  \par % End the paragraph before switching back
+  \endgroup % End the group, restoring previous \fussy setting
 
 \end{theappendices}

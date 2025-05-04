@@ -6,15 +6,15 @@ This chapter presents the results from the experiments detailed in Chapter 3. Fi
 \section{Experimental Setup Summary}
 To provide context for the results, the key experimental parameters are briefly reiterated:
 \begin{itemize}
-    \item \textbf{Dataset:} BraTS 2023-GLI (Task 1) Training Data, preprocessed from NIfTI to H5 slices. 80/10/10 train/validation/test split applied to the slices.
-    \item \textbf{Input:} T1ce and FLAIR modalities mapped to 3 channels ([T1ce, FLAIR, T1ce]), Z-score normalized.
-    \item \textbf{Target:} Binary segmentation mask (Tumor vs. Background).
-    \item \textbf{Input Sizes:} VGG16, MNv3-L/S \& ENv2-B0 (224x224), ENv2-B1 (240x240).
-    \item \textbf{Architecture:} AS-Net decoder (SAM, CAM, Synergy) with specified encoder backbone (fine-tuned).
-    \item \textbf{Loss:} Combined Loss (0.5 * WBCE(weight=100) + 0.5 * DiceLoss).
-    \item \textbf{Optimizer:} Adam (LR=1e-4).
-    \item \textbf{Training:} Max 30 epochs, Batch Size 32/replica (VGG16) or 4/replica (Lightweight), Early Stopping (patience=15 on val\_loss), ReduceLROnPlateau (patience=5 on val\_loss), Best checkpoint saved based on val\_dice\_coef.
-    \item \textbf{Evaluation:} Metrics (Dice, IoU, Accuracy, Precision, Recall) calculated on the test set using a 0.5 threshold. Training time recorded for efficiency comparison.
+  \item \textbf{Dataset:} BraTS 2023-GLI (Task 1) Training Data, preprocessed from NIfTI to H5 slices. 80/10/10 train/validation/test split applied to the slices.
+  \item \textbf{Input:} T1ce and FLAIR modalities mapped to 3 channels ([T1ce, FLAIR, T1ce]), Z-score normalized.
+  \item \textbf{Target:} Binary segmentation mask (Tumor vs. Background).
+  \item \textbf{Input Sizes:} VGG16, MNv3-L/S \& ENv2-B0 (224x224), ENv2-B1 (240x240).
+  \item \textbf{Architecture:} AS-Net decoder (SAM, CAM, Synergy) with specified encoder backbone (fine-tuned).
+  \item \textbf{Loss:} Combined Loss (0.5 * WBCE(weight=100) + 0.5 * DiceLoss).
+  \item \textbf{Optimizer:} Adam (LR=1e-4).
+  \item \textbf{Training:} Max 30 epochs, Batch Size 32/replica (VGG16) or 4/replica (Lightweight), Early Stopping (patience=15 on val\_loss), ReduceLROnPlateau (patience=5 on val\_loss), Best checkpoint saved based on val\_dice\_coef.
+  \item \textbf{Evaluation:} Metrics (Dice, IoU, Accuracy, Precision, Recall) calculated on the test set using a 0.5 threshold. Training time recorded for efficiency comparison.
 \end{itemize}
 
 \section{Segmentation Performance Results}
@@ -23,24 +23,24 @@ To provide context for the results, the key experimental parameters are briefly 
 The primary quantitative segmentation metrics, calculated on the held-out test set using the best checkpoint (selected based on validation Dice score), are summarized in \ref{tab:quantitative_results_updated}. The table also includes the epoch number at which the best validation Dice score was achieved, along with computational efficiency metrics.
 
 \begin{table}[ht]
-    \centering
-    \caption{Quantitative performance and efficiency of AS-Net with different encoder backbones on the BraTS 2023-GLI (Task 1) test set (based on best checkpoint selected during validation).}
-    \label{tab:quantitative_results_updated}
-    \resizebox{\textwidth}{!}{%
-    \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
-        \hline
-        \textbf{Encoder} & \textbf{Input} & \textbf{Dice Coef} & \textbf{IoU} & \textbf{Precision} & \textbf{Recall} & \textbf{Binary} & \textbf{Best} & \textbf{Total Training} & \textbf{Avg. Inference} \\
-        \textbf{Backbone} & \textbf{Size} & \textbf{/ F1} & & & & \textbf{Acc.} & \textbf{Epoch} & \textbf{Time (HH:MM)} & \textbf{Time (ms/slice)} \\
-        \hline
-        VGG16 & 224x224 & \textbf{0.8873} & \textbf{0.7974} & 0.8334 & 0.9487 & 0.9974 & 19 & 23:39 & 5.43 \\
-        MobileNetV3-Large & 224x224 & 0.8738 & 0.7759 & 0.8186 & 0.9371 & 0.9971 & 16 & \textbf{18:12} & 2.77 \\
-        MobileNetV3-Small & 224x224 & 0.8570 & 0.7498 & 0.7912 & 0.9348 & 0.9967 & 21 & 18:25 & \textbf{2.42} \\
-        EfficientNetV2-B0 & 224x224 & 0.8853 & 0.7942 & 0.8327 & 0.9451 & \textbf{0.9974} & 17 & 18:56 & 3.84 \\
-        EfficientNetV2-B1 & 240x240 & 0.8815 & 0.7881 & 0.8185 & \textbf{0.9550} & 0.9973 & 21 & 19:22 & 4.22 \\
-        \hline
-    \end{tabular}% 
-    }
-    \footnotesize{\\ Note: Training times reflect the total script execution time. Inference time is the average per slice on the test set (lower is better). Hardware: NVIDIA Tesla V100 GPU (32GB), Intel Xeon Silver 4210 CPU, 16GB RAM. Dataset: BraTS 2023-GLI (Task 1). Best values (excluding time) are bolded. Best time values are bolded. Best epoch determined by maximum validation Dice Coefficient.}
+  \centering
+  \caption{Quantitative performance and efficiency of AS-Net with different encoder backbones on the BraTS 2023-GLI (Task 1) test set}
+  \label{tab:quantitative_results_updated}
+  \resizebox{\textwidth}{!}{%
+    \begin{tabular}{lccccccccc}
+      \hline\hline
+      \textbf{Encoder} & \textbf{Input} & \textbf{Dice Coef} & \textbf{IoU} & \textbf{Precision} & \textbf{Recall} & \textbf{Binary} & \textbf{Best} & \textbf{Training Time} & \textbf{Inference Time} \\
+      \textbf{Backbone} & \textbf{Size} & \textbf{/ F1} & & & & \textbf{Acc.} & \textbf{Epoch} & \textbf{(HH:MM)} & \textbf{(ms/slice)} \\
+      \hline
+      VGG16 & 224×224 & \textbf{0.8873} & \textbf{0.7974} & 0.8334 & 0.9487 & 0.9974 & 19 & 23:39 & 5.43 \\
+      MobileNetV3-Large & 224×224 & 0.8738 & 0.7759 & 0.8186 & 0.9371 & 0.9971 & 16 & \textbf{18:12} & 2.77 \\
+      MobileNetV3-Small & 224×224 & 0.8570 & 0.7498 & 0.7912 & 0.9348 & 0.9967 & 21 & 18:25 & \textbf{2.42} \\
+      EfficientNetV2-B0 & 224×224 & 0.8853 & 0.7942 & 0.8327 & 0.9451 & \textbf{0.9974} & 17 & 18:56 & 3.84 \\
+      EfficientNetV2-B1 & 240×240 & 0.8815 & 0.7881 & 0.8185 & \textbf{0.9550} & 0.9973 & 21 & 19:22 & 4.22 \\
+      \hline\hline
+    \end{tabular}%
+  }
+  \caption*{\textit{Note.} Values reflect performance on the test set using best validation checkpoint. Training times show total script execution. Inference time is average per slice (lower is better). Hardware: NVIDIA Tesla V100 GPU (32GB), Intel Xeon Silver 4210 CPU, 16GB RAM. Best values are bolded (excluding time metrics for clarity). Best time values are also bolded.}
 \end{table}
 
 \subsection{Training History}
@@ -48,8 +48,8 @@ All models were trained using the Adam optimizer with an initial learning rate o
 
 The training process incorporated two key callbacks based on the validation loss (\texttt{val\_loss}):
 \begin{itemize}
-    \item \textbf{ReduceLROnPlateau:} The learning rate was reduced by a factor of 2 if \texttt{val\_loss} did not improve for 5 consecutive epochs. Analysis of the training histories shows this callback was triggered for all models, typically around epoch 9 or 10 for the first reduction (e.g., VGG16 and MNv3-L at epoch 9; MNv3-S, ENv2-B0, and ENv2-B1 at epoch 10), with subsequent reductions occurring later in training if \texttt{val\_loss} continued to plateau.
-    \item \textbf{EarlyStopping:} Training was configured to stop if \texttt{val\_loss} did not improve for 15 consecutive epochs, preventing overfitting and unnecessary computation. This mechanism successfully halted training for all models before the maximum 30 epochs were reached.
+  \item \textbf{ReduceLROnPlateau:} The learning rate was reduced by a factor of 2 if \texttt{val\_loss} did not improve for 5 consecutive epochs. Analysis of the training histories shows this callback was triggered for all models, typically around epoch 9 or 10 for the first reduction (e.g., VGG16 and MNv3-L at epoch 9; MNv3-S, ENv2-B0, and ENv2-B1 at epoch 10), with subsequent reductions occurring later in training if \texttt{val\_loss} continued to plateau.
+  \item \textbf{EarlyStopping:} Training was configured to stop if \texttt{val\_loss} did not improve for 15 consecutive epochs, preventing overfitting and unnecessary computation. This mechanism successfully halted training for all models before the maximum 30 epochs were reached.
 \end{itemize}
 
 The training history plots and data generally showed convergence for all models. Training loss consistently decreased, while validation loss typically decreased steadily in the initial epochs before stabilizing or slightly increasing, triggering the learning rate reductions and eventual early stopping. Correspondingly, training and validation accuracy metrics (Dice, IoU, Accuracy) generally increased before plateauing. The training process for all variants appeared stable, without significant oscillations or divergence issues noted in the loss or accuracy curves. The epoch at which the best validation Dice score was achieved varied across models (ranging from 16 for MobileNetV3-Large to 21 for MobileNetV3-Small and EfficientNetV2-B1, see \ref{tab:quantitative_results_updated}), indicating differences in the learning dynamics and convergence points despite similar overall training configurations. The complete set of training history plots for all evaluated encoder variants, illustrating these learning curves, can be found in \ref{app:supplementary_figures}.
@@ -58,15 +58,15 @@ The training history plots and data generally showed convergence for all models.
 Analyzing the training histories reveals distinct behaviors among the different encoder architectures:
 
 \begin{itemize}
-    \item \textbf{Convergence Speed:} VGG16 demonstrated the fastest initial convergence, reaching a validation Dice coefficient of 0.90 by epoch 6, compared to MobileNetV3-Small which required until epoch 13 to achieve similar performance. This suggests VGG16's feature extraction capabilities may better suit the segmentation task without requiring extensive optimization.
-    
-    \item \textbf{Response to Learning Rate Reduction:} All models showed improved performance following learning rate reductions at epochs 9-10. However, the lightweight encoders (particularly EfficientNetV2-B0/B1) exhibited more significant gains post-reduction, with validation Dice scores improving by 0.01-0.02 in subsequent epochs, suggesting these architectures benefited more from fine-grained parameter adjustments.
-    
-    \item \textbf{Stability Patterns:} VGG16 maintained the most stable validation performance after reaching peak accuracy, with validation Dice fluctuating within ±0.005 after epoch 15. In contrast, MobileNetV3-Small showed more volatility (fluctuations of ±0.01), indicating a less stable optimization landscape potentially due to its reduced parameter count limiting representational capacity.
-    
-    \item \textbf{Training-Validation Gap:} EfficientNetV2 variants exhibited the narrowest gaps between training and validation metrics throughout training (typically <0.03 difference in Dice coefficient), suggesting better generalization properties. MobileNetV3-Small showed the widest gap (up to 0.05 difference), indicating greater tendency toward overfitting.
-    
-    \item \textbf{Fine-Tuning Phase Effectiveness:} The benefits of the fine-tuning strategy were particularly evident in VGG16 and EfficientNetV2-B1, which continued to show validation performance improvements for 8-10 epochs after the first learning rate reduction. MobileNetV3-Small showed diminishing returns more quickly, suggesting limited capacity to leverage the fine-tuning phase despite the learning rate adjustments.
+  \item \textbf{Convergence Speed:} VGG16 demonstrated the fastest initial convergence, reaching a validation Dice coefficient of 0.90 by epoch 6, compared to MobileNetV3-Small which required until epoch 13 to achieve similar performance. This suggests VGG16's feature extraction capabilities may better suit the segmentation task without requiring extensive optimization.
+
+  \item \textbf{Response to Learning Rate Reduction:} All models showed improved performance following learning rate reductions at epochs 9-10. However, the lightweight encoders (particularly EfficientNetV2-B0/B1) exhibited more significant gains post-reduction, with validation Dice scores improving by 0.01-0.02 in subsequent epochs, suggesting these architectures benefited more from fine-grained parameter adjustments.
+
+  \item \textbf{Stability Patterns:} VGG16 maintained the most stable validation performance after reaching peak accuracy, with validation Dice fluctuating within ±0.005 after epoch 15. In contrast, MobileNetV3-Small showed more volatility (fluctuations of ±0.01), indicating a less stable optimization landscape potentially due to its reduced parameter count limiting representational capacity.
+
+  \item \textbf{Training-Validation Gap:} EfficientNetV2 variants exhibited the narrowest gaps between training and validation metrics throughout training (typically <0.03 difference in Dice coefficient), suggesting better generalization properties. MobileNetV3-Small showed the widest gap (up to 0.05 difference), indicating greater tendency toward overfitting.
+
+  \item \textbf{Fine-Tuning Phase Effectiveness:} The benefits of the fine-tuning strategy were particularly evident in VGG16 and EfficientNetV2-B1, which continued to show validation performance improvements for 8-10 epochs after the first learning rate reduction. MobileNetV3-Small showed diminishing returns more quickly, suggesting limited capacity to leverage the fine-tuning phase despite the learning rate adjustments.
 \end{itemize}
 
 These behavioral differences highlight how encoder architecture choices significantly influence not only final performance metrics but also the learning dynamics and training efficiency of the AS-Net framework, with implications for encoder selection in time-constrained or resource-limited environments.
@@ -75,19 +75,19 @@ These behavioral differences highlight how encoder architecture choices signific
 Representative segmentation examples from the test set are shown in \ref{fig:qualitative_results_placeholder} to provide a visual illustration of the outputs produced by each AS-Net variant compared to the ground truth.
 
 \begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.8\textwidth]{figures/comparison_charts/qualitative_results_placeholder.png}
-    \caption[Illustrative Segmentation Results]{Illustrative segmentation results from the test set for different AS-Net encoder variants. The figure shows example outputs from all encoder variants (VGG16, MNv3-L, MNv3-S, ENv2-B0, ENv2-B1) alongside the ground truth for representative test samples.}
-    \label{fig:qualitative_results_placeholder}
+  \centering
+  \includegraphics[width=0.8\textwidth]{figures/comparison_charts/qualitative_results_placeholder.png}
+  \caption[Illustrative Segmentation Results]{Illustrative segmentation results from the test set for different AS-Net encoder variants. The figure shows example outputs from all encoder variants (VGG16, MNv3-L, MNv3-S, ENv2-B0, ENv2-B1) alongside the ground truth for representative test samples.}
+  \label{fig:qualitative_results_placeholder}
 \end{figure}
 
 \subsection{Discussion of Segmentation Performance}
 Analysis of the quantitative results (\ref{tab:quantitative_results_updated}) reveals:
 \begin{itemize}
-    \item \textbf{Best Performance:} AS-Net-VGG16 achieved the highest Dice (0.8873) and IoU (0.7974) scores, establishing the baseline performance.
-    \item \textbf{Lightweight Competitiveness:} AS-Net-EfficientNetV2-B0 demonstrated remarkably competitive performance (Dice 0.8853), nearly matching the VGG16 baseline with a difference of only ~0.2\%. EfficientNetV2-B1 (Dice 0.8815) and MobileNetV3-Large (Dice 0.8738) also achieved strong results, significantly outperforming MobileNetV3-Small (Dice 0.8570).
-    \item \textbf{Encoder Comparison:} The results suggest that while VGG16 provides a slight edge in accuracy in this setup, modern lightweight architectures like EfficientNetV2-B0 can achieve nearly equivalent performance for this task. MobileNetV3-Large offered reasonable accuracy, while MobileNetV3-Small lagged behind.
-    \item \textbf{Precision/Recall Trade-offs:} VGG16 had the highest precision, while EfficientNetV2-B1 had the highest recall, indicating subtle differences in how models handled false positives versus false negatives. ENv2-B0 showed a balance similar to VGG16.
+  \item \textbf{Best Performance:} AS-Net-VGG16 achieved the highest Dice (0.8873) and IoU (0.7974) scores, establishing the baseline performance.
+  \item \textbf{Lightweight Competitiveness:} AS-Net-EfficientNetV2-B0 demonstrated remarkably competitive performance (Dice 0.8853), nearly matching the VGG16 baseline with a difference of only ~0.2\%. EfficientNetV2-B1 (Dice 0.8815) and MobileNetV3-Large (Dice 0.8738) also achieved strong results, significantly outperforming MobileNetV3-Small (Dice 0.8570).
+  \item \textbf{Encoder Comparison:} The results suggest that while VGG16 provides a slight edge in accuracy in this setup, modern lightweight architectures like EfficientNetV2-B0 can achieve nearly equivalent performance for this task. MobileNetV3-Large offered reasonable accuracy, while MobileNetV3-Small lagged behind.
+  \item \textbf{Precision/Recall Trade-offs:} VGG16 had the highest precision, while EfficientNetV2-B1 had the highest recall, indicating subtle differences in how models handled false positives versus false negatives. ENv2-B0 showed a balance similar to VGG16.
 \end{itemize}
 
 These findings address Research Question 2a (accuracy comparison) and provide insights into Research Question 3 (attention effectiveness), suggesting the AS-Net attention synergy remains beneficial across different encoders.
@@ -98,78 +98,78 @@ These findings address Research Question 2a (accuracy comparison) and provide in
 The total training time and average inference time per slice for each AS-Net variant are presented in \ref{tab:quantitative_results_updated}. Visual comparisons are shown in \ref{fig:training_time_comparison} and \ref{fig:inference_time_comparison}.
 
 \begin{figure}[ht]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-            ybar,
-            width=0.9\textwidth,
-            height=7cm,
-            bar width=20pt,
-            ylabel={Total Training Time (Hours)},
-            xlabel={Encoder Backbone},
-            xlabel style={yshift=-30pt}, 
-            symbolic x coords={VGG16, MNv3-L, MNv3-S, ENv2-B0, ENv2-B1},
-            xtick=data,
-            nodes near coords,
-            nodes near coords align={vertical},
-            ymin=0,
-            ymax=25,
-            xticklabel style={rotate=45, anchor=east},
-            legend pos=outer north east
-        ]
-        \addplot coordinates {
-            (VGG16, 23.656)
-            (MNv3-L, 18.213)
-            (MNv3-S, 19.255)
-            (ENv2-B0, 18.941)
-            (ENv2-B1, 19.376)
-        };
-        \end{axis}
-    \end{tikzpicture}
-    \caption[Training Time Comparison]{Comparison of total training times (in hours) for AS-Net variants with different encoders on the test set. Lower is better.}
-    \label{fig:training_time_comparison}
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        width=0.9\textwidth,
+        height=7cm,
+        bar width=20pt,
+        ylabel={Total Training Time (Hours)},
+        xlabel={Encoder Backbone},
+        xlabel style={yshift=-30pt},
+        symbolic x coords={VGG16, MNv3-L, MNv3-S, ENv2-B0, ENv2-B1},
+        xtick=data,
+        nodes near coords,
+        nodes near coords align={vertical},
+        ymin=0,
+        ymax=25,
+        xticklabel style={rotate=45, anchor=east},
+        legend pos=outer north east
+      ]
+      \addplot coordinates {
+        (VGG16, 23.656)
+        (MNv3-L, 18.213)
+        (MNv3-S, 19.255)
+        (ENv2-B0, 18.941)
+        (ENv2-B1, 19.376)
+      };
+    \end{axis}
+  \end{tikzpicture}
+  \caption[Training Time Comparison]{Comparison of total training times (in hours) for AS-Net variants with different encoders on the test set. Lower is better.}
+  \label{fig:training_time_comparison}
 \end{figure}
 
 \begin{figure}[ht]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-            ybar,
-            width=0.9\textwidth,
-            height=7cm,
-            bar width=20pt,
-            ylabel={Average Inference Time (ms/slice)},
-            xlabel={Encoder Backbone},
-            xlabel style={yshift=-30pt}, 
-            symbolic x coords={VGG16, MNv3-L, MNv3-S, ENv2-B0, ENv2-B1},
-            xtick=data,
-            nodes near coords,
-            nodes near coords align={vertical},
-            ymin=0,
-            ymax=6, 
-            xticklabel style={rotate=45, anchor=east},
-            legend pos=outer north east 
-        ]
-        \addplot coordinates {
-            (VGG16, 5.43)
-            (MNv3-L, 2.77)
-            (MNv3-S, 2.42)
-            (ENv2-B0, 3.84)
-            (ENv2-B1, 4.22)
-        };
-        \end{axis}
-    \end{tikzpicture}
-    \caption[Inference Time Comparison]{Comparison of average inference times (in milliseconds per slice) for AS-Net variants with different encoders on the test set. Lower is better.}
-    \label{fig:inference_time_comparison}
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        width=0.9\textwidth,
+        height=7cm,
+        bar width=20pt,
+        ylabel={Average Inference Time (ms/slice)},
+        xlabel={Encoder Backbone},
+        xlabel style={yshift=-30pt},
+        symbolic x coords={VGG16, MNv3-L, MNv3-S, ENv2-B0, ENv2-B1},
+        xtick=data,
+        nodes near coords,
+        nodes near coords align={vertical},
+        ymin=0,
+        ymax=6,
+        xticklabel style={rotate=45, anchor=east},
+        legend pos=outer north east
+      ]
+      \addplot coordinates {
+        (VGG16, 5.43)
+        (MNv3-L, 2.77)
+        (MNv3-S, 2.42)
+        (ENv2-B0, 3.84)
+        (ENv2-B1, 4.22)
+      };
+    \end{axis}
+  \end{tikzpicture}
+  \caption[Inference Time Comparison]{Comparison of average inference times (in milliseconds per slice) for AS-Net variants with different encoders on the test set. Lower is better.}
+  \label{fig:inference_time_comparison}
 \end{figure}
 
 \subsection{Discussion of Computational Efficiency}
 The training and inference times clearly demonstrate the efficiency benefits of the lightweight encoders:
 \begin{itemize}
-    \item \textbf{Significant Training Speed-up:} All lightweight variants trained considerably faster than the VGG16 baseline (23h 39m). MobileNetV3-Large was the fastest (18h 12m), followed closely by EfficientNetV2-B0 (18h 56m).
-    \item \textbf{Quantified Training Gains:} The time reductions ranged from ~18\% (ENv2-B1, ~4.3 hours faster) to ~23\% (MNv3-Large, ~5.4 hours faster) compared to VGG16. EfficientNetV2-B0 offered a ~20\% reduction (~4.7 hours faster).
-    \item \textbf{Substantial Inference Speed-up:} All lightweight models offered significantly faster inference than VGG16 (5.43 ms/slice). MobileNetV3-Small was the fastest (2.42 ms/slice, ~55\% faster), followed by MobileNetV3-Large (2.77 ms/slice, ~49\% faster), EfficientNetV2-B0 (3.84 ms/slice, ~29\% faster), and EfficientNetV2-B1 (4.22 ms/slice, ~22\% faster). These faster inference times are particularly relevant for potential clinical application, enabling quicker analysis of patient scans \parencite{patel2024computational}.
-    \item \textbf{Encoder Complexity Correlation:} The observed training and inference times generally align with the expected computational complexity of the encoders, with VGG16 being the most demanding and the lightweight models requiring less time, despite the smaller batch size used for the latter during training.
+  \item \textbf{Significant Training Speed-up:} All lightweight variants trained considerably faster than the VGG16 baseline (23h 39m). MobileNetV3-Large was the fastest (18h 12m), followed closely by EfficientNetV2-B0 (18h 56m).
+  \item \textbf{Quantified Training Gains:} The time reductions ranged from ~18\% (ENv2-B1, ~4.3 hours faster) to ~23\% (MNv3-Large, ~5.4 hours faster) compared to VGG16. EfficientNetV2-B0 offered a ~20\% reduction (~4.7 hours faster).
+  \item \textbf{Substantial Inference Speed-up:} All lightweight models offered significantly faster inference than VGG16 (5.43 ms/slice). MobileNetV3-Small was the fastest (2.42 ms/slice, ~55\% faster), followed by MobileNetV3-Large (2.77 ms/slice, ~49\% faster), EfficientNetV2-B0 (3.84 ms/slice, ~29\% faster), and EfficientNetV2-B1 (4.22 ms/slice, ~22\% faster). These faster inference times are particularly relevant for potential clinical application, enabling quicker analysis of patient scans \parencite{patel2024computational}.
+  \item \textbf{Encoder Complexity Correlation:} The observed training and inference times generally align with the expected computational complexity of the encoders, with VGG16 being the most demanding and the lightweight models requiring less time, despite the smaller batch size used for the latter during training.
 \end{itemize}
 These results directly address Research Question 2b (efficiency comparison), confirming the substantial computational savings offered by replacing VGG16 with modern lightweight backbones.
 
@@ -179,82 +179,82 @@ These results directly address Research Question 2b (efficiency comparison), con
 Combining the segmentation accuracy and computational efficiency results reveals the trade-offs associated with each encoder choice. \ref{fig:accuracy_efficiency_paired_bar} illustrates this relationship by plotting the Dice Coefficient and the total training time side-by-side for each variant.
 
 \begin{figure}[ht]
-    \centering
-    \begin{tikzpicture}
-        \pgfplotsset{
-            compat=1.18, 
-            width=0.95\textwidth,
-            height=8cm,
-            symbolic x coords={VGG16, MNv3-L, MNv3-S, ENv2-B0, ENv2-B1},
-            xtick=data,
-            xticklabel style={rotate=45, anchor=east, font=\small},
-        }
-        
-        % First axis for Dice Coefficient
-        \begin{axis}[
-            name=plot1,
-            axis y line*=left,
-            ybar=0pt,
-            bar width=10pt,
-            ylabel={Dice Coefficient},
-            ymin=0.84, ymax=0.90,
-            nodes near coords,
-            nodes near coords style={font=$\scriptscriptstyle$, rotate=90, anchor=east}, 
-            legend style={at={(0.5,-0.35)}, anchor=north, legend columns=2},
-            legend cell align={left},
-            legend to name=commonlegend,
-            % Add right margin to make room for second y-axis label
-            enlargelimits=true,
-            enlarge x limits=0.15,
-        ]
-        % Dice Coefficient Data
-        \addplot+[ybar, fill=blue!70, bar shift=-5pt] coordinates {
-            (VGG16, 0.8873)
-            (MNv3-L, 0.8738)
-            (MNv3-S, 0.8570)
-            (ENv2-B0, 0.8853)
-            (ENv2-B1, 0.8815)
-        };
-        \addlegendentry{Dice Coef}
+  \centering
+  \begin{tikzpicture}
+    \pgfplotsset{
+      compat=1.18,
+      width=0.95\textwidth,
+      height=8cm,
+      symbolic x coords={VGG16, MNv3-L, MNv3-S, ENv2-B0, ENv2-B1},
+      xtick=data,
+      xticklabel style={rotate=45, anchor=east, font=\small},
+    }
 
-        % Add the Training Time plot to the first axis to include in legend
-        \addlegendimage{ybar,fill=red!70}
-        \addlegendentry{Time (Hours)}
-        \end{axis}
+    % First axis for Dice Coefficient
+    \begin{axis}[
+        name=plot1,
+        axis y line*=left,
+        ybar=0pt,
+        bar width=10pt,
+        ylabel={Dice Coefficient},
+        ymin=0.84, ymax=0.90,
+        nodes near coords,
+        nodes near coords style={font=$\scriptscriptstyle$, rotate=90, anchor=east},
+        legend style={at={(0.5,-0.35)}, anchor=north, legend columns=2},
+        legend cell align={left},
+        legend to name=commonlegend,
+        % Add right margin to make room for second y-axis label
+        enlargelimits=true,
+        enlarge x limits=0.15,
+      ]
+      % Dice Coefficient Data
+      \addplot+[ybar, fill=blue!70, bar shift=-5pt] coordinates {
+        (VGG16, 0.8873)
+        (MNv3-L, 0.8738)
+        (MNv3-S, 0.8570)
+        (ENv2-B0, 0.8853)
+        (ENv2-B1, 0.8815)
+      };
+      \addlegendentry{Dice Coef}
 
-        % Second axis for Training Time
-        \begin{axis}[
-            name=plot2,
-            axis y line*=right,
-            axis x line=none,
-            ylabel={Total Training Time (Hours)},
-            ylabel style={rotate=-180, at={(1.04,0.5)}}, 
-            ymin=0, ymax=25,
-            ytick={0,5,10,15,20,25},
-            nodes near coords,
-            nodes near coords style={font=$\scriptscriptstyle$, anchor=west}, 
-            bar width=10pt,
-            ybar=0pt,
-            legend style={empty legend},
-            enlarge x limits=0.15,
-        ]
+      % Add the Training Time plot to the first axis to include in legend
+      \addlegendimage{ybar,fill=red!70}
+      \addlegendentry{Time (Hours)}
+    \end{axis}
 
-        % Training Time Data
-        \addplot+[ybar, fill=red!70, bar shift=5pt] coordinates {
-            (VGG16, 23.66)
-            (MNv3-L, 18.21)
-            (MNv3-S, 19.26)
-            (ENv2-B0, 18.94)
-            (ENv2-B1, 19.38)
-        };
-        % No legend entry here to avoid duplicate
-        \end{axis}
-        
-        % Place the combined legend at the bottom
-        \node at ($(plot1.south)+(0,-2cm)$) {\ref{commonlegend}};
-    \end{tikzpicture}
-    \caption[Accuracy vs. Efficiency Paired Bar Chart]{Dice Coefficient (left axis, blue) versus Total Training Time in Hours (right axis, red) for AS-Net variants.}
-    \label{fig:accuracy_efficiency_paired_bar}
+    % Second axis for Training Time
+    \begin{axis}[
+        name=plot2,
+        axis y line*=right,
+        axis x line=none,
+        ylabel={Total Training Time (Hours)},
+        ylabel style={rotate=-180, at={(1.04,0.5)}},
+        ymin=0, ymax=25,
+        ytick={0,5,10,15,20,25},
+        nodes near coords,
+        nodes near coords style={font=$\scriptscriptstyle$, anchor=west},
+        bar width=10pt,
+        ybar=0pt,
+        legend style={empty legend},
+        enlarge x limits=0.15,
+      ]
+
+      % Training Time Data
+      \addplot+[ybar, fill=red!70, bar shift=5pt] coordinates {
+        (VGG16, 23.66)
+        (MNv3-L, 18.21)
+        (MNv3-S, 19.26)
+        (ENv2-B0, 18.94)
+        (ENv2-B1, 19.38)
+      };
+      % No legend entry here to avoid duplicate
+    \end{axis}
+
+    % Place the combined legend at the bottom
+    \node at ($(plot1.south)+(0,-2cm)$) {\ref{commonlegend}};
+  \end{tikzpicture}
+  \caption[Accuracy vs. Efficiency Paired Bar Chart]{Dice Coefficient (left axis, blue) versus Total Training Time in Hours (right axis, red) for AS-Net variants.}
+  \label{fig:accuracy_efficiency_paired_bar}
 \end{figure}
 
 While AS-Net-VGG16 achieved the highest Dice score, AS-Net-EfficientNetV2-B0 provided nearly identical accuracy (~0.2\% lower Dice) with a significant (~20\%) reduction in training time. The comparable accuracy of EfficientNetV2-B0, despite its efficiency, can be attributed to its modern architecture. It utilizes computationally efficient building blocks like MBConv (incorporating depthwise separable convolutions) and Fused-MBConv, along with channel attention (SE blocks), as detailed in Chapter 2. These components allow it to learn rich feature representations effectively while drastically reducing the parameter count and computational load (FLOPs) compared to the simpler, heavier convolutional stacks of VGG16 \parencite{tan2021efficientnetv2, hu2018squeeze, canziani2016analysis}. The AS-Net decoder's own attention mechanisms may further help in refining features extracted by the efficient encoder. MobileNetV3-Large offered the fastest training but at the cost of a more noticeable drop in accuracy compared to VGG16/ENv2-B0. MobileNetV3-Small and EfficientNetV2-B1 represented other points on this trade-off curve.
@@ -262,9 +262,9 @@ While AS-Net-VGG16 achieved the highest Dice score, AS-Net-EfficientNetV2-B0 pro
 \subsection{Encoder Suitability}
 Based on these findings for MRI brain tumor segmentation using AS-Net on the BraTS 2023-GLI (Task 1) dataset:
 \begin{itemize}
-    \item \textbf{EfficientNetV2-B0} emerges as the most promising lightweight encoder, offering the best balance between near-optimal accuracy and substantially improved computational efficiency.
-    \item \textbf{VGG16} remains the choice for maximizing accuracy if computational cost is not a concern.
-    \item \textbf{MobileNetV3-Large} could be considered if training time is the absolute priority and a slight accuracy decrease is acceptable.
+  \item \textbf{EfficientNetV2-B0} emerges as the most promising lightweight encoder, offering the best balance between near-optimal accuracy and substantially improved computational efficiency.
+  \item \textbf{VGG16} remains the choice for maximizing accuracy if computational cost is not a concern.
+  \item \textbf{MobileNetV3-Large} could be considered if training time is the absolute priority and a slight accuracy decrease is acceptable.
 \end{itemize}
 This addresses Objective 4 by providing recommendations based on the observed trade-offs.
 
@@ -280,10 +280,10 @@ The results highlight the potential for optimizing advanced attention-based mode
 \subsection{Limitations Revisited}
 It is crucial to interpret these results within the context of the study's limitations (Chapter 1, Section 6):
 \begin{itemize}
-    \item Results are specific to the BraTS 2023-GLI (Task 1) dataset and the binary segmentation task.
-    \item The slice-based 2D approach ignores 3D context.
-    \item The specific preprocessing pipeline and fixed hyperparameters might influence outcomes.
-    \item Training times are relative to the specific hardware used.
-    \item The data split was slice-based, not patient-based, which might overestimate generalization compared to a patient-level split.
+  \item Results are specific to the BraTS 2023-GLI (Task 1) dataset and the binary segmentation task.
+  \item The slice-based 2D approach ignores 3D context.
+  \item The specific preprocessing pipeline and fixed hyperparameters might influence outcomes.
+  \item Training times are relative to the specific hardware used.
+  \item The data split was slice-based, not patient-based, which might overestimate generalization compared to a patient-level split.
 \end{itemize}
 These factors should be considered when generalizing the findings. Further validation on diverse datasets, exploration of hyperparameter tuning per encoder, and formal statistical testing would strengthen the conclusions.

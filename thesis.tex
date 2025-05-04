@@ -6,7 +6,7 @@
 % preamble
 \usepackage{wrapfig}
 \usepackage{pgfplots}
-\pgfplotsset{compat=1.18} 
+\pgfplotsset{compat=1.18}
 \usepackage{fontspec}
 \setmainfont{Candara}[
   Path = fonts/Candara/,
@@ -24,7 +24,7 @@
 \usetikzlibrary{arrows,shapes,positioning,fit,calc}
 
 \usepackage{graphicx}
-\graphicspath{{figures/}} % Set the path to the figures directory
+\graphicspath{{figures/}}
 
 \usepackage{ifthen}
 \newcommand{\inputifexists}[1]{%
@@ -35,36 +35,36 @@
 
 \title{Optimizing AS-Net for MRI Brain Tumor Segmentation: A Comparative Study of Different Encoders for Improved Segmentation Performance}
 \author{Shaun Niel A. Ochavo \\ Armiex Jay J. Roble}
-	
+
 \approvaldate{\underline{\hspace{2in}}}
 \department{Institute of XXXXX}
 \bibliography{references}
 
 \begin{document}
 
-\makeTitlePage{April}{2025}
+\makeTitlePage{May}{2025}
 
 \begin{frontmatter}
-    \inputifexists{sections/approvalPage} 
-    \inputifexists{sections/dedication}
-    \inputifexists{sections/acknowledgment}
-    \makeTOC
-    \makeListOfFigures
-    \makeListOfTables
-    \input{sections/abstract}
-    \inputifexists{sections/abbrevs}
-    \makeListOfAcronyms
+  \inputifexists{sections/approvalPage}
+  \inputifexists{sections/dedication}
+  \inputifexists{sections/acknowledgment}
+  \makeTOC
+  \makeListOfFigures
+  \makeListOfTables
+  \input{sections/abstract}
+  \inputifexists{sections/abbrevs}
+  \makeListOfAcronyms
 \end{frontmatter}
 
 \begin{thesisbody}
-    \input{chapters/chapter1}
-    \input{chapters/chapter2}
-    \input{chapters/chapter3}
-    \input{chapters/chapter4}
-    \input{chapters/chapter5}
-    \makeBibliography
-    \inputifexists{sections/appendix}
-    \inputifexists{sections/bionote}
+  \input{chapters/chapter1}
+  \input{chapters/chapter2}
+  \input{chapters/chapter3}
+  \input{chapters/chapter4}
+  \input{chapters/chapter5}
+  \makeBibliography
+  \inputifexists{sections/appendix}
+  \inputifexists{sections/bionote}
 \end{thesisbody}
 
 \end{document}

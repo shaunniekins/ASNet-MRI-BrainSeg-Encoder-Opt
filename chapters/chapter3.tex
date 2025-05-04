@@ -3,10 +3,10 @@
 % 1. Conceptual Overview
 \section{Conceptual Framework}
 \begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.9\textwidth]{figures/asnet-architecture/placeholder_conceptual_framework.png}
-    \caption[Conceptual Framework of the Study]{Conceptual framework}
-    \label{fig:conceptual_framework}
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/asnet-architecture/placeholder_conceptual_framework.png}
+  \caption[Conceptual Framework of the Study]{Conceptual framework}
+  \label{fig:conceptual_framework}
 \end{figure}
 
 \ref{fig:conceptual_framework} illustrates the conceptual framework guiding this research. The process initiates with the BraTS 2023-GLI (Task 1) dataset, which undergoes a standardized preprocessing pipeline. The resulting data is then fed into multiple parallel processing streams. Each stream implements the Attention Synergy Network (AS-Net) architecture but utilizes a distinct encoder backbone, such as VGG16, MobileNetV3, and EfficientNetV2, as explored in this study. Within each stream, the encoder's features are processed by Spatial Attention Modules (SAM) and Channel Attention Modules (CAM), whose outputs are integrated by a Synergy module. Each AS-Net variant generates its own segmentation output, from which performance metrics are calculated. Finally, these metrics are systematically compared across the different encoder variants to evaluate their relative performance and efficiency.
@@ -17,27 +17,27 @@
 The study adapts the AS-Net architecture, originally proposed by \textcite{hu2022asnet} for skin lesion segmentation. The core components include:
 
 \begin{itemize}
-    \item \textbf{Encoder Backbone:} Extracts hierarchical features from the input image. The original AS-Net used VGG16. This study replaces it with various alternatives.
-    \item \textbf{Spatial Attention Module (SAM):} As illustrated in \ref{fig:sam_module}, SAM processes input features through parallel convolutional pathways to generate spatial attention maps, highlighting salient regions (likely tumor areas) and focusing computation spatially.
-    \item \textbf{Channel Attention Module (CAM):} As shown in \ref{fig:cam_module}, CAM focuses on inter-channel relationships using global pooling and an MLP to generate channel-wise attention weights, emphasizing informative feature channels.
-    \item \textbf{Synergy Module:} Integrates the outputs from SAM and CAM using learnable scalar parameters ($\alpha$ and $\beta$, initialized to 0.5), allowing adaptive fusion of spatial and channel attention before refinement and passing to the next decoder stage.
-    \item \textbf{Decoder Structure:} Follows a standard U-Net-like symmetric structure, progressively upsampling features and integrating high-resolution spatial information from the encoder via skip connections at each stage. The fused features from the Synergy module are passed through the decoder stages.
+  \item \textbf{Encoder Backbone:} Extracts hierarchical features from the input image. The original AS-Net used VGG16. This study replaces it with various alternatives.
+  \item \textbf{Spatial Attention Module (SAM):} As illustrated in \ref{fig:sam_module}, SAM processes input features through parallel convolutional pathways to generate spatial attention maps, highlighting salient regions (likely tumor areas) and focusing computation spatially.
+  \item \textbf{Channel Attention Module (CAM):} As shown in \ref{fig:cam_module}, CAM focuses on inter-channel relationships using global pooling and an MLP to generate channel-wise attention weights, emphasizing informative feature channels.
+  \item \textbf{Synergy Module:} Integrates the outputs from SAM and CAM using learnable scalar parameters ($\alpha$ and $\beta$, initialized to 0.5), allowing adaptive fusion of spatial and channel attention before refinement and passing to the next decoder stage.
+  \item \textbf{Decoder Structure:} Follows a standard U-Net-like symmetric structure, progressively upsampling features and integrating high-resolution spatial information from the encoder via skip connections at each stage. The fused features from the Synergy module are passed through the decoder stages.
 \end{itemize}
 
 % SAM Figure
 \begin{figure}[ht]
-    \centering
-	\includegraphics[width=0.85\textwidth]{figures/asnet-architecture/placeholder_sam_diagram.png}
-	\caption[Spatial Attention Module (SAM)]{Diagram of the Spatial Attention Module (SAM) used in the AS-Net decoder. Adapted from \textcite{hu2022asnet}.}
-	\label{fig:sam_module}
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/asnet-architecture/placeholder_sam_diagram.png}
+  \caption[Spatial Attention Module (SAM)]{Diagram of the Spatial Attention Module (SAM) used in the AS-Net decoder. Adapted from \textcite{hu2022asnet}.}
+  \label{fig:sam_module}
 \end{figure}
 
 % CAM Figure
 \begin{figure}[ht]
-    \centering
-	\includegraphics[width=0.85\textwidth]{figures/asnet-architecture/placeholder_cam_diagram.png}
-	\caption[Channel Attention Module (CAM)]{Diagram of the Channel Attention Module (CAM) used in the AS-Net decoder. Adapted from \textcite{hu2022asnet}.}
-	\label{fig:cam_module}
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/asnet-architecture/placeholder_cam_diagram.png}
+  \caption[Channel Attention Module (CAM)]{Diagram of the Channel Attention Module (CAM) used in the AS-Net decoder. Adapted from \textcite{hu2022asnet}.}
+  \label{fig:cam_module}
 \end{figure}
 
 % 3. Encoder Integration and Model Variants
@@ -46,13 +46,13 @@ The study adapts the AS-Net architecture, originally proposed by \textcite{hu202
 Five pre-trained encoder networks were integrated into the AS-Net framework:
 
 \begin{enumerate}
-    \item \textbf{Baseline Model (VGG16):} Used as the reference encoder, adapted from the original AS-Net paper \parencite{hu2022asnet}. Input size: 224x224x3.
-    \item \textbf{Lightweight Encoders:}
-        \begin{itemize}
-            \item \textbf{MobileNetV3-Large \& MobileNetV3-Small \parencite{howard2019searching}:} Selected for their high efficiency, designed for mobile applications, representing different points on the accuracy/latency curve. Input size: 224x224x3.
-            \item \textbf{EfficientNetV2-B0 \& EfficientNetV2-B1 \parencite{tan2021efficientnetv2}:} Chosen for their state-of-the-art balance of parameter efficiency and training speed, representing modern efficient architectures. Input sizes: 224x224x3 (B0), 240x240x3 (B1).
-        \end{itemize}
-        These lightweight encoders were selected to address the computational limitations of VGG16 and evaluate modern efficient alternatives.
+  \item \textbf{Baseline Model (VGG16):} Used as the reference encoder, adapted from the original AS-Net paper \parencite{hu2022asnet}. Input size: 224x224x3.
+  \item \textbf{Lightweight Encoders:}
+    \begin{itemize}
+      \item \textbf{MobileNetV3-Large \& MobileNetV3-Small \parencite{howard2019searching}:} Selected for their high efficiency, designed for mobile applications, representing different points on the accuracy/latency curve. Input size: 224x224x3.
+      \item \textbf{EfficientNetV2-B0 \& EfficientNetV2-B1 \parencite{tan2021efficientnetv2}:} Chosen for their state-of-the-art balance of parameter efficiency and training speed, representing modern efficient architectures. Input sizes: 224x224x3 (B0), 240x240x3 (B1).
+    \end{itemize}
+    These lightweight encoders were selected to address the computational limitations of VGG16 and evaluate modern efficient alternatives.
 \end{enumerate}
 
 \subsection{Integration Process}
@@ -61,46 +61,46 @@ Each encoder replaced the VGG16 feature extraction block. Skip connections were 
 \subsection{Transfer Learning Strategy}
 All encoders were initialized with weights pre-trained on ImageNet. A fine-tuning approach was employed:
 \begin{itemize}
-    \item Initial convolutional blocks of each encoder were frozen (weights not updated).
-    \item Later blocks were unfrozen and trained. The transition point varied per architecture (e.g., starting from 'block4' for VGG16, 'expanded\_conv\_6' for MobileNetV3-Large, 'block4' for EfficientNetV2 variants).
-    \item The entire network (unfrozen encoder parts and the decoder) was trained end-to-end from the start.
+  \item Initial convolutional blocks of each encoder were frozen (weights not updated).
+  \item Later blocks were unfrozen and trained. The transition point varied per architecture (e.g., starting from 'block4' for VGG16, 'expanded\_conv\_6' for MobileNetV3-Large, 'block4' for EfficientNetV2 variants).
+  \item The entire network (unfrozen encoder parts and the decoder) was trained end-to-end from the start.
 \end{itemize}
 This strategy aimed to leverage general features while adapting deeper layers to the MRI segmentation task.
 
 % Architecture Figures
 \begin{figure}[!htb]
-    \centering
-	\includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_vgg16.png}
-    \caption[AS-Net Architecture with VGG16 Encoder]{High-level architecture of AS-Net using the VGG16 encoder backbone.}
-    \label{fig:asnet_vgg16_arch}
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_vgg16.png}
+  \caption[AS-Net Architecture with VGG16 Encoder]{High-level architecture of AS-Net using the VGG16 encoder backbone.}
+  \label{fig:asnet_vgg16_arch}
 \end{figure}
 
 \begin{figure}[!htb]
-    \centering
-    \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_mobilenetv3l.png}
-    \caption[AS-Net Architecture with MobileNetV3 Encoder]{High-level architecture of AS-Net using MobileNetV3 (Large/Small) encoder backbones. Example shown uses MobileNetV3-Large.}
-    \label{fig:asnet_mobilenet_arch}
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_mobilenetv3l.png}
+  \caption[AS-Net Architecture with MobileNetV3 Encoder]{High-level architecture of AS-Net using MobileNetV3 (Large/Small) encoder backbones. Example shown uses MobileNetV3-Large.}
+  \label{fig:asnet_mobilenet_arch}
 \end{figure}
 
 \begin{figure}[!htb]
-    \centering
-    \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_mobilenetv3s.png}
-    \caption[AS-Net Architecture with MobileNetV3-Small Encoder]{High-level architecture of AS-Net using the MobileNetV3-Small encoder backbone.}
-    \label{fig:asnet_mobilenetv3s_arch}
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_mobilenetv3s.png}
+  \caption[AS-Net Architecture with MobileNetV3-Small Encoder]{High-level architecture of AS-Net using the MobileNetV3-Small encoder backbone.}
+  \label{fig:asnet_mobilenetv3s_arch}
 \end{figure}
 
 \begin{figure}[!htb]
-    \centering
-    \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_efficientnetv2b0.png}
-    \caption[AS-Net Architecture with EfficientNetV2-B0 Encoder]{High-level architecture of AS-Net using the EfficientNetV2-B0 encoder backbone.}
-    \label{fig:asnet_efficientnet_arch}
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_efficientnetv2b0.png}
+  \caption[AS-Net Architecture with EfficientNetV2-B0 Encoder]{High-level architecture of AS-Net using the EfficientNetV2-B0 encoder backbone.}
+  \label{fig:asnet_efficientnet_arch}
 \end{figure}
 
 \begin{figure}[!htb]
-    \centering
-    \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_efficientnetv2b1.png}
-    \caption[AS-Net Architecture with EfficientNetV2-B1 Encoder]{High-level architecture of AS-Net using the EfficientNetV2-B1 encoder backbone.}
-    \label{fig:asnet_efficientnetv2b1_arch}
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_efficientnetv2b1.png}
+  \caption[AS-Net Architecture with EfficientNetV2-B1 Encoder]{High-level architecture of AS-Net using the EfficientNetV2-B1 encoder backbone.}
+  \label{fig:asnet_efficientnetv2b1_arch}
 \end{figure}
 
 % 4. Dataset and Preprocessing
@@ -112,9 +112,9 @@ The study utilized the BraTS 2023-GLI (Task 1) (Brain Tumor Segmentation) challe
 \subsection{Ethical Considerations and Data Access}
 Access to the BraTS 2023 dataset requires registration and adherence to specific usage agreements, ensuring responsible use of sensitive medical data. The dataset consists of anonymized MRI scans, protecting patient privacy. The steps followed to gain access were:
 \begin{enumerate}
-    \item Registration for the BraTS 2023 challenge via the Synapse platform.
-    \item Completion and submission of the official BraTS Data Access form, providing a Synapse username and associated email.
-    \item Acceptance of an email invitation to join the BraTS 2023 Data Access Team on Synapse.
+  \item Registration for the BraTS 2023 challenge via the Synapse platform.
+  \item Completion and submission of the official BraTS Data Access form, providing a Synapse username and associated email.
+  \item Acceptance of an email invitation to join the BraTS 2023 Data Access Team on Synapse.
 \end{enumerate}
 This process ensures that researchers agree to the data usage terms before downloading the dataset from Synapse. All data handling in this study complied with these terms. Researchers using this dataset are required to cite the relevant BraTS publications \parencite{baid2021rsna, menze2015multimodal, bakas2017advancing, bakas2017segmentationGBM, bakas2017segmentationLGG}.
 
@@ -124,26 +124,26 @@ The original dataset provides multi-modal 3D MRI scans (T1, T1ce, T2, FLAIR) in 
 \subsection{Preprocessing Pipeline}
 A custom script converted the 3D NIfTI volumes into a collection of 2D HDF5 (H5) files, each representing a single axial slice. This facilitated efficient 2D processing. The pipeline included:
 \begin{enumerate}
-    \item \textbf{File Path Handling \& Metadata:} Read file paths from a metadata CSV mapping patient IDs, slice indices, and H5 paths.
-    \item \textbf{H5 File Structure:} Each H5 file contained:
-        \begin{itemize}
-            \item \texttt{image}: Numpy array (e.g., 240x240x4) with T1, T1ce, T2, FLAIR data for the slice.
-            \item \texttt{mask}: Numpy array (e.g., 240x240x3) with ground truth masks (NCR/NET, ED, ET).
-        \end{itemize}
-    \item \textbf{Data Splitting:} The list of H5 files was randomly shuffled (fixed seed) and split into training (80\%), validation (10\%), and test (10\%) sets based on slices, not patients.
-    \item \textbf{H5 Parsing:} Loaded \texttt{image} and \texttt{mask} arrays using TensorFlow's \texttt{tf.data} API.
-    \item \textbf{Modality Selection:} Selected T1ce (index 1) and FLAIR (index 3).
-    \item \textbf{RGB Channel Mapping:} Mapped [T1ce, FLAIR] to 3 channels using indices [0, 1, 0] -> [T1ce, FLAIR, T1ce].
-    \item \textbf{Normalization:} Applied Z-score normalization independently to T1ce and FLAIR channels *before* RGB mapping (per-slice, per-channel mean/std).
-    \item \textbf{Binary Mask Creation:} Converted the 3-channel ground truth \texttt{mask} to a single-channel binary mask (1 if any tumor label present, 0 otherwise). This was the training target.
-    \item \textbf{Multi-Class Mask Preparation (for visualization):} Created a multi-class mask (NCR/NET=1, ED=2, ET=4, BG=0).
-    \item \textbf{Resizing:} Resized the 3-channel input image (bilinear) and binary mask (nearest-neighbor) to target dimensions:
-        \begin{itemize}
-            \item 224x224: VGG16, MobileNetV3-L/S, EfficientNetV2-B0
-            \item 240x240: EfficientNetV2-B1
-        \end{itemize}
-    \item \textbf{Visualization Data Preparation:} Resized FLAIR and multi-class mask for display.
-    \item \textbf{Batching and Prefetching:} Batched samples and used \texttt{tf.data.AUTOTUNE} for prefetching.
+  \item \textbf{File Path Handling \& Metadata:} Read file paths from a metadata CSV mapping patient IDs, slice indices, and H5 paths.
+  \item \textbf{H5 File Structure:} Each H5 file contained:
+    \begin{itemize}
+      \item \texttt{image}: Numpy array (e.g., 240x240x4) with T1, T1ce, T2, FLAIR data for the slice.
+      \item \texttt{mask}: Numpy array (e.g., 240x240x3) with ground truth masks (NCR/NET, ED, ET).
+    \end{itemize}
+  \item \textbf{Data Splitting:} The list of H5 files was randomly shuffled (fixed seed) and split into training (80\%), validation (10\%), and test (10\%) sets based on slices, not patients.
+  \item \textbf{H5 Parsing:} Loaded \texttt{image} and \texttt{mask} arrays using TensorFlow's \texttt{tf.data} API.
+  \item \textbf{Modality Selection:} Selected T1ce (index 1) and FLAIR (index 3).
+  \item \textbf{RGB Channel Mapping:} Mapped [T1ce, FLAIR] to 3 channels using indices [0, 1, 0] -> [T1ce, FLAIR, T1ce].
+  \item \textbf{Normalization:} Applied Z-score normalization independently to T1ce and FLAIR channels *before* RGB mapping (per-slice, per-channel mean/std).
+  \item \textbf{Binary Mask Creation:} Converted the 3-channel ground truth \texttt{mask} to a single-channel binary mask (1 if any tumor label present, 0 otherwise). This was the training target.
+  \item \textbf{Multi-Class Mask Preparation (for visualization):} Created a multi-class mask (NCR/NET=1, ED=2, ET=4, BG=0).
+  \item \textbf{Resizing:} Resized the 3-channel input image (bilinear) and binary mask (nearest-neighbor) to target dimensions:
+    \begin{itemize}
+      \item 224x224: VGG16, MobileNetV3-L/S, EfficientNetV2-B0
+      \item 240x240: EfficientNetV2-B1
+    \end{itemize}
+  \item \textbf{Visualization Data Preparation:} Resized FLAIR and multi-class mask for display.
+  \item \textbf{Batching and Prefetching:} Batched samples and used \texttt{tf.data.AUTOTUNE} for prefetching.
 \end{enumerate}
 The pipeline yielded tuples: (\texttt{model\_input\_image}, \texttt{binary\_ground\_truth\_mask}, \texttt{reference\_display\_image}, \texttt{multi\_class\_display\_mask}).
 
@@ -151,32 +151,32 @@ The pipeline yielded tuples: (\texttt{model\_input\_image}, \texttt{binary\_grou
 \section{Training Configuration}
 
 \begin{itemize}
-    \item \textbf{Hardware:} NVIDIA Tesla V100 GPU (32GB), Intel Xeon Silver 4210 CPU, 16GB RAM.
-    \item \textbf{Software Environment:} Python, TensorFlow (v2.10+), Keras, SimpleITK, h5py, NumPy, Scikit-learn.
-    \item \textbf{Distribution Strategy:} \texttt{tf.distribute.MirroredStrategy} (used single GPU).
-    \item \textbf{Training Parameters:}
-        \begin{itemize}
-            \item \textbf{Batch Size:} \texttt{BATCH\_SIZE\_PER\_REPLICA = 32}. Global batch size = replica size * num replicas (1).
-            \item \textbf{Optimizer:} Adam (\texttt{tf.keras.optimizers.Adam}) with initial learning rate \texttt{1e-4}.
-            \item \textbf{Learning Rate Schedule:} \texttt{ReduceLROnPlateau} (monitor='val\_loss', factor=0.5, patience=5).
-            \item \textbf{Epochs:} Maximum \texttt{NUM\_EPOCHS = 30}.
-            \item \textbf{Loss Function:} Combined Loss:
-                \begin{equation}
-                    \text{Loss} = 0.5 \times \text{WBCE}(y_{true}, y_{pred}, \text{pos\_weight}=100.0) + 0.5 \times \text{DiceLoss}(y_{true}, y_{pred})
-                \end{equation}
-                Weighted Binary Cross-Entropy (WBCE) with high positive class weight (100.0) for imbalance, combined equally with Dice Loss.
-            \item \textbf{Regularization:} Implicit through pre-trained weights and standard practices in backbone architectures. Explicit weight decay not specified beyond optimizer defaults.
-        \end{itemize}
-    \item \textbf{Callbacks:}
-        \begin{itemize}
-            \item \texttt{ModelCheckpoint}: Save best weights based on \texttt{val\_dice\_coef} (max mode), save weights every epoch.
-            \item \texttt{EarlyStopping}: Monitor \texttt{val\_loss}, patience=15, restore best weights.
-            \item \texttt{TensorBoard}: Log metrics.
-            \item \texttt{ReduceLROnPlateau}: As described above.
-            \item \texttt{ConciseProgressCallback}: Summarized updates.
-        \end{itemize}
-    \item \textbf{Mixed Precision:} Disabled (\texttt{USE\_MIXED\_PRECISION = False}).
-    \item \textbf{Checkpoint Resumption:} Enabled.
+  \item \textbf{Hardware:} NVIDIA Tesla V100 GPU (32GB), Intel Xeon Silver 4210 CPU, 16GB RAM.
+  \item \textbf{Software Environment:} Python, TensorFlow (v2.10+), Keras, SimpleITK, h5py, NumPy, Scikit-learn.
+  \item \textbf{Distribution Strategy:} \texttt{tf.distribute.MirroredStrategy} (used single GPU).
+  \item \textbf{Training Parameters:}
+    \begin{itemize}
+      \item \textbf{Batch Size:} \texttt{BATCH\_SIZE\_PER\_REPLICA = 32}. Global batch size = replica size * num replicas (1).
+      \item \textbf{Optimizer:} Adam (\texttt{tf.keras.optimizers.Adam}) with initial learning rate \texttt{1e-4}.
+      \item \textbf{Learning Rate Schedule:} \texttt{ReduceLROnPlateau} (monitor='val\_loss', factor=0.5, patience=5).
+      \item \textbf{Epochs:} Maximum \texttt{NUM\_EPOCHS = 30}.
+      \item \textbf{Loss Function:} Combined Loss:
+        \begin{equation}
+          \text{Loss} = 0.5 \times \text{WBCE}(y_{true}, y_{pred}, \text{pos\_weight}=100.0) + 0.5 \times \text{DiceLoss}(y_{true}, y_{pred})
+        \end{equation}
+        Weighted Binary Cross-Entropy (WBCE) with high positive class weight (100.0) for imbalance, combined equally with Dice Loss.
+      \item \textbf{Regularization:} Implicit through pre-trained weights and standard practices in backbone architectures. Explicit weight decay not specified beyond optimizer defaults.
+    \end{itemize}
+  \item \textbf{Callbacks:}
+    \begin{itemize}
+      \item \texttt{ModelCheckpoint}: Save best weights based on \texttt{val\_dice\_coef} (max mode), save weights every epoch.
+      \item \texttt{EarlyStopping}: Monitor \texttt{val\_loss}, patience=15, restore best weights.
+      \item \texttt{TensorBoard}: Log metrics.
+      \item \texttt{ReduceLROnPlateau}: As described above.
+      \item \texttt{ConciseProgressCallback}: Summarized updates.
+    \end{itemize}
+  \item \textbf{Mixed Precision:} Disabled (\texttt{USE\_MIXED\_PRECISION = False}).
+  \item \textbf{Checkpoint Resumption:} Enabled.
 \end{itemize}
 
 % 6. Evaluation Methodology
@@ -187,23 +187,28 @@ Model performance was assessed on the held-out **test** set using the best check
 \subsection{Segmentation Accuracy Metrics}
 A threshold of 0.5 was applied to the sigmoid output for binary predictions. Metrics calculated on the test set:
 \begin{itemize}
-    \item \textbf{Dice Similarity Coefficient (Dice Coef / F1 Score):} Measures overlap (harmonic mean of precision/recall). Custom \texttt{DiceCoefficient} metric.
-        \begin{equation} \text{Dice} = \frac{2 \times TP}{2 \times TP + FP + FN} \end{equation}
-    \item \textbf{Intersection over Union (IoU / Jaccard Index):} Measures overlap (intersection/union). Custom \texttt{IoU} metric.
-        \begin{equation} \text{IoU} = \frac{TP}{TP + FP + FN} \end{equation}
-    \item \textbf{Precision:} Proportion of true positives among positive predictions. \newline \texttt{tf.keras.metrics.Precision(thresholds=0.5)}.
-        \begin{equation} \text{Precision} = \frac{TP}{TP + FP} \end{equation}
-    \item \textbf{Recall (Sensitivity):} Proportion of true positives among actual positives. \newline \texttt{tf.keras.metrics.Recall(thresholds=0.5)}.
-        \begin{equation} \text{Recall} = \frac{TP}{TP + FN} \end{equation}
-    \item \textbf{Binary Accuracy:} Pixel-wise accuracy. \texttt{tf.keras.metrics.BinaryAccuracy}.
-        \begin{equation} \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN} \end{equation}
+  \item \textbf{Dice Similarity Coefficient (Dice Coef / F1 Score):} Measures overlap (harmonic mean of precision/recall). Custom \texttt{DiceCoefficient} metric.
+    \begin{equation} \text{Dice} = \frac{2 \times TP}{2 \times TP + FP + FN}
+    \end{equation}
+  \item \textbf{Intersection over Union (IoU / Jaccard Index):} Measures overlap (intersection/union). Custom \texttt{IoU} metric.
+    \begin{equation} \text{IoU} = \frac{TP}{TP + FP + FN}
+    \end{equation}
+  \item \textbf{Precision:} Proportion of true positives among positive predictions. \newline \texttt{tf.keras.metrics.Precision(thresholds=0.5)}.
+    \begin{equation} \text{Precision} = \frac{TP}{TP + FP}
+    \end{equation}
+  \item \textbf{Recall (Sensitivity):} Proportion of true positives among actual positives. \newline \texttt{tf.keras.metrics.Recall(thresholds=0.5)}.
+    \begin{equation} \text{Recall} = \frac{TP}{TP + FN}
+    \end{equation}
+  \item \textbf{Binary Accuracy:} Pixel-wise accuracy. \texttt{tf.keras.metrics.BinaryAccuracy}.
+    \begin{equation} \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+    \end{equation}
 \end{itemize}
 (TP=True Positive, TN=True Negative, FP=False Positive, FN=False Negative pixels).
 
 \subsection{Computational Efficiency Metrics}
 \begin{itemize}
-    \item \textbf{Total Training Time:} Measured wall-clock time from the start of script execution to the completion of training (or evaluation if training skipped). Recorded in completion notification file. Provides a practical comparison under consistent hardware conditions.
-    \item \textbf{Average Inference Time:} Measured average wall-clock time required to generate a segmentation prediction for a single input slice on the test set using the trained model on the specified hardware (GPU). This reflects the model's speed during deployment.
+  \item \textbf{Total Training Time:} Measured wall-clock time from the start of script execution to the completion of training (or evaluation if training skipped). Recorded in completion notification file. Provides a practical comparison under consistent hardware conditions.
+  \item \textbf{Average Inference Time:} Measured average wall-clock time required to generate a segmentation prediction for a single input slice on the test set using the trained model on the specified hardware (GPU). This reflects the model's speed during deployment.
 \end{itemize}
 
 \subsection{Experimental Design \& Comparison}

@@ -82,3 +82,61 @@ For LaTeX help, refer to resources like:
 - <https://www.overleaf.com/learn>
 - `biblatex` package documentation
 - `glossaries` package documentation
+
+- install mactex([<https://www.tug.org/mactex/morepackages.html>](https://www.tug.org/mactex/mactex-download.html))
+- after installing check the texlive directory if path exists then add
+
+``` zsh
+echo 'export PATH="/usr/local/texlive/2025/bin/universal-darwin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+``` zsh
+brew install tex-fmt
+```
+
+## VS Code Setup for LaTeX
+
+To streamline your LaTeX workflow in Visual Studio Code:
+
+1. **Install Extensions:**
+    - **LaTeX Workshop:** Provides comprehensive LaTeX features (compilation, preview, IntelliSense, etc.).
+
+2. **Configure `settings.json`:**
+    Modify your VS Code `settings.json` file (`Cmd + Shift + P` -> "Preferences: Open User Settings (JSON)") to define the compilation tools and recipe. This configuration sets up `xelatex` and `biber` and creates a recipe to automatically run the necessary sequence for compiling the thesis with bibliography support.
+
+    ```json
+      "latex-workshop.latex.tools": [
+        {
+          "name": "xelatex",
+          "command": "xelatex",
+          "args": [
+            "-synctex=1",
+            "-interaction=nonstopmode",
+            "-file-line-error",
+            "%DOC%"
+          ]
+        },
+        {
+          "name": "biber",
+          "command": "biber",
+          "args": [
+            "%DOCFILE%"
+          ]
+        }
+      ],
+      "latex-workshop.latex.recipes": [
+        {
+          "name": "xelatex -> biber -> xelatex*2",
+          "tools": [
+            "xelatex",
+            "biber",
+            "xelatex",
+            "xelatex"
+          ]
+        }
+      ],
+      "latex-workshop.latex.recipe.default": "xelatex -> biber -> xelatex*2",
+    ```
+
+    After saving `settings.json`, you can compile the `thesis.tex` file using the "Build LaTeX project" command (`Cmd + Option + B` or via the TeX icon in the activity bar) in VS Code, which will use the default recipe defined above.

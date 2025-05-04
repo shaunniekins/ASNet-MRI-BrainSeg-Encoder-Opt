@@ -15,13 +15,13 @@ Therefore, the central problem addressed by this research is the suboptimal comp
 This study seeks to answer the following research questions:
 
 \begin{enumerate}
-	\item How can lightweight encoder architectures, specifically MobileNetV3 and EfficientNetV2, be effectively integrated into the existing AS-Net framework for MRI brain tumor segmentation?
-	\item How do the AS-Net variants using MobileNetV3 (Large and Small) and EfficientNetV2 (B0 and B1) encoders compare to the original AS-Net with a VGG16 encoder in terms of:
-	      \begin{itemize}
-		      \item Segmentation accuracy (measured by Dice Coefficient/F1 Score, IoU/Jaccard Index, Precision, Recall, Binary Accuracy)?
-		      \item Computational efficiency (measured by total training time)?
-	      \end{itemize}
-	\item Does the synergy of spatial and channel attention mechanisms within AS-Net remain effective for segmenting brain tumors in MRI data when paired with different encoder backbones?
+  \item How can lightweight encoder architectures, specifically MobileNetV3 and EfficientNetV2, be effectively integrated into the existing AS-Net framework for MRI brain tumor segmentation?
+  \item How do the AS-Net variants using MobileNetV3 (Large and Small) and EfficientNetV2 (B0 and B1) encoders compare to the original AS-Net with a VGG16 encoder in terms of:
+    \begin{itemize}
+      \item Segmentation accuracy (measured by Dice Coefficient/F1 Score, IoU/Jaccard Index, Precision, Recall, Binary Accuracy)?
+      \item Computational efficiency (measured by total training time)?
+    \end{itemize}
+  \item Does the synergy of spatial and channel attention mechanisms within AS-Net remain effective for segmenting brain tumors in MRI data when paired with different encoder backbones?
 \end{enumerate}
 
 \section{Objectives of the Study}
@@ -30,10 +30,10 @@ The primary purpose of this research is to adapt and optimize the Attention Syne
 
 Specifically, this study aims to:
 \begin{itemize}
-	\item Evaluate the integration of lightweight encoder architectures (MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, EfficientNetV2-B1) into the AS-Net framework as alternatives to the original VGG16 encoder.
-	\item Quantify and compare the segmentation performance (using metrics like Dice Coefficient, IoU, Precision, Recall) and computational efficiency (measured by training time) of the AS-Net variants equipped with these different encoders.
-	\item Assess the effectiveness of the AS-Net's spatial and channel attention mechanisms when applied to the specific domain of MRI brain tumor segmentation.
-	\item Provide evidence-based recommendations regarding the most suitable encoder architecture for balancing accuracy and efficiency within the AS-Net framework for this application.
+  \item Evaluate the integration of lightweight encoder architectures (MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, EfficientNetV2-B1) into the AS-Net framework as alternatives to the original VGG16 encoder.
+  \item Quantify and compare the segmentation performance (using metrics like Dice Coefficient, IoU, Precision, Recall) and computational efficiency (measured by training time) of the AS-Net variants equipped with these different encoders.
+  \item Assess the effectiveness of the AS-Net's spatial and channel attention mechanisms when applied to the specific domain of MRI brain tumor segmentation.
+  \item Provide evidence-based recommendations regarding the most suitable encoder architecture for balancing accuracy and efficiency within the AS-Net framework for this application.
 \end{itemize}
 
 \section{Significance of the Study}
@@ -44,9 +44,9 @@ The exploration of lightweight encoders like MobileNetV3 and EfficientNetV2 with
 
 The findings are expected to benefit multiple stakeholders:
 \begin{enumerate}
-	\item \textbf{Clinicians and Radiologists:} Access to more efficient and accurate automated segmentation tools can enhance diagnostic confidence, streamline treatment planning, and improve the monitoring of tumor response, ultimately supporting better patient management.
-	\item \textbf{Patients:} Improved accuracy and efficiency in segmentation can contribute to earlier detection, more precise interventions, and potentially improved prognoses.
-	\item \textbf{Researchers and Developers:} This work provides empirical evidence on the performance trade-offs of different encoders within an attention-based framework, informing future development of deep learning models for medical imaging. The adaptation of the attention synergy mechanism offers insights into the role of attention in extracting relevant features from MRI data.
+  \item \textbf{Clinicians and Radiologists:} Access to more efficient and accurate automated segmentation tools can enhance diagnostic confidence, streamline treatment planning, and improve the monitoring of tumor response, ultimately supporting better patient management.
+  \item \textbf{Patients:} Improved accuracy and efficiency in segmentation can contribute to earlier detection, more precise interventions, and potentially improved prognoses.
+  \item \textbf{Researchers and Developers:} This work provides empirical evidence on the performance trade-offs of different encoders within an attention-based framework, informing future development of deep learning models for medical imaging. The adaptation of the attention synergy mechanism offers insights into the role of attention in extracting relevant features from MRI data.
 \end{enumerate}
 
 Ultimately, this research aims to bridge the gap between cutting-edge deep learning techniques and practical clinical application, contributing to the development of more accessible and effective tools for brain tumor analysis.
@@ -56,19 +56,19 @@ Ultimately, this research aims to bridge the gap between cutting-edge deep learn
 \subsection{Scope}
 This research is specifically focused on:
 \begin{itemize}
-	\item Adapting and evaluating the Attention Synergy Network (AS-Net) architecture.
-	\item The task of binary brain tumor segmentation (tumor vs. background) using MRI data. Multi-class segmentation (differentiating tumor sub-regions) is outside the scope.
-	\item Comparing the performance of five specific encoder backbones: VGG16, MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, and EfficientNetV2-B1. Other potential encoders are not evaluated. Input sizes were 224x224 for VGG16, MobileNetV3-Large/Small, and EfficientNetV2-B0, and 240x240 for EfficientNetV2-B1.
-	\item Utilizing the BraTS 2023-GLI (Task 1) dataset. The original NIfTI files were preprocessed into 2D HDF5 slices for efficient loading. The study focuses only on the glioma segmentation task (Task 1) from the BraTS 2023 challenge and does not involve acquiring raw MRI data.
-	\item Evaluating performance based on standard segmentation metrics (Dice, IoU, etc.) and computational efficiency based on training time on specific hardware.
+  \item Adapting and evaluating the Attention Synergy Network (AS-Net) architecture.
+  \item The task of binary brain tumor segmentation (tumor vs. background) using MRI data. Multi-class segmentation (differentiating tumor sub-regions) is outside the scope.
+  \item Comparing the performance of five specific encoder backbones: VGG16, MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, and EfficientNetV2-B1. Other potential encoders are not evaluated. Input sizes were 224x224 for VGG16, MobileNetV3-Large/Small, and EfficientNetV2-B0, and 240x240 for EfficientNetV2-B1.
+  \item Utilizing the BraTS 2023-GLI (Task 1) dataset. The original NIfTI files were preprocessed into 2D HDF5 slices for efficient loading. The study focuses only on the glioma segmentation task (Task 1) from the BraTS 2023 challenge and does not involve acquiring raw MRI data.
+  \item Evaluating performance based on standard segmentation metrics (Dice, IoU, etc.) and computational efficiency based on training time on specific hardware.
 \end{itemize}
 
 \subsection{Limitations}
 The study acknowledges the following limitations:
 \begin{itemize}
-	\item \textbf{Dataset Specificity:} Findings are based on the BraTS 2023-GLI (Task 1) dataset. The generalizability of the results to other datasets (including other BraTS 2023 tasks) with different patient populations, tumor types, or imaging protocols requires further investigation.
-	\item \textbf{Data Characteristics:} The quality, resolution, and potential artifacts within the original NIfTI files, as well as the specific method used for preprocessing into HDF5 slices, could influence model performance.
-	\item \textbf{Computational Resources:} Training and evaluation were conducted on specific hardware (NVIDIA Tesla V100). Training times are relative and would differ on other systems. The scale of experimentation (e.g., number of runs, extent of hyperparameter tuning) was constrained by available resources.
-	\item \textbf{Hyperparameter Selection:} The study used a fixed set of primary hyperparameters (e.g., learning rate, loss weights) across models for comparability. Individual tuning for each encoder might yield slightly different performance rankings.
-	\item \textbf{Implementation Details:} Specific choices regarding fine-tuning strategy (which layers to freeze/unfreeze) and skip connection points could impact results.
+  \item \textbf{Dataset Specificity:} Findings are based on the BraTS 2023-GLI (Task 1) dataset. The generalizability of the results to other datasets (including other BraTS 2023 tasks) with different patient populations, tumor types, or imaging protocols requires further investigation.
+  \item \textbf{Data Characteristics:} The quality, resolution, and potential artifacts within the original NIfTI files, as well as the specific method used for preprocessing into HDF5 slices, could influence model performance.
+  \item \textbf{Computational Resources:} Training and evaluation were conducted on specific hardware (NVIDIA Tesla V100). Training times are relative and would differ on other systems. The scale of experimentation (e.g., number of runs, extent of hyperparameter tuning) was constrained by available resources.
+  \item \textbf{Hyperparameter Selection:} The study used a fixed set of primary hyperparameters (e.g., learning rate, loss weights) across models for comparability. Individual tuning for each encoder might yield slightly different performance rankings.
+  \item \textbf{Implementation Details:} Specific choices regarding fine-tuning strategy (which layers to freeze/unfreeze) and skip connection points could impact results.
 \end{itemize}
