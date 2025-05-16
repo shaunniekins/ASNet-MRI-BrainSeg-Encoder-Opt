@@ -2,15 +2,14 @@
 
 \section{Background of the Study}
 
-Medical image segmentation, particularly the delineation of brain tumors from Magnetic Resonance Imaging (MRI) scans, is a cornerstone of modern clinical oncology \parencite{cai2022novel, liu2021review}. Accurate segmentation provides critical information for diagnosis, treatment planning, and monitoring disease progression by precisely identifying tumor boundaries and characteristics \parencite{liu2021review, tang2019role}. This process involves partitioning an image into distinct regions based on shared properties, thereby enhancing the interpretability of complex medical images and mitigating potential diagnostic errors \parencite{liu2021review, handels2013viewpoints}.
-
-The field of computer-aided diagnosis (CAD) has witnessed significant advancements, largely driven by the success of deep learning, especially Convolutional Neural Networks (CNNs). These techniques have demonstrated superior accuracy and robustness compared to traditional image processing methods for medical image segmentation tasks \parencite{litjens2017survey}. Architectures such as U-Net \parencite{ronneberger2015u} and its derivatives have become standard tools for segmenting organs and lesions across various imaging modalities, including MRI for brain tumor analysis \parencite{cai2022novel, moorthy2022survey, tang2019role}. The automation offered by these deep learning models promises not only to improve the speed and consistency of tumor segmentation but also to alleviate the workload of radiologists and other healthcare professionals \parencite{moorthy2022survey, tang2019role}.
+Segmentation of medical images, specifically brain tumor segmentation based on Magnetic Resonance Imaging (MRI) scans, is at the core of contemporary clinical oncology \parencite{cai2022novel, liu2021review}. Segmentation is valuable because it conveys useful information for diagnosis, treatment planning, and monitoring disease extent by accurately defining tumor outline and characteristics \parencite{liu2021review, tang2019role}. Segmenting an image into clearly demarcated regions according to standard features is necessary to decomplicate complex medical images so they can be more easily interpreted. It enhances our interpretation of these images and minimizes the opportunities for errors in diagnosis \parencite{liu2021review, handels2013viewpoints}.
+Over the past few years, CAD has advanced further than imagined with the evolution of deep learning (specifically via Convolutional Neural Networks - CNNs). These improvements help create segmentation of medical images that are more accurate, consistent, and trustworthy than methods with traditional image processing \parencite{litjens2017survey}. Well-known network architectures like U-Net \parencite{ronneberger2015u} have led these advancements. Further, its derivatives are now standard organ and lesion segmentation procedures in various imaging modalities, including MRI for tumor analysis of brain tumors \parencite{cai2022novel, moorthy2022survey, tang2019role}. The improvements achieved in the deep learning models have tremendous promise to improve the speed and uniformity of tumor segmentation. This automation would significantly reduce the workload for radiologists and other medical professionals, enabling them to concentrate more on patient care \parencite{moorthy2022survey, tang2019role}.
 
 \section{Statement of the Problem}
 
-Despite these strides, challenges remain. A recent advancement in image segmentation is the Attention Synergy Network (AS-Net), proposed by \textcite{hu2022asnet} for skin lesion segmentation. AS-Net effectively utilizes spatial and channel attention mechanisms to improve segmentation performance. However, the original study acknowledged significant limitations related to the computational demands and potential generalizability issues stemming from its reliance on the relatively heavy VGG16 encoder architecture. This computational inefficiency poses a barrier to practical deployment in clinical settings where resources may be constrained and rapid processing is often desirable.
+Despite these strides, challenges remain. A recent advancement in image segmentation is the Attention Synergy Network (AS-Net), proposed by \textcite{hu2022asnet} for skin lesion segmentation. AS-Net effectively utilizes spatial and channel attention mechanisms to improve segmentation performance. Nonetheless, the initial study recognized limitations regarding computational requirements and possible generalizability concerns due to its use of the comparatively resource-intensive VGG16 encoder architecture. This computational inefficiency is a limitation to real-world deployment in clinical environments where resources are limited and quick processing is preferable.
 
-Therefore, the central problem addressed by this research is the suboptimal computational efficiency of the original AS-Net architecture when considering its potential application to the demanding task of MRI brain tumor segmentation. While the attention mechanisms show promise, the VGG16 encoder limits its practicality. This study investigates whether adapting AS-Net with more modern, lightweight encoder architectures can maintain or improve segmentation accuracy while significantly enhancing computational efficiency.
+Therefore, this research addresses the central problem of the original AS-Net architecture's suboptimal computational efficiency when considering its potential application to MRI brain tumor segmentation. While the attention mechanisms show promise, the VGG16 encoder limits their practicality. This study investigates whether adapting AS-Net with more modern, lightweight encoder architectures can maintain or improve segmentation accuracy while significantly enhancing computational efficiency.
 
 This study seeks to answer the following research questions:
 
@@ -26,31 +25,30 @@ This study seeks to answer the following research questions:
 
 \section{Objectives of the Study}
 
-The primary purpose of this research is to adapt and optimize the Attention Synergy Network (AS-Net) architecture for the task of MRI-based brain tumor segmentation by systematically comparing the performance and efficiency of different encoder backbones.
+The primary purpose of this research is to adapt and optimize the Attention Synergy Network (AS-Net) architecture for MRI-based brain tumor segmentation by systematically comparing the performance and efficiency of different encoder backbones.
 
 Specifically, this study aims to:
 \begin{itemize}
-  \item Evaluate the integration of lightweight encoder architectures (MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, EfficientNetV2-B1) into the AS-Net framework as alternatives to the original VGG16 encoder.
-  \item Quantify and compare the segmentation performance (using metrics like Dice Coefficient, IoU, Precision, Recall) and computational efficiency (measured by training time) of the AS-Net variants equipped with these different encoders.
-  \item Assess the effectiveness of the AS-Net's spatial and channel attention mechanisms when applied to the specific domain of MRI brain tumor segmentation.
+  \item Assess the incorporation of light encoder architectures (MobileNetV3-Large, MobileNetV3-Small, EfficientNetV2-B0, EfficientNetV2-B1) into the AS-Net framework as substitutes for the base VGG16 encoder.
+  \item Quantify and compare segmentation performance (in terms of metrics such as Dice Coefficient, IoU, Precision, Recall) and computational efficiency (train time) of the AS-Net variants with these various encoders.
+  \item Assess the effectiveness of the AS-Net's spatial and channel attention mechanisms when applied to the specific MRI brain tumor segmentation domain.
   \item Provide evidence-based recommendations regarding the most suitable encoder architecture for balancing accuracy and efficiency within the AS-Net framework for this application.
 \end{itemize}
 
 \section{Significance of the Study}
 
-This research holds significant potential for advancing knowledge in medical image analysis, particularly concerning deep learning applications for brain tumor CAD. Adapting and optimizing the AS-Net architecture \parencite{hu2022asnet} for MRI brain tumor segmentation contributes valuable insights into the design and application of attention-based deep learning models for complex medical imaging tasks.
+This research holds significant potential for advancing knowledge in medical image analysis, particularly concerning deep learning applications for brain tumor CAD. Adapting and optimizing the AS-Net architecture \parencite{hu2022asnet} for MRI brain tumor segmentation contributes valuable insights into designing and applying attention-based deep learning models for complex medical imaging tasks.
 
-The exploration of lightweight encoders like MobileNetV3 and EfficientNetV2 within the AS-Net framework directly addresses a critical need for practical, deployable AI solutions in healthcare. By demonstrating the feasibility of achieving high segmentation accuracy with reduced computational cost, this study can facilitate the adoption of advanced segmentation tools in real-world clinical workflows, potentially operating on resource-constrained hardware or enabling faster processing times.
+The exploration of lightweight encoders like MobileNetV3 and EfficientNetV2 within the AS-Net framework addresses a critical need for practical, deployable AI solutions in healthcare. By demonstrating the feasibility of achieving high segmentation accuracy with reduced computational cost, this study can facilitate the adoption of advanced segmentation tools in real-world clinical workflows, potentially operating on resource-constrained hardware or enabling faster processing times.
 
-The findings are expected to benefit multiple stakeholders:
+The results are likely to assist various stakeholders:
 \begin{enumerate}
-  \item \textbf{Clinicians and Radiologists:} Access to more efficient and accurate automated segmentation tools can enhance diagnostic confidence, streamline treatment planning, and improve the monitoring of tumor response, ultimately supporting better patient management.
-  \item \textbf{Patients:} Improved accuracy and efficiency in segmentation can contribute to earlier detection, more precise interventions, and potentially improved prognoses.
-  \item \textbf{Researchers and Developers:} This work provides empirical evidence on the performance trade-offs of different encoders within an attention-based framework, informing future development of deep learning models for medical imaging. The adaptation of the attention synergy mechanism offers insights into the role of attention in extracting relevant features from MRI data.
+  \item \textbf{Radiologists and Clinicians:} Accessing more efficient, precise automated segmentation solutions can enhance confidence in diagnosis, make treatment planning easier, and enable more accurate monitoring of tumor response. It all cumulatively enables improved patient care and management.
+  \item \textbf{Patients:} More accurate and efficient segmentation can lead to earlier detections, more precise treatments, and potentially better health outcomes.
+  \item \textbf{Researchers and Developers:} This work provides empirical evidence on the performance trade-offs of different encoders within an attention-based framework, informing future development of deep learning models for medical imaging. Adapting the attention synergy mechanism offers insights into the role of attention in extracting relevant features from MRI data.
 \end{enumerate}
 
-Ultimately, this research aims to bridge the gap between cutting-edge deep learning techniques and practical clinical application, contributing to the development of more accessible and effective tools for brain tumor analysis.
-
+Ultimately, this research aims to bridge the gap between cutting-edge deep learning techniques and practical clinical applications, contributing to developing more accessible and practical tools for brain tumor analysis.
 \section{Scope and Limitation of the Study}
 
 \subsection{Scope}
@@ -69,6 +67,6 @@ The study acknowledges the following limitations:
   \item \textbf{Dataset Specificity:} Findings are based on the BraTS 2023-GLI (Task 1) dataset. The generalizability of the results to other datasets (including other BraTS 2023 tasks) with different patient populations, tumor types, or imaging protocols requires further investigation.
   \item \textbf{Data Characteristics:} The quality, resolution, and potential artifacts within the original NIfTI files, as well as the specific method used for preprocessing into HDF5 slices, could influence model performance.
   \item \textbf{Computational Resources:} Training and evaluation were conducted on specific hardware (NVIDIA Tesla V100). Training times are relative and would differ on other systems. The scale of experimentation (e.g., number of runs, extent of hyperparameter tuning) was constrained by available resources.
-  \item \textbf{Hyperparameter Selection:} The study used a fixed set of primary hyperparameters (e.g., learning rate, loss weights) across models for comparability. Individual tuning for each encoder might yield slightly different performance rankings.
+  \item \textbf{Hyperparameter Selection:} For comparability, the study used a fixed set of primary hyperparameters (e.g., learning rate, loss weights) across models. Individual tuning for each encoder might yield slightly different performance rankings.
   \item \textbf{Implementation Details:} Specific choices regarding fine-tuning strategy (which layers to freeze/unfreeze) and skip connection points could impact results.
 \end{itemize}

@@ -4,30 +4,22 @@
 \section{Conceptual Framework}
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.9\textwidth]{figures/asnet-architecture/placeholder_conceptual_framework.png}
+  \includegraphics[width=0.9\textwidth]{figures/asnet-architecture/conceptual_framework.png}
   \caption[Conceptual Framework of the Study]{Conceptual framework}
   \label{fig:conceptual_framework}
 \end{figure}
 
-\ref{fig:conceptual_framework} illustrates the conceptual framework guiding this research. The process initiates with the BraTS 2023-GLI (Task 1) dataset, which undergoes a standardized preprocessing pipeline. The resulting data is then fed into multiple parallel processing streams. Each stream implements the Attention Synergy Network (AS-Net) architecture but utilizes a distinct encoder backbone, such as VGG16, MobileNetV3, and EfficientNetV2, as explored in this study. Within each stream, the encoder's features are processed by Spatial Attention Modules (SAM) and Channel Attention Modules (CAM), whose outputs are integrated by a Synergy module. Each AS-Net variant generates its own segmentation output, from which performance metrics are calculated. Finally, these metrics are systematically compared across the different encoder variants to evaluate their relative performance and efficiency.
+\ref{fig:conceptual_framework} illustrates the conceptual framework guiding this research. The process initiates with the BraTS 2023-GLI (Task 1) dataset, which undergoes a standardized preprocessing pipeline. The resulting data is then fed into multiple parallel processing streams. Each stream implements the Attention Synergy Network (AS-Net) architecture but utilizes a distinct encoder backbone, such as VGG16, MobileNetV3, and EfficientNetV2, as explored in this study. Within each stream, the encoder's features are processed by Spatial Attention Modules (SAM) and Channel Attention Modules (CAM), whose outputs are integrated by a Synergy module. Each AS-Net variant generates its segmentation output, from which performance metrics are calculated. Finally, these metrics are systematically compared across the encoder variants to evaluate their relative performance and efficiency.
 
 % 2. The Attention Synergy Network (AS-Net) Architecture
 \section{The Attention Synergy Network (AS-Net) Architecture}
 
 The study adapts the AS-Net architecture, originally proposed by \textcite{hu2022asnet} for skin lesion segmentation. The core components include:
 
-\begin{itemize}
-  \item \textbf{Encoder Backbone:} Extracts hierarchical features from the input image. The original AS-Net used VGG16. This study replaces it with various alternatives.
-  \item \textbf{Spatial Attention Module (SAM):} As illustrated in \ref{fig:sam_module}, SAM processes input features through parallel convolutional pathways to generate spatial attention maps, highlighting salient regions (likely tumor areas) and focusing computation spatially.
-  \item \textbf{Channel Attention Module (CAM):} As shown in \ref{fig:cam_module}, CAM focuses on inter-channel relationships using global pooling and an MLP to generate channel-wise attention weights, emphasizing informative feature channels.
-  \item \textbf{Synergy Module:} Integrates the outputs from SAM and CAM using learnable scalar parameters ($\alpha$ and $\beta$, initialized to 0.5), allowing adaptive fusion of spatial and channel attention before refinement and passing to the next decoder stage.
-  \item \textbf{Decoder Structure:} Follows a standard U-Net-like symmetric structure, progressively upsampling features and integrating high-resolution spatial information from the encoder via skip connections at each stage. The fused features from the Synergy module are passed through the decoder stages.
-\end{itemize}
-
 % SAM Figure
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.85\textwidth]{figures/asnet-architecture/placeholder_sam_diagram.png}
+  \includegraphics[width=0.85\textwidth]{figures/asnet-architecture/sam_diagram.png}
   \caption[Spatial Attention Module (SAM)]{Diagram of the Spatial Attention Module (SAM) used in the AS-Net decoder. Adapted from \textcite{hu2022asnet}.}
   \label{fig:sam_module}
 \end{figure}
@@ -35,10 +27,18 @@ The study adapts the AS-Net architecture, originally proposed by \textcite{hu202
 % CAM Figure
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.85\textwidth]{figures/asnet-architecture/placeholder_cam_diagram.png}
+  \includegraphics[width=0.85\textwidth]{figures/asnet-architecture/cam_diagram.png}
   \caption[Channel Attention Module (CAM)]{Diagram of the Channel Attention Module (CAM) used in the AS-Net decoder. Adapted from \textcite{hu2022asnet}.}
   \label{fig:cam_module}
 \end{figure}
+
+\begin{itemize}
+  \item \textbf{Encoder Backbone:} This process extracts hierarchical features from the input image. The original AS-Net used VGG16, which this study replaces with various alternatives.
+  \item \textbf{Spatial Attention Module (SAM):} As illustrated in \ref{fig:sam_module}, SAM processes input features through parallel convolutional pathways to generate spatial attention maps, highlighting salient regions (likely tumor areas) and focusing computation spatially.
+  \item \textbf{Channel Attention Module (CAM):} As shown in \ref{fig:cam_module}, CAM focuses on inter-channel relationships using global pooling and an MLP to generate channel-wise attention weights, emphasizing informative feature channels.
+  \item \textbf{Synergy Module:} Integrates the outputs from SAM and CAM using learnable scalar parameters ($\alpha$ and $\beta$, initialized to 0.5), allowing adaptive fusion of spatial and channel attention before refinement and passing to the next decoder stage.
+  \item \textbf{Decoder Structure:} Follows a standard U-Net-like symmetric structure, progressively upsampling features and integrating high-resolution spatial information from the encoder via skip connections at each stage. The fused features from the Synergy module are passed through the decoder stages.
+\end{itemize}
 
 % 3. Encoder Integration and Model Variants
 \section{Encoder Integration and Model Variants}
@@ -46,7 +46,7 @@ The study adapts the AS-Net architecture, originally proposed by \textcite{hu202
 Five pre-trained encoder networks were integrated into the AS-Net framework:
 
 \begin{enumerate}
-  \item \textbf{Baseline Model (VGG16):} Used as the reference encoder, adapted from the original AS-Net paper \parencite{hu2022asnet}. Input size: 224x224x3.
+  \item \textbf{Baseline Model (VGG16):} The reference encoder was adapted from the original AS-Net paper \parencite{hu2022asnet}. Its input size is 224x224x3.
   \item \textbf{Lightweight Encoders:}
     \begin{itemize}
       \item \textbf{MobileNetV3-Large \& MobileNetV3-Small \parencite{howard2019searching}:} Selected for their high efficiency, designed for mobile applications, representing different points on the accuracy/latency curve. Input size: 224x224x3.
@@ -56,7 +56,7 @@ Five pre-trained encoder networks were integrated into the AS-Net framework:
 \end{enumerate}
 
 \subsection{Integration Process}
-Each encoder replaced the VGG16 feature extraction block. Skip connections were established by extracting feature maps from intermediate layers of each encoder that corresponded spatially to the resolution required at each stage of the AS-Net decoder. Specific layer choices were based on common practices for U-Net style architectures using these backbones (e.g., outputs of blocks ending with stride 2). Since encoders produce features with varying channel depths, 1x1 convolutional layers were potentially used within the decoder's skip connection pathway (before concatenation) if necessary to standardize channel dimensions, although the primary adaptation focused on selecting appropriate layers. For MobileNetV3 and EfficientNetV2, their respective built-in \texttt{preprocess\_input} functions were applied within the model. For VGG16, Z-score normalization served this purpose. A custom \texttt{ResizeToMatchLayer} was used in the EfficientNetV2 decoders to ensure spatial dimension compatibility before concatenation, addressing potential minor discrepancies from padding/striding.
+Each encoder replaced the VGG16 feature extraction block. Skip connections were established by extracting feature maps from intermediate layers of each encoder that corresponded spatially to the resolution required at each stage of the AS-Net decoder. Specific layer choices were based on standard practices for U-Net style architectures using these backbones (e.g., outputs of blocks ending with a stride 2). Since encoders produce features with varying channel depths, 1x1 convolutional layers were potentially used within the decoder's skip connection pathway (before concatenation) if necessary to standardize channel dimensions. However, the primary adaptation focused on selecting appropriate layers. MobileNetV3 and EfficientNetV2's respective built-in \texttt{preprocess\_input} functions were applied to the model. For VGG16, Z-score normalization served this purpose. A custom \texttt{ResizeToMatchLayer} was used in the EfficientNetV2 decoders to ensure spatial dimension compatibility before concatenation, addressing potential minor discrepancies from padding/striding.
 
 \subsection{Transfer Learning Strategy}
 All encoders were initialized with weights pre-trained on ImageNet. A fine-tuning approach was employed:
@@ -67,41 +67,41 @@ All encoders were initialized with weights pre-trained on ImageNet. A fine-tunin
 \end{itemize}
 This strategy aimed to leverage general features while adapting deeper layers to the MRI segmentation task.
 
-% Architecture Figures
+% Consolidated Architecture Figure
 \begin{figure}[!htb]
   \centering
-  \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_vgg16.png}
-  \caption[AS-Net Architecture with VGG16 Encoder]{High-level architecture of AS-Net using the VGG16 encoder backbone.}
-  \label{fig:asnet_vgg16_arch}
+  \includegraphics[width=0.8\textwidth]{figures/asnet-architecture/asnet_architecture.png}
+  \caption[AS-Net Architecture]{Complete AS-Net encoder-decoder architecture with attention modules.}
+  \label{fig:encoder_integration}
 \end{figure}
 
-\begin{figure}[!htb]
+A key architectural difference among the encoder variants is their feature map resolution progression. VGG16-based AS-Net processes features from H/16 to H (four decoder stages), while MobileNetV3 and EfficientNetV2 variants incorporate an additional deeper stage to handle features from H/32 to H (five decoder stages). This reflects the deeper feature hierarchies in modern efficient architectures compared to VGG16.
+% filepath: /Users/shaunniekins/Desktop/01 Projects/ASNet_MRI_BrainSeg_Encoder_Opt/chapters/chapter3.tex
+\begin{table}[!htb]
   \centering
-  \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_mobilenetv3l.png}
-  \caption[AS-Net Architecture with MobileNetV3 Encoder]{High-level architecture of AS-Net using MobileNetV3 (Large/Small) encoder backbones. Example shown uses MobileNetV3-Large.}
-  \label{fig:asnet_mobilenet_arch}
-\end{figure}
-
-\begin{figure}[!htb]
-  \centering
-  \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_mobilenetv3s.png}
-  \caption[AS-Net Architecture with MobileNetV3-Small Encoder]{High-level architecture of AS-Net using the MobileNetV3-Small encoder backbone.}
-  \label{fig:asnet_mobilenetv3s_arch}
-\end{figure}
-
-\begin{figure}[!htb]
-  \centering
-  \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_efficientnetv2b0.png}
-  \caption[AS-Net Architecture with EfficientNetV2-B0 Encoder]{High-level architecture of AS-Net using the EfficientNetV2-B0 encoder backbone.}
-  \label{fig:asnet_efficientnet_arch}
-\end{figure}
-
-\begin{figure}[!htb]
-  \centering
-  \includegraphics[width=0.85\textwidth]{figures/asnet-encoders/placeholder_asnet_efficientnetv2b1.png}
-  \caption[AS-Net Architecture with EfficientNetV2-B1 Encoder]{High-level architecture of AS-Net using the EfficientNetV2-B1 encoder backbone.}
-  \label{fig:asnet_efficientnetv2b1_arch}
-\end{figure}
+  \caption{Encoder and decoder stage dimensions in AS-Net variants.}
+  \label{tab:encoder_specs}
+  \setlength{\tabcolsep}{3pt} % Keep this, adjust if needed
+  \begin{tabularx}{\textwidth}{@{}l*{5}{>{\centering\arraybackslash}X}@{}}
+    \hline\hline
+    \textbf{Encoder} & \textbf{Stage 1} & \textbf{Stage 2} & \textbf{Stage 3} & \textbf{Stage 4} & \textbf{Stage 5} \\
+    & \textbf{(H/2)} & \textbf{(H/4)} & \textbf{(H/8)} & \textbf{(H/16)} & \textbf{(H/32)} \\
+    \midrule
+    VGG16 & 64@112$\times$112 & 128@56$\times$56 & 256@28$\times$28 & 512@14$\times$14 & N/A \\
+    MNv3-Large & 24@112$\times$112 & 40@56$\times$56 & 80@28$\times$28 & 160@14$\times$14 & 960@7$\times$7 \\
+    MNv3-Small  & 16@112$\times$112 & 24@56$\times$56 & 48@28$\times$28 & 96@14$\times$14 & 576@7$\times$7 \\
+    ENv2-B0 & 32@112$\times$112 & 48@56$\times$56 & 64@28$\times$28 & 176@14$\times$14 & 1280@7$\times$7 \\
+    ENv2-B1 & 32@120$\times$120 & 56@60$\times$60 & 80@30$\times$30 & 192@15$\times$15 & 1280@8$\times$8 \\
+    \midrule
+    \multicolumn{6}{c}{\textbf{Decoder Path and Synergy Module}} \\
+    \midrule
+    \multicolumn{6}{@{}>{\RaggedRight}p{\dimexpr\textwidth-2\tabcolsep\relax}@{}}{
+      \textbf{VGG16:} Decoder path is Stage 4 $\rightarrow$ Stage 3 $\rightarrow$ Stage 2 $\rightarrow$ Stage 1 $\rightarrow$ Synergy $\rightarrow$ Output (H/16 $\rightarrow$ H/8 $\rightarrow$ H/4 $\rightarrow$ H/2 $\rightarrow$ H). \newline
+      \textbf{MobileNetV3 \& EfficientNetV2:} Decoder path is Stage 5 $\rightarrow$ Stage 4 $\rightarrow$ Stage 3 $\rightarrow$ Stage 2 $\rightarrow$ Stage 1 $\rightarrow$ Synergy $\rightarrow$ Output (H/32 $\rightarrow$ H/16 $\rightarrow$ H/8 $\rightarrow$ H/4 $\rightarrow$ H/2 $\rightarrow$ H).
+    } \\
+    \hline\hline
+  \end{tabularx}%
+\end{table}
 
 % 4. Dataset and Preprocessing
 \section{Dataset and Preprocessing}
@@ -119,7 +119,7 @@ Access to the BraTS 2023 dataset requires registration and adherence to specific
 This process ensures that researchers agree to the data usage terms before downloading the dataset from Synapse. All data handling in this study complied with these terms. Researchers using this dataset are required to cite the relevant BraTS publications \parencite{baid2021rsna, menze2015multimodal, bakas2017advancing, bakas2017segmentationGBM, bakas2017segmentationLGG}.
 
 \subsection{Original Data Description}
-The original dataset provides multi-modal 3D MRI scans (T1, T1ce, T2, FLAIR) in NIfTI format, along with expert-annotated ground truth segmentation masks for tumor sub-regions (NCR/NET, ED, ET). This study focused on creating a binary segmentation target (tumor vs. background).
+The original dataset provides multimodal 3D MRI scans (T1, T1ce, T2, FLAIR) in NIfTI format and expert-annotated ground truth segmentation masks for tumor sub-regions (NCR/NET, ED, ET). This study focused on creating a binary segmentation target (tumor vs. background).
 
 \subsection{Preprocessing Pipeline}
 A custom script converted the 3D NIfTI volumes into a collection of 2D HDF5 (H5) files, each representing a single axial slice. This facilitated efficient 2D processing. The pipeline included:
@@ -182,7 +182,7 @@ The pipeline yielded tuples: (\texttt{model\_input\_image}, \texttt{binary\_grou
 % 6. Evaluation Methodology
 \section{Evaluation Methodology}
 
-Model performance was assessed on the held-out **test** set using the best checkpoint saved during training (based on validation Dice Coefficient).
+Model performance was assessed on the held-out test set using the best checkpoint saved during training (based on validation Dice Coefficient).
 
 \subsection{Segmentation Accuracy Metrics}
 A threshold of 0.5 was applied to the sigmoid output for binary predictions. Metrics calculated on the test set:
@@ -207,9 +207,9 @@ A threshold of 0.5 was applied to the sigmoid output for binary predictions. Met
 
 \subsection{Computational Efficiency Metrics}
 \begin{itemize}
-  \item \textbf{Total Training Time:} Measured wall-clock time from the start of script execution to the completion of training (or evaluation if training skipped). Recorded in completion notification file. Provides a practical comparison under consistent hardware conditions.
+  \item \textbf{Total Training Time:} Measured wall-clock time from the start of script execution to the completion of training (or evaluation if training skipped). Recorded in the completion notification file. Provides a practical comparison under consistent hardware conditions.
   \item \textbf{Average Inference Time:} Measured average wall-clock time required to generate a segmentation prediction for a single input slice on the test set using the trained model on the specified hardware (GPU). This reflects the model's speed during deployment.
 \end{itemize}
 
 \subsection{Experimental Design \& Comparison}
-The five AS-Net variants (VGG16, MobileNetV3-L/S, EfficientNetV2-B0/B1) were trained using the described configuration and evaluated on the test set using the defined accuracy and efficiency metrics (training time and inference time). The primary analysis focuses on comparing these variants to understand the trade-offs between segmentation performance and computational cost associated with different encoder choices within the AS-Net framework for MRI brain tumor segmentation.
+The five AS-Net variants (VGG16, MobileNetV3-L/S, EfficientNetV2-B0/B1) were trained using the described configuration and evaluated on the test set using the defined accuracy and efficiency metrics (training time and inference time). The primary analysis compares these variants to understand the trade-offs between segmentation performance and computational cost associated with different encoder choices within the AS-Net framework for MRI brain tumor segmentation.

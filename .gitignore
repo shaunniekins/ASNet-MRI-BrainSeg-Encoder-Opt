@@ -5,7 +5,7 @@ file_pdf
 # latex build
 *.acn
 *.aux
-*.bbl
+*.bbl*
 *.bcf
 *.blg
 *.glo

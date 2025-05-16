@@ -6,6 +6,7 @@
 % preamble
 \usepackage{wrapfig}
 \usepackage{pgfplots}
+\usepackage{indentfirst}
 \pgfplotsset{compat=1.18}
 \usepackage{fontspec}
 \setmainfont{Candara}[
@@ -16,9 +17,13 @@
   ItalicFont = *_Italic,
   BoldItalicFont = *_Bold_Italic
 ]
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage{listings}
+\lstset{breaklines=true}
 
-\setlength{\headheight}{14.5pt}
-\addtolength{\topmargin}{-2.5pt}
+% \setlength{\headheight}{14.5pt}
+% \addtolength{\topmargin}{-2.5pt}
 
 \usepackage{tikz}
 \usetikzlibrary{arrows,shapes,positioning,fit,calc}
@@ -32,6 +37,9 @@
 }
 
 \usepackage{adjustbox}
+\usepackage{booktabs}
+\usepackage{tabularx} % For X columns
+\usepackage{ragged2e} % For \Centering in X columns
 
 \title{Optimizing AS-Net for MRI Brain Tumor Segmentation: A Comparative Study of Different Encoders for Improved Segmentation Performance}
 \author{Shaun Niel A. Ochavo \\ Armiex Jay J. Roble}
@@ -41,6 +49,8 @@
 \bibliography{references}
 
 \begin{document}
+
+\sloppy % Add this line to make LaTeX more tolerant globally
 
 \makeTitlePage{May}{2025}
 

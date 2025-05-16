@@ -162,16 +162,17 @@ def iou_coef(y_true, y_pred, smooth=1.0):
     \centering
     \caption{Encoder Skip Connection Layer Names}
     \label{tab:skip_connections}
+    \setlength{\tabcolsep}{3pt}
     \resizebox{\textwidth}{!}{%
-      \begin{tabular}{lcccc}
+      \begin{tabular}{@{}lcccc@{}}
         \hline\hline
         \textbf{Encoder} & \textbf{Skip 1} & \textbf{Skip 2} & \textbf{Skip 3} & \textbf{Skip 4} \\
         \hline
         VGG16 & \texttt{block1\_conv2} & \texttt{block2\_conv2} & \texttt{block3\_conv3} & \texttt{block4\_conv3} \\
-        MobileNetV3-Large & \texttt{re\_lu\_2} & \texttt{re\_lu\_5} & \texttt{re\_lu\_11} & \texttt{re\_lu\_14} \\
-        MobileNetV3-Small & \texttt{re\_lu\_1} & \texttt{re\_lu\_3} & \texttt{re\_lu\_8} & \texttt{re\_lu\_10} \\
-        EfficientNetV2-B0 & \texttt{block1a\_project\_bn} & \texttt{block2b\_add} & \texttt{block4a\_project\_bn} & \texttt{block6a\_project\_bn} \\
-        EfficientNetV2-B1 & \texttt{block1b\_add} & \texttt{block2c\_add} & \texttt{block4c\_add} & \texttt{block6d\_add} \\
+        MNv3‐Large & \texttt{re\_lu\_2} & \texttt{re\_lu\_5} & \texttt{re\_lu\_11} & \texttt{re\_lu\_14} \\
+        MNv3-Small & \texttt{re\_lu\_1} & \texttt{re\_lu\_3} & \texttt{re\_lu\_8} & \texttt{re\_lu\_10} \\
+        ENv2‐B0 & \texttt{block1a\_project\_bn} & \texttt{block2b\_add} & \texttt{block4a\_project\_bn} & \texttt{block6a\_project\_bn} \\
+        ENv2‐B1 & \texttt{block1b\_add} & \texttt{block2c\_add} & \texttt{block4c\_add} & \texttt{block6d\_add} \\
         \hline\hline
       \end{tabular}%
     }
@@ -186,15 +187,15 @@ def iou_coef(y_true, y_pred, smooth=1.0):
     \caption{Encoder Fine-Tuning Strategies}
     \label{tab:fine_tuning}
     \resizebox{\textwidth}{!}{%
-      \begin{tabular}{lcc}
+      \begin{tabular}{@{}lcc@{}}
         \hline\hline
         \textbf{Encoder} & \textbf{Frozen Layers (Approx.)} & \textbf{Trainable Layers (Approx.)} \\
         \hline
         VGG16 & Up to \texttt{block3\_conv3} & From \texttt{block4\_conv1} onwards \\
-        MobileNetV3-Large & Up to block \texttt{expanded\_conv\_5} & From block \texttt{expanded\_conv\_6} onwards \\
-        MobileNetV3-Small & Up to block \texttt{expanded\_conv\_3} & From block \texttt{expanded\_conv\_4} onwards \\
-        EfficientNetV2-B0 & Up to block \texttt{block3b} & From block \texttt{block4a} onwards \\
-        EfficientNetV2-B1 & Up to block \texttt{block3c} & From block \texttt{block4a} onwards \\
+        MNv3‐Large & Up to block \texttt{expanded\_conv\_5} & From block \texttt{expanded\_conv\_6} onwards \\
+        MNv3-Small & Up to block \texttt{expanded\_conv\_3} & From block \texttt{expanded\_conv\_4} onwards \\
+        ENv2‐B0 & Up to block \texttt{block3b} & From block \texttt{block4a} onwards \\
+        ENv2‐B1 & Up to block \texttt{block3c} & From block \texttt{block4a} onwards \\
         \hline\hline
       \end{tabular}%
     }
@@ -209,8 +210,8 @@ def iou_coef(y_true, y_pred, smooth=1.0):
 
   \begin{figure}[ht]
     \centering
-    \IfFileExists{figures/training-history-plots/placeholder_training_plot_vgg16.png}{%
-      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_vgg16.png}
+    \IfFileExists{figures/training-history-plots/training_plot_vgg16.png}{%
+      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/training_plot_vgg16.png}
     }{%
       \fbox{
         \begin{minipage}{0.9\textwidth}\centering[VGG16 Training Plot Placeholder]
@@ -222,8 +223,8 @@ def iou_coef(y_true, y_pred, smooth=1.0):
 
   \begin{figure}[ht]
     \centering
-    \IfFileExists{figures/training-history-plots/placeholder_training_plot_env2b0.png}{%
-      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_env2b0.png}
+    \IfFileExists{figures/training-history-plots/training_plot_env2b0.png}{%
+      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/training_plot_env2b0.png}
     }{%
       \fbox{
         \begin{minipage}{0.9\textwidth}\centering[EfficientNetV2-B0 Training Plot Placeholder]
@@ -235,8 +236,8 @@ def iou_coef(y_true, y_pred, smooth=1.0):
 
   \begin{figure}[ht]
     \centering
-    \IfFileExists{figures/training-history-plots/placeholder_training_plot_mnv3l.png}{%
-      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_mnv3l.png}
+    \IfFileExists{figures/training-history-plots/training_plot_mnv3l.png}{%
+      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/training_plot_mnv3l.png}
     }{%
       \fbox{
         \begin{minipage}{0.9\textwidth}\centering[MobileNetV3-Large Training Plot Placeholder]
@@ -248,8 +249,8 @@ def iou_coef(y_true, y_pred, smooth=1.0):
 
   \begin{figure}[ht]
     \centering
-    \IfFileExists{figures/training-history-plots/placeholder_training_plot_mnv3s.png}{%
-      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_mnv3s.png}
+    \IfFileExists{figures/training-history-plots/training_plot_mnv3s.png}{%
+      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/training_plot_mnv3s.png}
     }{%
       \fbox{
         \begin{minipage}{0.9\textwidth}\centering[MobileNetV3-Small Training Plot Placeholder]
@@ -261,8 +262,8 @@ def iou_coef(y_true, y_pred, smooth=1.0):
 
   \begin{figure}[ht]
     \centering
-    \IfFileExists{figures/training-history-plots/placeholder_training_plot_env2b1.png}{%
-      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/placeholder_training_plot_env2b1.png}
+    \IfFileExists{figures/training-history-plots/training_plot_env2b1.png}{%
+      \includegraphics[width=0.9\textwidth]{figures/training-history-plots/training_plot_env2b1.png}
     }{%
       \fbox{
         \begin{minipage}{0.9\textwidth}\centering[EfficientNetV2-B1 Training Plot Placeholder]
@@ -275,12 +276,71 @@ def iou_coef(y_true, y_pred, smooth=1.0):
   \chapter{Code Availability}
   \label{app:code_availability}
 
-  \begingroup % Start a group to keep \sloppy local
-  \sloppy % Allow more flexible line breaking
+  \begingroup
+  \sloppy
 
   The Python code developed and used for the experiments described in this thesis, including data preprocessing, model implementation (AS-Net variants), training, evaluation, and visualization scripts, is contained within the \texttt{asnet-brats-encoder-comparison} directory accompanying this document. The code is available upon reasonable request to the author or can be found at \url{https://github.com/shaunniekins/asnet-brats-encoder-comparison}. Ensuring reproducibility was a key consideration, and the provided code, along with the specified software environment (Appendix A), allows for the replication of the study's results.
 
-  \par % End the paragraph before switching back
-  \endgroup % End the group, restoring previous \fussy setting
+  \par
+  \endgroup
+
+  \chapter{Turnitin Similarity Report}
+  \label{app:turnitin_report}
+
+  This chapter contains the first 6 pages of the Turnitin similarity check report for this thesis, demonstrating the originality of the work.
+
+  \vspace{-0.3cm}
+
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[page=1, width=0.9\textwidth]{figures/turnitin/plagiarism_checked_file.pdf}
+    \caption{Turnitin similarity report - Page 1}
+  \end{figure}
+
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[page=2, width=0.9\textwidth]{figures/turnitin/plagiarism_checked_file.pdf}
+    \caption{Turnitin similarity report - Page 2}
+  \end{figure}
+
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[page=3, width=0.9\textwidth]{figures/turnitin/plagiarism_checked_file.pdf}
+    \caption{Turnitin similarity report - Page 3}
+  \end{figure}
+
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[page=4, width=0.9\textwidth]{figures/turnitin/plagiarism_checked_file.pdf}
+    \caption{Turnitin similarity report - Page 4}
+  \end{figure}
+
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[page=5, width=0.9\textwidth]{figures/turnitin/plagiarism_checked_file.pdf}
+    \caption{Turnitin similarity report - Page 5}
+  \end{figure}
+
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[page=6, width=0.9\textwidth]{figures/turnitin/plagiarism_checked_file.pdf}
+    \caption{Turnitin similarity report - Page 6}
+  \end{figure}
+
+  \chapter{Turnitin AI Content Verification}
+  \label{app:turnitin_ai_verification}
+  This chapter contains the Turnitin AI content check report for this thesis, confirming the authenticity of the written work.
+
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[page=1, width=0.9\textwidth]{figures/turnitin/ai_checked_file.pdf}
+    \caption{Turnitin AI content checker report - Page 1}
+  \end{figure}
+
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[page=2, width=0.9\textwidth]{figures/turnitin/ai_checked_file.pdf}
+    \caption{Turnitin AI content checker report - Page 2}
+  \end{figure}
 
 \end{theappendices}
