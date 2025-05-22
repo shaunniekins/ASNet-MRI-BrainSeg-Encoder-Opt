@@ -27,10 +27,9 @@ The primary quantitative segmentation metrics, calculated on the held-out test s
   \captionsetup{skip=0pt}
   \caption{AS-Net test set performance and efficiency by encoder backbone.}
   \label{tab:quantitative_results_updated}
-  \setlength{\tabcolsep}{3pt} % Adjust as needed
-  % Define a new centered X column type for headers if needed
-  \newcolumntype{C}{>{\Centering\arraybackslash}X} % Requires ragged2e for \Centering
-  \begin{tabularx}{\textwidth}{@{} l C C C C C c c C C @{}} % Use X for wider, c for narrower
+  \setlength{\tabcolsep}{3pt}
+  \newcolumntype{C}{>{\Centering\arraybackslash}X}
+  \begin{tabularx}{\textwidth}{@{} l C C C C C c c C C @{}}
     \hline\hline
     \textbf{Encoder} & \textbf{DC} & \textbf{IoU} & \textbf{Prec.} & \textbf{Rec.} & \textbf{Bin.} & \textbf{Best} & \textbf{Train} & \textbf{Infer.} \\
     \textbf{Backbone} & & & & & \textbf{Acc.} & \textbf{Epoch} & \textbf{Time} & \textbf{Time} \\
@@ -169,7 +168,7 @@ The training and inference times clearly demonstrate the efficiency benefits of 
 \begin{itemize}
   \item \textbf{Significant Training Speed-up:} All lightweight variants trained considerably faster than the VGG16 baseline (23h 39m). MobileNetV3-Large was the fastest (18h 12m), followed closely by EfficientNetV2-B0 (18h 56m).
   \item \textbf{Quantified Training Gains:} The time reductions ranged from ~18\% (ENv2-B1, ~4.3 hours faster) to ~23\% (MNv3-Large, ~5.4 hours faster) compared to VGG16. EfficientNetV2-B0 offered a ~20\% reduction (~4.7 hours faster).
-  \item \textbf{Substantial Inference Speed-up:} All lightweight models offered significantly faster inference than VGG16 (5.43 ms/slice). MobileNetV3-Small was the fastest (2.42 ms/slice, ~55\% faster), followed by MobileNetV3-Large (2.77 ms/slice, ~49\% faster), EfficientNetV2-B0 (3.84 ms/slice, ~29\% faster), and EfficientNetV2-B1 (4.22 ms/slice, ~22\% faster). These faster inference times are particularly relevant for potential clinical application, enabling quicker analysis of patient scans \parencite{patel2024computational}.
+  \item \textbf{Substantial Inference Speed-up:} All lightweight models offered significantly faster inference than VGG16 (5.43 ms/slice). MobileNetV3-Small was the fastest (2.42 ms/slice, ~55\% faster), followed by MobileNetV3-Large (2.77 ms/slice, ~49\% faster), EfficientNetV2-B0 (3.84 ms/slice, ~29\% faster), and EfficientNetV2-B1 (4.22 ms/slice, ~22\% faster). These faster inference times are particularly relevant for potential clinical application, enabling quicker analysis of patient scans \parencite{diagnostics13162670}.
   \item \textbf{Encoder Complexity Correlation:} The observed training and inference times generally align with the expected computational complexity of the encoders, with VGG16 being the most demanding and the lightweight models requiring less time, despite the smaller batch size used for the latter during training.
 \end{itemize}
 These results directly address Research Question 2b (efficiency comparison), confirming the substantial computational savings offered by replacing VGG16 with modern lightweight backbones.
@@ -191,7 +190,6 @@ Combining the segmentation accuracy and computational efficiency results reveals
       xticklabel style={rotate=45, anchor=east, font=\small},
     }
 
-    % First axis for Dice Coefficient
     \begin{axis}[
         name=plot1,
         axis y line*=left,
@@ -204,11 +202,10 @@ Combining the segmentation accuracy and computational efficiency results reveals
         legend style={at={(0.5,-0.35)}, anchor=north, legend columns=2},
         legend cell align={left},
         legend to name=commonlegend,
-        % Add right margin to make room for second y-axis label
         enlargelimits=true,
         enlarge x limits=0.15,
       ]
-      % Dice Coefficient Data
+
       \addplot+[ybar, fill=blue!70, bar shift=-5pt] coordinates {
         (VGG16, 0.8873)
         (MNv3-L, 0.8738)
@@ -218,12 +215,10 @@ Combining the segmentation accuracy and computational efficiency results reveals
       };
       \addlegendentry{Dice Coef}
 
-      % Add the Training Time plot to the first axis to include in legend
       \addlegendimage{ybar,fill=red!70}
       \addlegendentry{Time (Hours)}
     \end{axis}
 
-    % Second axis for Training Time
     \begin{axis}[
         name=plot2,
         axis y line*=right,
@@ -240,7 +235,6 @@ Combining the segmentation accuracy and computational efficiency results reveals
         enlarge x limits=0.15,
       ]
 
-      % Training Time Data
       \addplot+[ybar, fill=red!70, bar shift=5pt] coordinates {
         (VGG16, 23.66)
         (MNv3-L, 18.21)
@@ -248,10 +242,8 @@ Combining the segmentation accuracy and computational efficiency results reveals
         (ENv2-B0, 18.94)
         (ENv2-B1, 19.38)
       };
-      % No legend entry here to avoid duplicate
     \end{axis}
 
-    % Place the combined legend at the bottom
     \node at ($(plot1.south)+(0,-2cm)$) {\ref{commonlegend}};
   \end{tikzpicture}
   \caption[Accuracy vs. Efficiency Paired Bar Chart]{Dice Coefficient (left axis, blue) versus Total Training Time in Hours (right axis, red) for AS-Net variants.}

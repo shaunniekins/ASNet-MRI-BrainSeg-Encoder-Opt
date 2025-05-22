@@ -106,9 +106,9 @@ To address computational challenges, recent studies have focused on lightweight 
 
   \item \textbf{MobileNetV2-SVM Hybrid Model:} Research by \textcite{li2024real} combined MobileNetV2 with a Support Vector Machine classifier, resulting in a model suitable for real-time applications with limited resources, achieving 88.7\% accuracy on BraTS 2018 with inference times under 50ms per slice.
 
-  \item \textbf{EfficientNetV2-M with Inception-V3:} \textcite{chen2024concatenated} proposed a concatenated model combining EfficientNetV2-M and Inception-V3 architectures, demonstrating enhanced classification performance on imbalanced datasets through transfer learning and data augmentation techniques (F1-score improvement of 7.2\%).
+  \item \textbf{EfficientNetV2-M with Inception-V3:} \textcite{incir2024improving} proposed a concatenated model combining EfficientNetV2-M and Inception-V3 architectures, demonstrating enhanced classification performance on imbalanced datasets through transfer learning and data augmentation techniques (F1-score improvement of 7.2\%).
 
-  \item \textbf{Quantized Lightweight U-Net:} \textcite{khan2023quantized} developed a 8-bit quantized version of U-Net with depthwise separable convolutions, achieving comparable performance to full-precision models while reducing memory requirements by 75\%.
+  \item \textbf{Quantized Lightweight U-Net:} \textcite{hernandez2024brain} developed a 8-bit quantized version of U-Net with depthwise separable convolutions, achieving comparable performance to full-precision models while reducing memory requirements by 75\%.
 
   \item \textbf{Neural Architecture Search for Medical Segmentation:} \textcite{wang2023automated} employed NAS techniques to automatically design efficient architectures for brain tumor segmentation, discovering models that outperformed manually designed counterparts while using 60\% fewer parameters.
 
@@ -117,9 +117,9 @@ To address computational challenges, recent studies have focused on lightweight 
 
 \section{Research Gap and Contribution}
 
-While attention mechanisms and lightweight architectures have individually shown promise in brain tumor segmentation, their combined application within frameworks like AS-Net remains underexplored. \textcite{huang2023efficient} recently highlighted this gap in their comprehensive review of efficient medical image segmentation methods, noting that most attention-based models still rely on computationally heavy backbones. Similarly, \textcite{patel2024computational} identified encoder inefficiency as a significant bottleneck in deploying attention-based segmentation models in clinical settings.
+While attention mechanisms and lightweight architectures have individually shown promise in brain tumor segmentation, their combined application within frameworks like AS-Net remains underexplored. \textcite{huang2023efficient} recently highlighted this gap in their comprehensive review of efficient medical image segmentation methods, noting that most attention-based models still rely on computationally heavy backbones. Similarly, \textcite{diagnostics13162670} identified encoder inefficiency as a significant bottleneck in deploying attention-based segmentation models in clinical settings.
 
-This study aims to fill this gap by systematically evaluating lightweight encoder alternatives (MobileNetV3 and EfficientNetV2) within the AS-Net framework. Our work extends beyond previous encoder comparison studies like \textcite{singh2023encoder} by focusing on the interaction between encoder choice and attention mechanism effectiveness. Furthermore, we address the clinical applicability concerns that \textcite{nguyen2024clinical} raised by providing concrete metrics on accuracy and computational efficiency using the latest BraTS 2023 dataset.
+This study aims to fill this gap by systematically evaluating lightweight encoder alternatives (MobileNetV3 and EfficientNetV2) within the AS-Net framework. Our work extends beyond previous encoder comparison studies like \textcite{qin2021efficient} by focusing on the interaction between encoder choice and attention mechanism effectiveness. Furthermore, we address the clinical applicability concerns that \textcite{yao2020deeplearning} raised by providing concrete metrics on accuracy and computational efficiency using the latest BraTS 2023 dataset.
 
 \section{Definition of Terms}
 

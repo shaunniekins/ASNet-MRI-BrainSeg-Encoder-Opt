@@ -1,18 +1,16 @@
 % !TeX root = thesis.tex
 % !TeX program = xelatex  % Or lualatex
+
 \NeedsTeXFormat{LaTeX2e}
-% \ProvidesClass{gatechthesis}[2025/04/22 GA Tech MS/Ungraduate Thesis - Modified]
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{report}}
 \ProcessOptions\relax
-\LoadClass[12pt]{report} %%% MODIFIED: Set base font size to 12pt
+\LoadClass[12pt]{report}
 
 % --- Package Imports ---
 \RequirePackage{graphicx}
-\RequirePackage[letterpaper, left=1.5in, right=1in, top=1in, bottom=1in]{geometry} % Standard margins
-% \RequirePackage[letterpaper, left=0in, right=0in, top=0in, bottom=0in]{geometry} % User's original "zero margin" setting
+\RequirePackage[letterpaper, left=1.5in, right=1in, top=1in, bottom=1in]{geometry}
 \RequirePackage{multicol}
 \RequirePackage{setspace}
-% \RequirePackage{times} % Removed: Redundant with fontspec/xelatex
 \RequirePackage[explicit]{titlesec}
 \RequirePackage[titles]{tocloft}
 \RequirePackage{ifoddpage}
@@ -30,31 +28,21 @@
 \RequirePackage[acronym,nogroupskip,nopostdot]{glossaries}
 \RequirePackage{doi}
 \RequirePackage{fancyhdr}
-\RequirePackage{etoolbox} % For \patchcmd, \pretocmd etc. if needed later
+\RequirePackage{etoolbox}
 
-% --- Font Setup (from thesis.tex preamble) ---
-% It's generally better to have font setup within the class if it's a core part of the thesis style
-% However, keeping it in thesis.tex allows user flexibility. If you move \setmainfont here,
-% ensure font files are accessible relative to the .cls or use system fonts.
-% For now, assuming \setmainfont{Candara} remains in thesis.tex.
-
-% --- Thesis Title Font Size Definition ---
 \newcommand{\thesistitlefontsize}{\fontsize{14pt}{16.8pt}\selectfont}
-\newcommand{\sectiontitlefontsize}{\fontsize{13pt}{15.6pt}\selectfont} %%% ADDED: For 13pt section titles
+\newcommand{\sectiontitlefontsize}{\fontsize{13pt}{15.6pt}\selectfont}
+\newcommand{\rothead}[1]{\rotatebox{90}{\textbf{#1}}}
 
-\newcommand{\rothead}[1]{\rotatebox{90}{\textbf{#1}}} % Adjust angle as needed
-
-% --- SI Units Setup ---
 \sisetup{
   sticky-per=true,
   detect-mode=true,
   per-mode = symbol-or-fraction
 }
 
-% --- Fancyhdr setup for page number in top right ---
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[R]{\thepage} % Page number in the top right corner
+\fancyhead[R]{\thepage}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
 
@@ -66,8 +54,8 @@
 }
 
 % --- Spacing and Paragraph Setup ---
-\doublespacing % This will apply to the 12pt base font
-\setlength{\parindent}{3.011em} % Set to 2em for a "tab"; adjust as needed
+\doublespacing
+\setlength{\parindent}{3.011em}
 
 % --- Document-wide Settings ---
 \AtBeginDocument{\renewcommand{\ref}[1]{\autoref{#1}}}
@@ -83,23 +71,21 @@
 }
 
 % --- Default Chapter Title Formatting & Spacing ---
-% These are defaults; they can be overridden by environments like frontmatter or thesisbody.
 \titleformat{\chapter}[display]
-{\thesistitlefontsize\bfseries\filcenter} % Apply 14pt font size
+{\thesistitlefontsize\bfseries\filcenter}
 {\chaptertitlename\ \thechapter}
 {0pt}
 {\MakeUppercase}
 \titlespacing*{\chapter}
-{0pt}{-\topskip}{35pt} % Adjusted: Pull up by \topskip to remove default top spacing
+{0pt}{-\topskip}{35pt}
 
-%%% MODIFIED: Section, Subsection, Subsubsection title formats
-\titleformat{\section}{\sectiontitlefontsize\bfseries}{\thesection}{1em}{##1} % Use 13pt
-\titleformat{\subsection}{\normalfont\bfseries}{\thesubsection}{1em}{##1}     % Use 12pt (from \normalsize)
-\titleformat{\subsubsection}{\normalfont\bfseries}{\thesubsubsection}{1em}{##1} % Use 12pt (from \normalsize)
+%%% Section, Subsection, Subsubsection title formats
+\titleformat{\section}{\sectiontitlefontsize\bfseries}{\thesection}{1em}{##1}
+\titleformat{\subsection}{\normalfont\bfseries}{\thesubsection}{1em}{##1}
+\titleformat{\subsubsection}{\normalfont\bfseries}{\thesubsubsection}{1em}{##1}
 
-% Ensure subsubsections are numbered in the document and TOC
-\setcounter{secnumdepth}{3}  % Show numbers up to subsubsection level
-\setcounter{tocdepth}{3}     % Include subsubsections in TOC
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
 
 \makeatletter
 
@@ -151,38 +137,34 @@
   \clearpage
   \pagestyle{plain}
   \titleformat{\chapter}[display]
-  {\vspace*{-16.8pt}\normalfont\thesistitlefontsize\bfseries\filcenter} % Adjusted
-  {} % No chapter number/name for \chapter*
+  {\vspace*{-16.8pt}\normalfont\thesistitlefontsize\bfseries\filcenter}
+  {}
   {0pt}
   {\MakeUppercase{##1}}
   \titlespacing*{\chapter}
-  {0pt}{0pt}{35pt} % before-sep is 0pt
+  {0pt}{0pt}{35pt}
 }%
 {%
 }
 
 % --- Thesisbody Environment ---
-% Handles text and other formatting for main content and appendices
 \newenvironment{thesisbody}{%
   \clearpage
   \pagestyle{fancy}
-  \pagenumbering{arabic} % resumes page numbering after front matter
-  \setcounter{page}{1} % set the page number appropriately
+  \pagenumbering{arabic}
+  \setcounter{page}{1}
 
-  % --- Modified Chapter Formatting for thesisbody ---
-  \titleformat{\chapter}[block] % Shape can remain [block] if that's the desired style for numbered chapters
-  {\vspace*{-28pt}\thesistitlefontsize\bfseries\filcenter} % Added \vspace*{-16.8pt}
-  {\MakeUppercase{CHAPTER \thechapter.}} % Label for numbered chapters
-  {0.5em} % Separation between label (CHAPTER X.) and title text
-  {\MakeUppercase{##1}}[\thispagestyle{empty}] % Formatting for the title text AND set page style to empty
+  \titleformat{\chapter}[block]
+  {\vspace*{-28pt}\thesistitlefontsize\bfseries\filcenter}
+  {\MakeUppercase{CHAPTER \thechapter.}}
+  {0.5em}
+  {\MakeUppercase{##1}}[\thispagestyle{empty}]
   \titlespacing*{\chapter}
-  {0pt}{0pt}{35pt} % before-sep changed from -\topskip to 0pt. after-sep remains 35pt.
-  % --- End of Modified Chapter Formatting ---
+  {0pt}{0pt}{35pt}
 
-  %%% MODIFIED: Section, Subsection, Subsubsection title formats within thesisbody
-  \titleformat{\section}{\sectiontitlefontsize\bfseries}{\thesection}{1em}{##1} % Use 13pt
-  \titleformat{\subsection}{\normalfont\bfseries}{\thesubsection}{1em}{##1}     % Use 12pt (from \normalsize)
-  \titleformat{\subsubsection}{\normalfont\bfseries}{\thesubsubsection}{1em}{##1} % Use 12pt (from \normalsize)
+  \titleformat{\section}{\sectiontitlefontsize\bfseries}{\thesection}{1em}{##1}
+  \titleformat{\subsection}{\normalfont\bfseries}{\thesubsection}{1em}{##1}
+  \titleformat{\subsubsection}{\normalfont\bfseries}{\thesubsubsection}{1em}{##1}
 }%
 {
   \clearpage
@@ -190,14 +172,13 @@
 
 % --- Title Page Command ---
 \makeatletter
-% args: {month}{year}
 \newcommand{\makeTitlePage}[2]{
   \pagestyle{empty}
   \pagenumbering{roman}
   \currentpdfbookmark{Title Page}{titlePage}
   \phantomsection
   \begin{center}
-    \bfseries % Add \bfseries here to make all text bold
+    \bfseries
     \begin{singlespacing}
       \@title\\
       \vspace{6\baselineskip}
@@ -235,7 +216,7 @@
   \phantomsection
   \addcontentsline{toc}{chapter}{APPROVAL SHEET}
   \begin{centering}
-    \thesistitlefontsize\textbf{APPROVAL SHEET}\\ % Apply 14pt font size
+    \thesistitlefontsize\textbf{APPROVAL SHEET}\\
     \vspace{\baselineskip}
   \end{centering}
 }
@@ -250,7 +231,7 @@
   \phantomsection
   \addcontentsline{toc}{chapter}{DEDICATION}
   \begin{centering}
-    \thesistitlefontsize\textbf{DEDICATION}\\ % Apply 14pt font size
+    \thesistitlefontsize\textbf{DEDICATION}\\
     \vspace{\baselineskip}
   \end{centering}
 }
@@ -265,7 +246,7 @@
   \phantomsection
   \addcontentsline{toc}{chapter}{ACKNOWLEDGMENT}
   \begin{centering}
-    \thesistitlefontsize\textbf{ACKNOWLEDGMENT}\\ % Apply 14pt font size
+    \thesistitlefontsize\textbf{ACKNOWLEDGMENT}\\
     \vspace{\baselineskip}
   \end{centering}
 }
@@ -280,11 +261,10 @@
   \phantomsection
   \addcontentsline{toc}{chapter}{ABSTRACT}
   \begin{centering}
-    \thesistitlefontsize\textbf{ABSTRACT}\\ % Apply 14pt font size
+    \thesistitlefontsize\textbf{ABSTRACT}\\
     \vspace{\baselineskip}
   \end{centering}
 }{
-  % \clearpage % Original abstract did not have \clearpage at the end
 }
 
 % --- Table of Contents Title ---
@@ -302,16 +282,11 @@
 \renewcommand{\cftsubsecafterpnum}{\vskip\baselineskip}
 \renewcommand{\cftsubsubsecafterpnum}{\vskip\baselineskip}
 
-% Removed commented-out \tableofcontents, \listoffigures, \listoftables redefinitions
-% and \patchcmd. Title formatting/spacing should be handled by \titleformat and \titlespacing
-% for \chapter (affecting \chapter*) within the frontmatter environment.
-
 \newcommand{\makeTOC}{
   \currentpdfbookmark{Table of Contents}{TOC}
-  % \renewcommand\contentsname{Table of Contents} % Title set by \chapter* mechanism
   \begin{singlespace}
     \setcounter{tocdepth}{3}
-    \tableofcontents % This will use \chapter*{TABLE OF CONTENTS}
+    \tableofcontents
   \end{singlespace}
   \clearpage
 }
@@ -319,10 +294,9 @@
 % --- List of Tables Command ---
 \newcommand{\makeListOfTables}{
   \phantomsection
-  % \addcontentsline{toc}{chapter}{LIST OF TABLES} % Done by \listoftables with tocloft
   \begin{singlespace}
     \setlength\cftbeforetabskip{\baselineskip}
-    \listoftables % This will use \chapter*{LIST OF TABLES}
+    \listoftables
   \end{singlespace}
   \clearpage
 }
@@ -330,10 +304,9 @@
 % --- List of Figures Command ---
 \newcommand{\makeListOfFigures}{
   \phantomsection
-  % \addcontentsline{toc}{chapter}{LIST OF FIGURES} % Done by \listoffigures with tocloft
   \begin{singlespace}
     \setlength\cftbeforefigskip{\baselineskip}
-    \listoffigures % This will use \chapter*{LIST OF FIGURES}
+    \listoffigures
   \end{singlespace}
   \clearpage
 }
@@ -341,9 +314,8 @@
 % --- List of Acronyms Command ---
 \newcommand{\makeListOfAcronyms}{
   \phantomsection
-  % \addcontentsline{toc}{chapter}{LIST OF ACRONYMS} % Done by \printglossary with tocloft
-  \printglossary[type=\acronymtype,title=LIST OF ACRONYMS] % Title should pick up frontmatter \chapter* style
-  \clearpage % Added clearpage for consistency, if needed. Remove if List of Acronyms page break is handled differently.
+  \printglossary[type=\acronymtype,title=LIST OF ACRONYMS]
+  \clearpage
 }
 
 % --- Appendix Environment Definition ---
@@ -365,13 +337,12 @@
     {\centering
       \interlinepenalty \@M
       \normalfont
-    \thesistitlefontsize\bfseries \MakeUppercase{\appendixpagename}\par}% Apply 14pt font size
+    \thesistitlefontsize\bfseries \MakeUppercase{\appendixpagename}\par}
     \if@dotoc@pp
     \fi
   }
   \bookmarksetupnext{level=part}
-  \begin{appendices} % From appendix package
-    % These \addtocontents customize how appendix sections appear in ToC
+  \begin{appendices}
     \addtocontents{toc}{\protect\renewcommand{\protect\cftsecpresnum}{\appendixname\space}}
     \addtocontents{toc}{\protect\renewcommand{\protect\cftsecnumwidth}{5.75em}}
     \addtocontents{toc}{\protect\renewcommand{\protect\cftsecaftersnum}{:}}
@@ -386,8 +357,6 @@
 }
 \makeatother
 
-% --- Bibliography Formatting and Command Creation ---
-% Prevent certain fields in references from printing
 \AtEveryBibitem{\clearfield{issn}}
 \AtEveryBibitem{\clearlist{issn}}
 \AtEveryBibitem{\clearfield{language}}
@@ -404,15 +373,13 @@
   \clearpage
   \bookmarksetupnext{level=part}
   \phantomsection
-  \addcontentsline{toc}{chapter}{REFERENCES} % This adds "REFERENCES" to ToC
+  \addcontentsline{toc}{chapter}{REFERENCES}
   \begin{centering}
-    \thesistitlefontsize\textbf{REFERENCES}\\ % Apply 14pt font size
-    % No \vspace here, \printbibliography will handle spacing before first item.
-    % If extra space is needed before bib items, adjust \bibitemsep or add \vspace before \printbibliography
+    \thesistitlefontsize\textbf{REFERENCES}\\
   \end{centering}
   \begin{singlespace}
-    \setlength\bibitemsep{\baselineskip} % Separation between bibliography items
-    \printbibliography[heading=none] % heading=none because we provided our own centered title
+    \setlength\bibitemsep{\baselineskip}
+    \printbibliography[heading=none]
   \end{singlespace}
 }
 
@@ -423,7 +390,7 @@
   \phantomsection
   \addcontentsline{toc}{chapter}{BIONOTE}
   \begin{centering}
-    \thesistitlefontsize\textbf{BIONOTE}\\ % Apply 14pt font size
+    \thesistitlefontsize\textbf{BIONOTE}\\
     \vspace{\baselineskip}
   \end{centering}
 }

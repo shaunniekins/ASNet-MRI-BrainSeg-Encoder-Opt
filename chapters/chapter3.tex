@@ -1,6 +1,5 @@
 \chapter{METHODOLOGY}
 
-% 1. Conceptual Overview
 \section{Conceptual Framework}
 \begin{figure}[ht]
   \centering
@@ -11,7 +10,6 @@
 
 \ref{fig:conceptual_framework} illustrates the conceptual framework guiding this research. The process initiates with the BraTS 2023-GLI (Task 1) dataset, which undergoes a standardized preprocessing pipeline. The resulting data is then fed into multiple parallel processing streams. Each stream implements the Attention Synergy Network (AS-Net) architecture but utilizes a distinct encoder backbone, such as VGG16, MobileNetV3, and EfficientNetV2, as explored in this study. Within each stream, the encoder's features are processed by Spatial Attention Modules (SAM) and Channel Attention Modules (CAM), whose outputs are integrated by a Synergy module. Each AS-Net variant generates its segmentation output, from which performance metrics are calculated. Finally, these metrics are systematically compared across the encoder variants to evaluate their relative performance and efficiency.
 
-% 2. The Attention Synergy Network (AS-Net) Architecture
 \section{The Attention Synergy Network (AS-Net) Architecture}
 
 The study adapts the AS-Net architecture, originally proposed by \textcite{hu2022asnet} for skin lesion segmentation. The core components include:
@@ -40,7 +38,6 @@ The study adapts the AS-Net architecture, originally proposed by \textcite{hu202
   \item \textbf{Decoder Structure:} Follows a standard U-Net-like symmetric structure, progressively upsampling features and integrating high-resolution spatial information from the encoder via skip connections at each stage. The fused features from the Synergy module are passed through the decoder stages.
 \end{itemize}
 
-% 3. Encoder Integration and Model Variants
 \section{Encoder Integration and Model Variants}
 
 Five pre-trained encoder networks were integrated into the AS-Net framework:
@@ -67,7 +64,6 @@ All encoders were initialized with weights pre-trained on ImageNet. A fine-tunin
 \end{itemize}
 This strategy aimed to leverage general features while adapting deeper layers to the MRI segmentation task.
 
-% Consolidated Architecture Figure
 \begin{figure}[!htb]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/asnet-architecture/asnet_architecture.png}
@@ -76,12 +72,12 @@ This strategy aimed to leverage general features while adapting deeper layers to
 \end{figure}
 
 A key architectural difference among the encoder variants is their feature map resolution progression. VGG16-based AS-Net processes features from H/16 to H (four decoder stages), while MobileNetV3 and EfficientNetV2 variants incorporate an additional deeper stage to handle features from H/32 to H (five decoder stages). This reflects the deeper feature hierarchies in modern efficient architectures compared to VGG16.
-% filepath: /Users/shaunniekins/Desktop/01 Projects/ASNet_MRI_BrainSeg_Encoder_Opt/chapters/chapter3.tex
+
 \begin{table}[!htb]
   \centering
   \caption{Encoder and decoder stage dimensions in AS-Net variants.}
   \label{tab:encoder_specs}
-  \setlength{\tabcolsep}{3pt} % Keep this, adjust if needed
+  \setlength{\tabcolsep}{3pt}
   \begin{tabularx}{\textwidth}{@{}l*{5}{>{\centering\arraybackslash}X}@{}}
     \hline\hline
     \textbf{Encoder} & \textbf{Stage 1} & \textbf{Stage 2} & \textbf{Stage 3} & \textbf{Stage 4} & \textbf{Stage 5} \\
@@ -103,7 +99,6 @@ A key architectural difference among the encoder variants is their feature map r
   \end{tabularx}%
 \end{table}
 
-% 4. Dataset and Preprocessing
 \section{Dataset and Preprocessing}
 
 \subsection{Dataset Identification}
@@ -147,7 +142,6 @@ A custom script converted the 3D NIfTI volumes into a collection of 2D HDF5 (H5)
 \end{enumerate}
 The pipeline yielded tuples: (\texttt{model\_input\_image}, \texttt{binary\_ground\_truth\_mask}, \texttt{reference\_display\_image}, \texttt{multi\_class\_display\_mask}).
 
-% 5. Training Configuration
 \section{Training Configuration}
 
 \begin{itemize}
@@ -179,7 +173,6 @@ The pipeline yielded tuples: (\texttt{model\_input\_image}, \texttt{binary\_grou
   \item \textbf{Checkpoint Resumption:} Enabled.
 \end{itemize}
 
-% 6. Evaluation Methodology
 \section{Evaluation Methodology}
 
 Model performance was assessed on the held-out test set using the best checkpoint saved during training (based on validation Dice Coefficient).
